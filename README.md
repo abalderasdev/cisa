@@ -81,6 +81,24 @@ Las URLs son:
 - `http://localhost:5173/levantamiento` — dirección 01
 - `http://localhost:5173/patrimonio` — dirección 02
 
+### Si tu `~/.npmrc` global tiene `os=linux` (típico de WSL o setups viejos)
+
+En Windows, ese setting rompe `npm install` porque intenta bajar binarios Linux. Tienes dos opciones:
+
+**Opción A — Temporal, solo para este proyecto (recomendado):**
+```bash
+npm install --os=win32
+```
+
+**Opción B — Crear un `.npmrc` local solo en tu máquina (no lo commitees):**
+```bash
+echo "os=win32" > .npmrc
+npm install
+rm .npmrc   # antes de commitear
+```
+
+**No** commitees un `.npmrc` con `os=win32` al repo: rompe el deploy en Vercel (que corre en Linux).
+
 ---
 
 ## Cómo desplegar en Vercel
