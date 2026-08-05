@@ -38,7 +38,7 @@ export default function Home() {
             Grupo CISA
           </h1>
           <p className="mt-4 text-stone-500 text-sm uppercase tracking-widest">
-            Dos direcciones de arte sobre el copy real
+            Vista interna de ABDev · dirección visual recomendada
           </p>
         </motion.div>
 
@@ -49,13 +49,13 @@ export default function Home() {
           className="mt-20 text-center max-w-2xl mx-auto"
         >
           <p className="text-stone-600 leading-relaxed">
-            Esta es la demo que se le presenta al cliente. Cada dirección es una página
-            completa con el mismo copy, distinta estética. La estructura, las
-            animaciones y el stack son los mismos que se usarán en producción
-            (Next.js, Tailwind v4, Motion, GSAP, React Three Fiber).
+            Esta es la vista interna de ABDev. La dirección Levantamiento ya
+            quedó integrada como home comercial. La dirección Patrimonio se
+            mantiene como referencia visual para una iteración futura.
           </p>
           <p className="mt-4 text-stone-500 text-sm italic">
-            Elige una para verla en pantalla completa.
+            La estructura, animaciones y stack son los mismos que se migrarán a
+            Next.js, Supabase y Vercel para producción.
           </p>
         </motion.div>
 
@@ -94,7 +94,7 @@ export default function Home() {
               </div>
 
               <div className="mt-8 text-xs uppercase tracking-widest text-stone-900 group-hover:translate-x-1 transition-transform">
-                Ver demo →
+                {d.href === '/levantamiento' ? 'Abrir home comercial →' : 'Ver demo →'}
               </div>
             </motion.a>
           ))}

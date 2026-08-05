@@ -1,56 +1,66 @@
 import { motion } from 'motion/react'
-import Container from '../shared/Container'
 import Section from '../shared/Section'
-import Button from '../shared/Button'
-import { copy } from '../../lib/copy/copy'
+import Container from '../shared/Container'
+
+const rutas = [
+  {
+    number: 'R 01',
+    title: 'Tengo un terreno',
+    body: 'Revise si su predio puede pasar de activo dormido a un proyecto desarrollado, con su participación por escrito.',
+    href: '#contacto',
+    cta: 'Precalificar mi terreno'
+  },
+  {
+    number: 'R 02',
+    title: 'Quiero invertir',
+    body: 'Conozca los proyectos abiertos, su estructura de capital y los criterios de entrada antes de cualquier firma.',
+    href: '#contacto',
+    cta: 'Solicitar resumen'
+  },
+  {
+    number: 'R 03',
+    title: 'Busco una propiedad',
+    body: 'Departamentos, casas, locales, lotes y macrolotes en preventa y entrega inmediata en distintas ciudades.',
+    href: '#desarrollos',
+    cta: 'Ver desarrollos'
+  }
+]
 
 export default function NuevaOportunidad() {
   return (
-    <Section className="bg-[var(--color-bg-soft)] border-y border-[var(--color-line)]">
+    <Section id="rutas" className="bg-[var(--color-bg-soft)] border-y border-[var(--color-line)]">
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6 }}
-          className="max-w-3xl"
         >
-          <span className="text-[10px] uppercase tracking-[0.3em] text-[var(--color-accent)] font-medium">
-            Bloque 02
-          </span>
-          <h2 className="mt-4 font-[family-name:var(--font-heading)] text-3xl md:text-5xl leading-tight text-[var(--color-fg)]">
-            {copy.nuevaOportunidad.titular}
-          </h2>
-          <p className="mt-6 text-lg text-[var(--color-fg-soft)] leading-relaxed">
-            {copy.nuevaOportunidad.parrafo}
+          <p className="section-kicker">Tres rutas, una decisión</p>
+          <h2 className="section-title">Elija por dónde quiere entrar.</h2>
+          <p className="section-lede">
+            Su terreno, su capital o su próxima propiedad. Cada ruta tiene su propio
+            proceso y sus propios documentos. La promesa es la misma: empezar antes
+            de comprometerse.
           </p>
         </motion.div>
 
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-px bg-[var(--color-line)] border border-[var(--color-line)]">
-          {copy.nuevaOportunidad.pasos.map((paso, i) => (
-            <motion.div
-              key={i}
+        <div className="rutas-grid mt-14">
+          {rutas.map((r, i) => (
+            <motion.a
+              key={r.number}
+              href={r.href}
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-50px' }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="bg-[var(--color-bg)] p-8 md:p-10"
+              transition={{ duration: 0.5, delay: i * 0.08 }}
             >
-              <div className="text-[10px] uppercase tracking-[0.3em] text-[var(--color-fg-mute)] mb-3">
-                Etapa {String(i + 1).padStart(2, '0')}
-              </div>
-              <h3 className="font-[family-name:var(--font-heading)] text-2xl text-[var(--color-fg)] mb-4">
-                {paso.titulo}
-              </h3>
-              <p className="text-sm text-[var(--color-fg-soft)] leading-relaxed">
-                {paso.descripcion}
-              </p>
-            </motion.div>
+              <span className="ru-number">{r.number}</span>
+              <h3>{r.title}</h3>
+              <p>{r.body}</p>
+              <span className="ru-arrow">{r.cta} →</span>
+            </motion.a>
           ))}
-        </div>
-
-        <div className="mt-12">
-          <Button variant="secondary">¿Aplica mi terreno? Averígüelo en 3 minutos</Button>
         </div>
       </Container>
     </Section>
