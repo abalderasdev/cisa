@@ -1,6 +1,7 @@
 import SignatureMoment from '../components/shared/SignatureMoment'
 import AgenteSection from '../components/shared/AgenteSection'
 import Hero from '../components/levantamiento/Hero'
+import Equipo from '../components/levantamiento/Equipo'
 import Modalidades from '../components/levantamiento/Modalidades'
 import Prueba from '../components/levantamiento/Prueba'
 import Metodo from '../components/levantamiento/Metodo'
@@ -12,6 +13,7 @@ export default function Levantamiento() {
       <Hero />
       <AgenteSection />
       <SignatureMoment theme="levantamiento" />
+      <Equipo />
       <Modalidades />
       <Prueba />
       <Metodo />

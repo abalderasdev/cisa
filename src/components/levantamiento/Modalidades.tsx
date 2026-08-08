@@ -4,6 +4,13 @@ import Section from '../shared/Section'
 import Button from '../shared/Button'
 import { copy } from '../../lib/copy/copy'
 
+const modalidadesImagenes: Record<string, string> = {
+  'Aportación de terreno': '/modalities/terreno.svg',
+  'Co-desarrollo': '/modalities/codesarrollo.svg',
+  'Construcción por encargo': '/modalities/construccion.svg',
+  'Inversión en proyectos': '/modalities/inversion.svg'
+}
+
 export default function Modalidades() {
   return (
     <Section>
@@ -36,7 +43,14 @@ export default function Modalidades() {
               transition={{ duration: 0.5, delay: i * 0.08 }}
               className="bg-[var(--color-bg)] p-8 md:p-10"
             >
-              <div className="font-mono text-xs text-[var(--color-fg-mute)] mb-4">
+              <div className="aspect-square w-32 mb-6 mx-auto">
+                <img
+                  src={modalidadesImagenes[m.titulo] || '/modalities/terreno.svg'}
+                  alt={m.titulo}
+                  className="w-full h-full"
+                />
+              </div>
+              <div className="font-mono text-xs text-[var(--color-fg-mute)] mb-3">
                 {m.numero}
               </div>
               <h3 className="font-[family-name:var(--font-heading)] text-2xl text-[var(--color-fg)] mb-4">

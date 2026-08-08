@@ -51,10 +51,19 @@ export default function AgenteSection() {
           {/* Columna derecha: demo del agente */}
           <div className="md:col-span-5">
             <div className="relative aspect-[3/4] bg-[var(--color-bg)] border border-[var(--color-line-strong)] overflow-hidden">
-              {/* Visual placeholder del agente */}
               <div className="absolute inset-0 flex flex-col items-center justify-center p-8">
-                {/* Ondas animadas */}
-                <div className="relative w-32 h-32 mb-8">
+                {/* Ondas estáticas de fondo */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-20">
+                  <img
+                    src="/agent/waveform.svg"
+                    alt=""
+                    className="w-full"
+                    style={{ transform: 'rotate(90deg) scale(1.5)' }}
+                  />
+                </div>
+
+                {/* Anillos pulsantes */}
+                <div className="relative w-32 h-32 mb-8 z-10">
                   <div className="absolute inset-0 rounded-full border border-[var(--color-accent)] opacity-30 animate-ping" />
                   <div
                     className="absolute inset-2 rounded-full border border-[var(--color-accent)] opacity-50 animate-ping"
@@ -84,11 +93,16 @@ export default function AgenteSection() {
                   </div>
                 </div>
 
-                <p className="font-[family-name:var(--font-heading)] text-xl text-[var(--color-fg)] text-center italic">
+                {/* Status badge */}
+                <div className="mb-4 z-10">
+                  <img src="/agent/status.svg" alt="En línea" className="h-8" />
+                </div>
+
+                <p className="font-[family-name:var(--font-heading)] text-xl text-[var(--color-fg)] text-center italic z-10">
                   «Te escucho. Pregúntame lo que quieras.»
                 </p>
 
-                <div className="mt-8 pt-8 border-t border-[var(--color-line)] w-full">
+                <div className="mt-8 pt-8 border-t border-[var(--color-line)] w-full z-10 bg-[var(--color-bg)]/80 backdrop-blur-sm">
                   <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--color-fg-mute)] text-center mb-4">
                     Powered by
                   </p>
@@ -98,8 +112,7 @@ export default function AgenteSection() {
                 </div>
               </div>
 
-              {/* Anotación tipo plano */}
-              <div className="absolute top-3 left-3 text-[9px] uppercase tracking-widest text-[var(--color-fg-mute)]">
+              <div className="absolute top-3 left-3 text-[9px] uppercase tracking-widest text-[var(--color-fg-mute)] z-20">
                 Demo · Live widget
               </div>
             </div>

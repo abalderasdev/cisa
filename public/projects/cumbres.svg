@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+  <rect width="800" height="600" fill="#f1ebdc"/>
+  <defs>
+    <pattern id="grid-cum" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="40" y2="0" stroke="#1a2332" stroke-width="0.5" stroke-opacity="0.08"/>
+      <line x1="0" y1="0" x2="0" y2="40" stroke="#1a2332" stroke-width="0.5" stroke-opacity="0.08"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="600" fill="url(#grid-cum)"/>
+
+  <rect x="40" y="40" width="720" height="520" stroke="#1a2332" stroke-width="1" stroke-opacity="0.3" fill="none"/>
+  <text x="60" y="70" font-family="'Inter', sans-serif" font-size="10" font-weight="500" letter-spacing="3" fill="#1a2332" fill-opacity="0.5">REF · 004 — CUMB</text>
+  <text x="740" y="70" font-family="'Inter', sans-serif" font-size="10" font-weight="500" letter-spacing="3" fill="#1a2332" fill-opacity="0.5" text-anchor="end">ESC 1:100</text>
+
+  <!-- Residencia con vista al lago - elevación + planta -->
+  <g transform="translate(120, 120)">
+    <!-- Lago (forma orgánica) -->
+    <path d="M 380 280 Q 480 260 540 300 Q 560 340 520 360 L 360 360 Q 320 320 380 280 Z" stroke="#1a2332" stroke-width="1.5" fill="#1a2332" fill-opacity="0.06"/>
+    <text x="450" y="320" font-family="'Inter', sans-serif" font-size="9" fill="#1a2332" fill-opacity="0.6" text-anchor="middle">LAGO</text>
+
+    <!-- Casa - planta -->
+    <g stroke="#1a2332" stroke-width="2" fill="none">
+      <rect x="40" y="80" width="220" height="140"/>
+    </g>
+    <!-- Divisiones interiores -->
+    <g stroke="#1a2332" stroke-width="0.8" stroke-opacity="0.6">
+      <line x1="40" y1="140" x2="260" y2="140"/>
+      <line x1="100" y1="80" x2="100" y2="220"/>
+      <line x1="180" y1="80" x2="180" y2="220"/>
+      <line x1="220" y1="80" x2="220" y2="220"/>
+    </g>
+    <!-- Recámaras -->
+    <text x="70" y="115" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.7" text-anchor="middle">REC</text>
+    <text x="140" y="115" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.7" text-anchor="middle">REC</text>
+    <text x="200" y="115" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.7" text-anchor="middle">REC</text>
+    <text x="70" y="180" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.7" text-anchor="middle">ESTAR</text>
+    <text x="140" y="180" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.7" text-anchor="middle">COMEDOR</text>
+    <text x="220" y="180" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.7" text-anchor="middle">COC</text>
+    <text x="70" y="210" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.7" text-anchor="middle">BAÑO</text>
+
+    <!-- Terraza hacia el lago -->
+    <rect x="260" y="160" width="80" height="40" stroke="#1a2332" stroke-width="1" stroke-opacity="0.5" stroke-dasharray="3 2" fill="none"/>
+    <text x="300" y="185" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.6" text-anchor="middle">TERRAZA</text>
+
+    <!-- Jardín -->
+    <g fill="#1a2332" fill-opacity="0.06">
+      <rect x="40" y="40" width="220" height="30"/>
+    </g>
+    <text x="150" y="60" font-family="'Inter', sans-serif" font-size="8" fill="#1a2332" fill-opacity="0.6" text-anchor="middle">JARDÍN</text>
+
+    <!-- Cota superficie -->
+    <line x1="40" y1="240" x2="540" y2="240" stroke="#1a2332" stroke-width="0.8"/>
+    <text x="20" y="244" font-family="'Inter', sans-serif" font-size="8" fill="#1a2332" fill-opacity="0.6" text-anchor="end">±0.00</text>
+    <text x="540" y="244" font-family="'Inter', sans-serif" font-size="8" fill="#1a2332" fill-opacity="0.6">±0.00</text>
+
+    <!-- Orientación -->
+    <g transform="translate(490, 60)">
+      <circle cx="0" cy="0" r="20" stroke="#1a2332" stroke-width="0.8" stroke-opacity="0.4" fill="none"/>
+      <text x="0" y="-25" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.6" text-anchor="middle">N</text>
+      <line x1="0" y1="-15" x2="0" y2="-5" stroke="#1a2332" stroke-width="1"/>
+    </g>
+  </g>
+
+  <g transform="translate(120, 530)">
+    <text font-family="'Inter', sans-serif" font-size="10" font-weight="500" letter-spacing="3" fill="#1a2332" fill-opacity="0.6">PROYECTO 04 · QUERÉTARO</text>
+    <text y="22" font-family="'Fraunces', serif" font-size="22" font-weight="600" fill="#1a2332">Cumbres del Lago</text>
+    <text y="40" font-family="'Inter', sans-serif" font-size="11" fill="#1a2332" fill-opacity="0.7">Residencia de 190 m² · Vista al lago</text>
+  </g>
+
+  <g transform="translate(680, 510)">
+    <rect x="0" y="0" width="60" height="60" stroke="#1a2332" stroke-width="1" stroke-opacity="0.4" fill="none"/>
+    <text x="30" y="20" font-family="'Inter', sans-serif" font-size="6" fill="#1a2332" fill-opacity="0.5" text-anchor="middle">N ↑</text>
+    <line x1="0" y1="30" x2="60" y2="30" stroke="#1a2332" stroke-width="0.5" stroke-opacity="0.3"/>
+    <text x="30" y="42" font-family="'Inter', sans-serif" font-size="6" fill="#1a2332" fill-opacity="0.5" text-anchor="middle">20°42'N</text>
+    <text x="30" y="52" font-family="'Inter', sans-serif" font-size="6" fill="#1a2332" fill-opacity="0.5" text-anchor="middle">100°17'O</text>
+  </g>
+</svg>

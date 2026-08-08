@@ -6,12 +6,12 @@ export default function Footer() {
     <footer className="bg-[var(--color-fg)] text-[var(--color-bg)]">
       <Container className="py-20">
         <div className="max-w-2xl mx-auto text-center">
-          <div
-            className="font-[family-name:var(--font-heading)] text-3xl md:text-4xl"
-            style={{ fontStyle: 'italic', fontWeight: 500 }}
-          >
-            {copy.marca.nombre}
-          </div>
+          <img
+            src="/brand/logo-mono.svg"
+            alt="Grupo CISA"
+            className="h-12 w-auto mx-auto"
+            style={{ color: 'var(--color-bg)' }}
+          />
           <p className="mt-3 text-xs uppercase tracking-[0.3em] text-[var(--color-accent-soft)]">
             Dirección 02 · Patrimonio
           </p>
@@ -47,9 +47,10 @@ export default function Footer() {
         <div className="mt-8 flex items-center justify-center">
           <a
             href="/levantamiento"
-            className="text-[10px] uppercase tracking-[0.3em] text-[var(--color-accent-soft)] hover:text-[var(--color-bg)] transition-colors"
+            className="text-[10px] uppercase tracking-[0.3em] text-[var(--color-accent-soft)] hover:text-[var(--color-bg)] transition-colors flex items-center gap-2"
           >
-            ← Ver dirección 01 · Levantamiento
+            <img src="/decor/arrow.svg" alt="" className="w-6 h-3 rotate-180" />
+            Ver dirección 01 · Levantamiento
           </a>
         </div>
       </Container>

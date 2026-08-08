@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" fill="none">
+  <rect width="400" height="500" fill="#f1ebdc"/>
+  <defs>
+    <pattern id="grid-t1" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="40" y2="0" stroke="#1a2332" stroke-width="0.5" stroke-opacity="0.06"/>
+      <line x1="0" y1="0" x2="0" y2="40" stroke="#1a2332" stroke-width="0.5" stroke-opacity="0.06"/>
+    </pattern>
+  </defs>
+  <rect width="400" height="500" fill="url(#grid-t1)"/>
+
+  <!-- Marco -->
+  <rect x="20" y="20" width="360" height="460" stroke="#1a2332" stroke-width="1" stroke-opacity="0.3" fill="none"/>
+  <text x="35" y="42" font-family="'Inter', sans-serif" font-size="8" font-weight="500" letter-spacing="3" fill="#1a2332" fill-opacity="0.5">EQUIPO · 01</text>
+
+  <!-- Silueta minimalista (busto) -->
+  <g transform="translate(200, 240)">
+    <!-- Cabeza -->
+    <circle cx="0" cy="-90" r="40" stroke="#1a2332" stroke-width="1.5" fill="none"/>
+    <!-- Cuerpo -->
+    <path d="M -70 -50 Q -70 -55 -65 -55 L 65 -55 Q 70 -55 70 -50 L 70 110 L -70 110 Z"
+          stroke="#1a2332" stroke-width="1.5" fill="none"/>
+    <!-- Líneas de detalle -->
+    <line x1="-30" y1="-30" x2="30" y2="-30" stroke="#1a2332" stroke-width="0.5" stroke-opacity="0.3"/>
+    <line x1="-30" y1="80" x2="30" y2="80" stroke="#1a2332" stroke-width="0.5" stroke-opacity="0.3"/>
+  </g>
+
+  <!-- Cota de altura (decorativa) -->
+  <g transform="translate(370, 80)">
+    <line x1="0" y1="0" x2="0" y2="360" stroke="#1a2332" stroke-width="0.5" stroke-opacity="0.3"/>
+    <text x="6" y="0" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.5">170</text>
+    <text x="6" y="180" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.5">85</text>
+    <text x="6" y="360" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.5">0</text>
+  </g>
+
+  <!-- Texto placeholder -->
+  <g transform="translate(200, 430)">
+    <line x1="-40" y1="0" x2="40" y2="0" stroke="#1a2332" stroke-width="1" stroke-opacity="0.4"/>
+    <text x="0" y="20" font-family="'Inter', sans-serif" font-size="11" font-weight="500" letter-spacing="2" fill="#1a2332" fill-opacity="0.7" text-anchor="middle">[ FOTO PENDIENTE ]</text>
+  </g>
+</svg>

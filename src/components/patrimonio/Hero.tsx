@@ -9,9 +9,22 @@ export default function Hero() {
     <div className="relative">
       <Container className="pt-32 md:pt-44 pb-16 md:pb-24 text-center">
         <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="mb-12 flex justify-center"
+        >
+          <img
+            src="/brand/logo-horizontal.svg"
+            alt="Grupo CISA"
+            className="h-16 w-auto text-[var(--color-fg)]"
+          />
+        </motion.div>
+
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: 1, delay: 0.2 }}
           className="inline-flex items-center gap-3 mb-10 text-[10px] uppercase tracking-[0.4em] text-[var(--color-fg-soft)]"
         >
           <span className="block w-6 h-px bg-[var(--color-accent)]" />

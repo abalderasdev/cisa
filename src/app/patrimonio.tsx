@@ -1,6 +1,7 @@
 import SignatureMoment from '../components/shared/SignatureMoment'
 import AgenteSection from '../components/shared/AgenteSection'
 import Hero from '../components/patrimonio/Hero'
+import Equipo from '../components/patrimonio/Equipo'
 import Modalidades from '../components/patrimonio/Modalidades'
 import Prueba from '../components/patrimonio/Prueba'
 import Metodo from '../components/patrimonio/Metodo'
@@ -12,6 +13,7 @@ export default function Patrimonio() {
       <Hero />
       <AgenteSection />
       <SignatureMoment theme="patrimonio" />
+      <Equipo />
       <Modalidades />
       <Prueba />
       <Metodo />

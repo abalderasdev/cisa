@@ -12,6 +12,19 @@ export default function Hero() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
+          className="mb-12"
+        >
+          <img
+            src="/brand/logo-horizontal.svg"
+            alt="Grupo CISA"
+            className="h-16 w-auto text-[var(--color-fg)]"
+          />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
           className="flex items-center gap-3 mb-8 text-[10px] uppercase tracking-[0.3em] text-[var(--color-fg-soft)]"
         >
           <span className="block w-8 h-px bg-[var(--color-fg-soft)]" />
