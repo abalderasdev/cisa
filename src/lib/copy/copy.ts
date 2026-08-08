@@ -15,68 +15,9 @@ export const copy = {
     titular: '«Ese terreno lleva años parado y venderlo se siente como regalarlo.»',
     subtitulo:
       'Hay una tercera opción: aportarlo a un desarrollo y cobrar en metros construidos, conservando participación en el proyecto. Grupo CISA diseña, gestiona, financia, construye y comercializa. Empiece por saber qué puede construirse en el suyo.',
-    ctaPrimario: 'Hablar con el agente',
+    ctaPrimario: 'Precalificar mi terreno',
     ctaSecundario: 'Ver propiedades disponibles',
-    ctaCompromiso: 'Disponible 24/7 · Voz y texto · Sin compromiso'
-  },
-
-  // Bloque 2 · El agente (pieza WOW)
-  agente: {
-    titular: 'Habla con nosotros. Al instante.',
-    parrafo:
-      'No es un chatbot. Es un agente con voz, entrenado con todo lo que sabemos de desarrollo inmobiliario. Le preguntas lo que quieras en tu lenguaje, él responde en el suyo.',
-    bullets: [
-      'Pregúntale por tu terreno y te dice qué opciones hay',
-      'Pregúntale por una propiedad y te da precio, ubicación, disponibilidad',
-      'Pregúntale por inversión y te explica cómo funciona',
-      'Si necesitas hablar con una persona, te conecta'
-    ],
-    cta: 'Empezar conversación',
-    puedeHacer: [
-      'Resolver dudas sobre el modelo de aportación, co-desarrollo, construcción e inversión',
-      'Dar información de cualquier propiedad o desarrollo del catálogo',
-      'Agendar una llamada con un asesor humano',
-      'Registrar tu contacto para seguimiento'
-    ],
-    noHace: [
-      'Valuar tu terreno sin factibilidad',
-      'Prometerte cifras de rendimiento',
-      'Comprometer fechas de entrega',
-      'Darte información que no esté validada por CISA'
-    ]
-  },
-
-  // Bloque 3 · Modalidades (antes era nuevaOportunidad)
-  modalidades: {
-    titular: 'Cuatro formas de trabajar contigo',
-    parrafo:
-      'No somos para todos. Somos para quien quiere hacer las cosas en serio, con un equipo que se hace responsable de principio a fin.',
-    items: [
-      {
-        numero: '01',
-        titulo: 'Aportación de terreno',
-        descripcion:
-          'Tienes un terreno urbano o periurbano. Nosotros lo desarrollamos. Tú conservas participación en el proyecto.'
-      },
-      {
-        numero: '02',
-        titulo: 'Co-desarrollo',
-        descripcion:
-          'Tienes un terreno y capital, o solo capital. Buscamos un socio para estructurar el proyecto juntos.'
-      },
-      {
-        numero: '03',
-        titulo: 'Construcción por encargo',
-        descripcion:
-          'Ya tienes el proyecto, las licencias, el financiamiento. Necesitas quien construya con orden y con fecha cierta.'
-      },
-      {
-        numero: '04',
-        titulo: 'Inversión en proyectos',
-        descripcion:
-          'Quieres participar en un desarrollo sin operar. Evaluamos juntos en qué proyecto, con qué riesgo, bajo qué figura.'
-      }
-    ]
+    ctaCompromiso: '3 minutos · sin costo · sin compromiso de aportarlo'
   },
 
   // Bloque 2 · Nueva oportunidad

@@ -3,13 +3,6 @@ import Container from '../shared/Container'
 import Section from '../shared/Section'
 import { copy } from '../../lib/copy/copy'
 
-const proyectosImagenes: Record<string, string> = {
-  'Bosques de Calacoaya': '/projects/calacoaya.svg',
-  'Viaducto 14': '/projects/viaducto.svg',
-  'Bomadica': '/projects/bomadica.svg',
-  'Cumbres del Lago': '/projects/cumbres.svg'
-}
-
 export default function Prueba() {
   return (
     <Section className="bg-[var(--color-bg-soft)]">
@@ -35,7 +28,7 @@ export default function Prueba() {
           </p>
         </motion.div>
 
-        <div className="max-w-4xl mx-auto space-y-16">
+        <div className="max-w-4xl mx-auto space-y-12">
           {copy.prueba.proyectos.map((p, i) => (
             <motion.div
               key={i}
@@ -45,14 +38,19 @@ export default function Prueba() {
               transition={{ duration: 0.7, delay: i * 0.1 }}
               className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center"
             >
-              <div className="md:col-span-5 aspect-[4/3] bg-[var(--color-bg)] border border-[var(--color-line)] overflow-hidden">
-                <img
-                  src={proyectosImagenes[p.nombre] || '/projects/calacoaya.svg'}
-                  alt={`Plano de ${p.nombre}`}
-                  className="w-full h-full object-cover"
-                />
+              {/* Imagen */}
+              <div className="md:col-span-5 aspect-[4/3] bg-[var(--color-bg)] border border-[var(--color-line)] flex items-center justify-center">
+                <div className="text-center">
+                  <div className="w-14 h-14 mx-auto rounded-full border border-[var(--color-accent)] flex items-center justify-center">
+                    <span className="text-[10px] tracking-widest text-[var(--color-accent)]">FOTO</span>
+                  </div>
+                  <p className="mt-3 text-[10px] uppercase tracking-widest text-[var(--color-fg-mute)]">
+                    [fotografía de obra]
+                  </p>
+                </div>
               </div>
 
+              {/* Info */}
               <div className="md:col-span-7">
                 <div className="flex items-baseline gap-3">
                   <span className="text-[10px] uppercase tracking-widest text-[var(--color-accent)]">

@@ -7,12 +7,9 @@ export default function Footer() {
       <Container className="py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           <div>
-            <img
-              src="/brand/logo-mono.svg"
-              alt="Grupo CISA"
-              className="h-12 w-auto text-[var(--color-fg)]"
-              style={{ filter: 'var(--logo-filter, none)' }}
-            />
+            <div className="font-[family-name:var(--font-heading)] text-2xl text-[var(--color-fg)]">
+              {copy.marca.nombre}
+            </div>
             <p className="mt-3 text-sm text-[var(--color-fg-mute)]">
               Dirección 01 · Levantamiento
             </p>
@@ -48,10 +45,9 @@ export default function Footer() {
           </p>
           <a
             href="/patrimonio"
-            className="text-[10px] uppercase tracking-widest text-[var(--color-fg-mute)] hover:text-[var(--color-accent)] transition-colors flex items-center gap-2"
+            className="text-[10px] uppercase tracking-widest text-[var(--color-fg-mute)] hover:text-[var(--color-accent)] transition-colors"
           >
-            Ver dirección 02 · Patrimonio
-            <img src="/decor/arrow.svg" alt="" className="w-6 h-3" />
+            Ver dirección 02 · Patrimonio →
           </a>
         </div>
       </Container>

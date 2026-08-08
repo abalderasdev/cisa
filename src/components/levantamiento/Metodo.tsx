@@ -1,51 +1,62 @@
 import { motion } from 'motion/react'
-import Section from '../shared/Section'
 import Container from '../shared/Container'
-
-const etapas = [
-  { numero: '01', nombre: 'Aportación del terreno', detalle: 'Se define qué aporta cada parte y bajo qué figura jurídica.' },
-  { numero: '02', nombre: 'Conceptualización y factibilidad', detalle: 'Qué puede construirse ahí y si tiene sentido económico.' },
-  { numero: '03', nombre: 'Proyecto arquitectónico', detalle: 'El desarrollo toma forma y define la superficie vendible.' },
-  { numero: '04', nombre: 'Esquema legal', detalle: 'Contratos, permisos, licencias y la figura del propietario.' },
-  { numero: '05', nombre: 'Esquema financiero', detalle: 'Cómo se financia la obra y cómo se reparte el resultado.' },
-  { numero: '06', nombre: 'Construcción', detalle: 'Obra con avance documentado y fechado, visible para el propietario.' },
-  { numero: '07', nombre: 'Preventa y entrega', detalle: 'Comercialización, escrituración y entrega de unidades.' }
-]
+import Section from '../shared/Section'
+import { copy } from '../../lib/copy/copy'
 
 export default function Metodo() {
   return (
-    <Section id="metodo" className="bg-[var(--color-bg-soft)] border-y border-[var(--color-line)]">
+    <Section className="bg-[var(--color-bg-soft)] border-t border-[var(--color-line)]">
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6 }}
+          className="max-w-3xl"
         >
-          <p className="section-kicker">El proceso, abierto</p>
-          <h2 className="section-title">Siete etapas. En todo momento sabe en cuál está.</h2>
-          <p className="section-lede">
-            Publicamos el proceso completo porque es la parte que casi nadie
-            explica, y es justo donde nacen las dudas.
+          <span className="text-[10px] uppercase tracking-[0.3em] text-[var(--color-accent)] font-medium">
+            Bloque 04
+          </span>
+          <h2 className="mt-4 font-[family-name:var(--font-heading)] text-3xl md:text-5xl leading-tight text-[var(--color-fg)]">
+            {copy.metodo.titular}
+          </h2>
+          <p className="mt-6 text-lg text-[var(--color-fg-soft)] leading-relaxed">
+            {copy.metodo.parrafo}
           </p>
         </motion.div>
 
-        <ol className="metodo-list mt-14">
-          {etapas.map((e, i) => (
-            <motion.li
-              key={e.numero}
-              className="metodo-step"
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
-              transition={{ duration: 0.4, delay: i * 0.05 }}
-            >
-              <span className="step-pin" aria-hidden="true">{e.numero}</span>
-              <h3>{e.nombre}</h3>
-              <p>{e.detalle}</p>
-            </motion.li>
-          ))}
-        </ol>
+        {/* Timeline horizontal con numeración tipo plano */}
+        <div className="mt-20 relative">
+          {/* Línea horizontal */}
+          <div className="absolute top-7 left-0 right-0 h-px bg-[var(--color-line-strong)]" />
+
+          <div className="grid grid-cols-1 md:grid-cols-7 gap-y-10 md:gap-y-0 md:gap-2 relative">
+            {copy.metodo.etapas.map((etapa, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ duration: 0.4, delay: i * 0.06 }}
+                className="relative"
+              >
+                <div className="flex md:flex-col items-start md:items-center gap-4 md:gap-3">
+                  <div className="flex-shrink-0 w-14 h-14 border border-[var(--color-line-strong)] bg-[var(--color-bg)] flex items-center justify-center font-mono text-sm text-[var(--color-fg)] z-10 relative">
+                    {etapa.numero}
+                  </div>
+                  <div className="md:mt-2 md:text-center">
+                    <h3 className="font-[family-name:var(--font-heading)] text-base text-[var(--color-fg)] leading-snug">
+                      {etapa.nombre}
+                    </h3>
+                    <p className="mt-2 text-xs text-[var(--color-fg-soft)] leading-relaxed md:max-w-[10rem]">
+                      {etapa.detalle}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
       </Container>
     </Section>
   )
