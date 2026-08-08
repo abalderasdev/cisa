@@ -1,11 +1,12 @@
 import { motion } from 'motion/react'
 import Container from '../shared/Container'
 import Section from '../shared/Section'
+import { copy } from '../../lib/copy/copy'
 
 const equipo = [
-  { nombre: 'Director General', placeholder: '/team/placeholder-1.svg' },
-  { nombre: 'Director de Operaciones', placeholder: '/team/placeholder-2.svg' },
-  { nombre: 'Director Jurídico', placeholder: '/team/placeholder-3.svg' }
+  { placeholder: '/team/placeholder-1.svg' },
+  { placeholder: '/team/placeholder-2.svg' },
+  { placeholder: '/team/placeholder-3.svg' }
 ]
 
 export default function Equipo() {
@@ -26,10 +27,10 @@ export default function Equipo() {
             className="mt-8 font-[family-name:var(--font-heading)] text-4xl md:text-5xl leading-tight text-[var(--color-fg)]"
             style={{ fontStyle: 'italic', fontWeight: 500 }}
           >
-            Detrás de cada proyecto hay nombres, no un logotipo.
+            {copy.equipo.titular}
           </h2>
           <p className="mt-6 text-base text-[var(--color-fg-soft)] leading-relaxed">
-            Un desarrollo es una relación de años. Conviene saber con quién la estás empezando.
+            {copy.equipo.parrafo}
           </p>
         </motion.div>
 
@@ -46,18 +47,12 @@ export default function Equipo() {
               <div className="aspect-[4/5] overflow-hidden border border-[var(--color-line)] mb-4">
                 <img
                   src={p.placeholder}
-                  alt={`Placeholder de ${p.nombre}`}
+                  alt="Placeholder de integrante del equipo"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--color-fg-mute)] mb-2">
-                Pendiente de confirmar
-              </p>
-              <p
-                className="font-[family-name:var(--font-heading)] text-lg text-[var(--color-fg)] italic"
-                style={{ fontStyle: 'italic' }}
-              >
-                {p.nombre}
+              <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--color-fg-mute)]">
+                Pendiente de confirmar con CISA
               </p>
             </motion.div>
           ))}

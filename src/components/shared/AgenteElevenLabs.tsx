@@ -1,14 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import {
-  ConversationProvider,
-  useConversationControls,
-  useConversationStatus
-} from '@elevenlabs/react'
-
-// ID del agente de Grupo CISA en ElevenLabs
-// Por ahora es un placeholder; en produccion se reemplaza con el ID real
-const AGENT_ID = 'agent_placeholder_cisa'
+import { useConversationControls, useConversationStatus } from '@elevenlabs/react'
 
 interface AgenteProps {
   botonPrimario?: boolean
@@ -19,20 +11,6 @@ export default function AgenteElevenLabs({
   botonPrimario = false,
   etiqueta = 'Hablar con el agente'
 }: AgenteProps) {
-  return (
-    <ConversationProvider agentId={AGENT_ID}>
-      <BotonAgente botonPrimario={botonPrimario} etiqueta={etiqueta} />
-    </ConversationProvider>
-  )
-}
-
-function BotonAgente({
-  botonPrimario,
-  etiqueta
-}: {
-  botonPrimario: boolean
-  etiqueta: string
-}) {
   const [abierto, setAbierto] = useState(false)
   const { startSession, endSession } = useConversationControls()
   const { status } = useConversationStatus()
@@ -60,7 +38,7 @@ function BotonAgente({
         {status === 'connected' ? (
           <>
             <span className="w-2 h-2 bg-red-400 rounded-full animate-pulse" />
-            Cerrar conversacion
+            Cerrar conversación
           </>
         ) : (
           <>
@@ -122,11 +100,11 @@ function BotonAgente({
                 </div>
                 <p className="text-sm text-[var(--color-fg-soft)]">
                   {status === 'connected'
-                    ? 'Te escucho. Preguntame lo que quieras.'
+                    ? 'Te escucho. Pregúntame lo que quieras.'
                     : 'Conectando con el agente...'}
                 </p>
                 <p className="mt-4 text-xs text-[var(--color-fg-mute)]">
-                  El widget oficial de ElevenLabs se renderizara aqui en produccion.
+                  El widget oficial de ElevenLabs se renderizará aquí en producción.
                 </p>
               </div>
             </div>

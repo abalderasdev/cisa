@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import AgenteElevenLabs from '../shared/AgenteElevenLabs'
+import AgenteElevenLabs from './AgenteElevenLabs'
 import Container from '../shared/Container'
 import Section from '../shared/Section'
 import { copy } from '../../lib/copy/copy'
@@ -15,7 +15,6 @@ export default function AgenteSection() {
           transition={{ duration: 0.6 }}
           className="grid grid-cols-1 md:grid-cols-12 gap-12 items-center"
         >
-          {/* Columna izquierda: copy */}
           <div className="md:col-span-7">
             <span className="text-[10px] uppercase tracking-[0.3em] text-[var(--color-accent)] font-medium">
               La pieza nueva
@@ -48,21 +47,9 @@ export default function AgenteSection() {
             </p>
           </div>
 
-          {/* Columna derecha: demo del agente */}
           <div className="md:col-span-5">
             <div className="relative aspect-[3/4] bg-[var(--color-bg)] border border-[var(--color-line-strong)] overflow-hidden">
               <div className="absolute inset-0 flex flex-col items-center justify-center p-8">
-                {/* Ondas estáticas de fondo */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-20">
-                  <img
-                    src="/agent/waveform.svg"
-                    alt=""
-                    className="w-full"
-                    style={{ transform: 'rotate(90deg) scale(1.5)' }}
-                  />
-                </div>
-
-                {/* Anillos pulsantes */}
                 <div className="relative w-32 h-32 mb-8 z-10">
                   <div className="absolute inset-0 rounded-full border border-[var(--color-accent)] opacity-30 animate-ping" />
                   <div
@@ -93,7 +80,6 @@ export default function AgenteSection() {
                   </div>
                 </div>
 
-                {/* Status badge */}
                 <div className="mb-4 z-10">
                   <img src="/agent/status.svg" alt="En línea" className="h-8" />
                 </div>
@@ -102,7 +88,7 @@ export default function AgenteSection() {
                   «Te escucho. Pregúntame lo que quieras.»
                 </p>
 
-                <div className="mt-8 pt-8 border-t border-[var(--color-line)] w-full z-10 bg-[var(--color-bg)]/80 backdrop-blur-sm">
+                <div className="mt-8 pt-8 border-t border-[var(--color-line)] w-full z-10">
                   <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--color-fg-mute)] text-center mb-4">
                     Powered by
                   </p>
@@ -119,7 +105,6 @@ export default function AgenteSection() {
           </div>
         </motion.div>
 
-        {/* Lo que SÍ y lo que NO */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
