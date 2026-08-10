@@ -1,21 +1,39 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" fill="none">
-  <!-- Bocadillo de voz/texto -->
+  <defs>
+    <linearGradient id="conv-bg-user" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f5f5f0"/>
+      <stop offset="100%" stop-color="#e8e0d0"/>
+    </linearGradient>
+    <linearGradient id="conv-bg-agen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8f0e8"/>
+      <stop offset="100%" stop-color="#c8e0c0"/>
+    </linearGradient>
+  </defs>
 
-  <!-- Bocadillo izquierdo (usuario) -->
-  <g transform="translate(60, 80)">
+  <!-- Bocadillo del usuario (izquierda) -->
+  <g transform="translate(60, 60)">
     <path d="M 0 0 L 220 0 Q 230 0 230 10 L 230 80 Q 230 90 220 90 L 30 90 L 10 110 L 20 90 L 10 90 Q 0 90 0 80 Z"
-          stroke="#1a2332" stroke-width="1.5" fill="#f1ebdc"/>
-    <text x="20" y="30" font-family="'Inter', sans-serif" font-size="11" fill="#1a2332">Tengo un terreno en Atizapán.</text>
-    <text x="20" y="50" font-family="'Inter', sans-serif" font-size="11" fill="#1a2332">¿Qué opciones tengo sin venderlo?</text>
+          fill="url(#conv-bg-user)" stroke="#1a2332" stroke-width="1.5"/>
+    <text x="20" y="32" font-family="'Inter', sans-serif" font-size="12" fill="#1a2332">Tengo un terreno en Atizapán</text>
+    <text x="20" y="52" font-family="'Inter', sans-serif" font-size="12" fill="#1a2332">¿qué opciones tengo sin venderlo?</text>
     <text x="20" y="76" font-family="'Inter', sans-serif" font-size="9" fill="#1a2332" fill-opacity="0.5">16:42</text>
   </g>
 
-  <!-- Bocadillo derecho (agente) -->
+  <!-- Centro: avatar del agente (mini) -->
+  <g transform="translate(300, 140)">
+    <circle cx="0" cy="0" r="28" fill="#1f6e3a"/>
+    <text font-family="'Inter', sans-serif" font-size="10" font-weight="700" fill="#fafaf9" text-anchor="middle" dominant-baseline="middle">CISA</text>
+    <!-- Ondas alrededor -->
+    <circle cx="0" cy="0" r="36" stroke="#1f6e3a" stroke-width="1" stroke-opacity="0.3" fill="none"/>
+    <circle cx="0" cy="0" r="44" stroke="#1f6e3a" stroke-width="1" stroke-opacity="0.15" fill="none"/>
+  </g>
+
+  <!-- Bocadillo del agente (derecha) -->
   <g transform="translate(310, 170)">
     <path d="M 230 0 L 0 0 Q -10 0 -10 10 L -10 80 Q -10 90 0 90 L 220 90 L 240 110 L 230 90 L 230 90 Q 230 90 230 80 Z"
-          stroke="#8b6f47" stroke-width="1.5" fill="#f1ebdc"/>
-    <!-- Indicador de voz (mini waveform) -->
-    <g stroke="#8b6f47" stroke-width="2" stroke-linecap="round">
+          fill="url(#conv-bg-agen)" stroke="#1f6e3a" stroke-width="1.5"/>
+    <!-- Mini waveform (voz) -->
+    <g stroke="#1f6e3a" stroke-width="2" stroke-linecap="round">
       <line x1="20" y1="20" x2="20" y2="20"/>
       <line x1="32" y1="14" x2="32" y2="26"/>
       <line x1="44" y1="8" x2="44" y2="32"/>
@@ -24,15 +42,8 @@
       <line x1="80" y1="10" x2="80" y2="30"/>
       <line x1="92" y1="16" x2="92" y2="24"/>
     </g>
-    <text x="20" y="55" font-family="'Inter', sans-serif" font-size="11" fill="#1a2332">Hay tres caminos. Te los explico</text>
-    <text x="20" y="71" font-family="'Inter', sans-serif" font-size="11" fill="#1a2332">y vemos cuál aplica a tu caso...</text>
-    <text x="20" y="85" font-family="'Inter', sans-serif" font-size="9" fill="#1a2332" fill-opacity="0.5">16:42 · agente</text>
-  </g>
-
-  <!-- Centro: indicador de conexión -->
-  <g transform="translate(300, 140)">
-    <circle cx="0" cy="0" r="20" stroke="#8b6f47" stroke-width="1.5" fill="#f1ebdc"/>
-    <path d="M -8 -5 A 8 8 0 0 1 8 -5" stroke="#8b6f47" stroke-width="1.5" fill="none"/>
-    <line x1="-6" y1="3" x2="6" y2="3" stroke="#8b6f47" stroke-width="1.5"/>
+    <text x="20" y="55" font-family="'Inter', sans-serif" font-size="12" fill="#1a2332">Hay tres caminos. Te los explico</text>
+    <text x="20" y="71" font-family="'Inter', sans-serif" font-size="12" fill="#1a2332">y vemos cuál aplica a tu caso...</text>
+    <text x="20" y="85" font-family="'Inter', sans-serif" font-size="9" fill="#1f6e3a" fill-opacity="0.7">16:42 · agente</text>
   </g>
 </svg>

@@ -1,4 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <rect x="2" y="2" width="28" height="28" fill="#1a2332"/>
-  <path d="M 24 10 A 8 8 0 1 0 24 22" stroke="#f1ebdc" stroke-width="2.5" fill="none" stroke-linecap="square"/>
+  <g transform="translate(3, 3)">
+    <path d="M 13 0
+             C 20 0, 26 6, 26 13
+             C 26 20, 20 26, 13 26
+             C 6 26, 0 20, 0 13
+             C 0 6, 6 0, 13 0 Z"
+          fill="#1f6e3a"/>
+    <path d="M 13 4
+             C 6 6, 3 11, 4 16
+             C 5 21, 13 24, 19 22
+             C 13 21, 9 17, 10 12
+             C 11 8, 15 6, 13 4 Z"
+          fill="#a3c947"/>
+    <ellipse cx="13" cy="13" rx="6" ry="6" fill="#fafaf9"/>
+  </g>
 </svg>

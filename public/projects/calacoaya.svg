@@ -1,89 +1,113 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
-  <!-- Fondo cálido -->
-  <rect width="800" height="600" fill="#f1ebdc"/>
-  <!-- Retícula técnica sutil -->
   <defs>
-    <pattern id="grid-cal" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-      <line x1="0" y1="0" x2="40" y2="0" stroke="#1a2332" stroke-width="0.5" stroke-opacity="0.08"/>
-      <line x1="0" y1="0" x2="0" y2="40" stroke="#1a2332" stroke-width="0.5" stroke-opacity="0.08"/>
-    </pattern>
+    <!-- Gradiente de cielo -->
+    <linearGradient id="sky-cal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8f0f5"/>
+      <stop offset="60%" stop-color="#f5f0e8"/>
+      <stop offset="100%" stop-color="#ede5d4"/>
+    </linearGradient>
+    <!-- Sombra -->
+    <radialGradient id="ground-cal" cx="0.5" cy="0.5">
+      <stop offset="0%" stop-color="#3a3a3a" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#3a3a3a" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Textura pared -->
+    <linearGradient id="wall-cal" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#fafaf7"/>
+      <stop offset="100%" stop-color="#e8e3d8"/>
+    </linearGradient>
+    <linearGradient id="roof-cal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5a5a55"/>
+      <stop offset="100%" stop-color="#3a3a35"/>
+    </linearGradient>
+    <linearGradient id="window-cal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2a3540"/>
+      <stop offset="100%" stop-color="#4a5560"/>
+    </linearGradient>
+    <linearGradient id="garden-cal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7a8a55"/>
+      <stop offset="100%" stop-color="#5a6a45"/>
+    </linearGradient>
   </defs>
-  <rect width="800" height="600" fill="url(#grid-cal)"/>
 
-  <!-- Marco de plano -->
-  <rect x="40" y="40" width="720" height="520" stroke="#1a2332" stroke-width="1" stroke-opacity="0.3" fill="none"/>
+  <!-- Cielo -->
+  <rect width="800" height="600" fill="url(#sky-cal)"/>
 
-  <!-- Etiquetas tipo plano -->
-  <text x="60" y="70" font-family="'Inter', sans-serif" font-size="10" font-weight="500" letter-spacing="3" fill="#1a2332" fill-opacity="0.5">REF · 001 — CALAC</text>
-  <text x="740" y="70" font-family="'Inter', sans-serif" font-size="10" font-weight="500" letter-spacing="3" fill="#1a2332" fill-opacity="0.5" text-anchor="end">ESC 1:200</text>
+  <!-- Suelo base -->
+  <ellipse cx="400" cy="500" rx="500" ry="40" fill="url(#ground-cal)"/>
+  <rect x="0" y="490" width="800" height="110" fill="#8a8478"/>
 
-  <!-- Polígono del terreno (vista cenital) -->
-  <g transform="translate(120, 130)">
-    <!-- Terreno base -->
-    <polygon points="40,40 480,40 480,360 40,360" stroke="#1a2332" stroke-width="2" fill="none"/>
-    <text x="50" y="32" font-family="'Inter', sans-serif" font-size="9" fill="#1a2332" fill-opacity="0.6">TERRENO · 12,400 m²</text>
+  <!-- Carretera -->
+  <rect x="0" y="540" width="800" height="60" fill="#3a3a35"/>
+  <line x1="0" y1="568" x2="800" y2="568" stroke="#d4c11a" stroke-width="2" stroke-dasharray="20 15"/>
 
-    <!-- Calles perimetrales -->
-    <line x1="0" y1="40" x2="800" y2="40" stroke="#1a2332" stroke-width="1" stroke-opacity="0.4" stroke-dasharray="4 3"/>
-    <line x1="0" y1="360" x2="800" y2="360" stroke="#1a2332" stroke-width="1" stroke-opacity="0.4" stroke-dasharray="4 3"/>
-    <text x="500" y="36" font-family="'Inter', sans-serif" font-size="8" fill="#1a2332" fill-opacity="0.5">CALLE BOSQUES</text>
-    <text x="500" y="376" font-family="'Inter', sans-serif" font-size="8" fill="#1a2332" fill-opacity="0.5">AV. PRINCIPAL</text>
-
-    <!-- Casas (11) -->
-    <g stroke="#1a2332" stroke-width="1.5" fill="none">
-      <rect x="80" y="80" width="50" height="40"/>
-      <rect x="140" y="80" width="50" height="40"/>
-      <rect x="200" y="80" width="50" height="40"/>
-      <rect x="260" y="80" width="50" height="40"/>
-      <rect x="320" y="80" width="50" height="40"/>
-      <rect x="380" y="80" width="50" height="40"/>
-    </g>
-    <text x="80" y="76" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.6">CASAS 1-6</text>
-
-    <!-- Departamentos (3 bloques) -->
-    <g stroke="#1a2332" stroke-width="1.5" fill="none">
-      <rect x="80" y="170" width="100" height="60"/>
-      <rect x="190" y="170" width="100" height="60"/>
-      <rect x="300" y="170" width="100" height="60"/>
-      <text x="100" y="200" font-family="'Inter', sans-serif" font-size="8" fill="#1a2332">DEPT A</text>
-      <text x="210" y="200" font-family="'Inter', sans-serif" font-size="8" fill="#1a2332">DEPT B</text>
-      <text x="320" y="200" font-family="'Inter', sans-serif" font-size="8" fill="#1a2332">DEPT C</text>
+  <!-- Casas en perspectiva -->
+  <g transform="translate(80, 200)">
+    <!-- Casa 1 -->
+    <g>
+      <!-- Cuerpo -->
+      <polygon points="0,80 80,40 240,40 240,160 160,200 0,200" fill="url(#wall-cal)" stroke="#a8a398" stroke-width="1"/>
+      <!-- Techo -->
+      <polygon points="0,80 80,40 240,40 240,80 80,120" fill="url(#roof-cal)" stroke="#3a3a35" stroke-width="1"/>
+      <!-- Sombra lateral -->
+      <polygon points="240,40 240,160 160,200 160,80" fill="#000" fill-opacity="0.15"/>
+      <!-- Puerta -->
+      <rect x="60" y="130" width="22" height="50" fill="url(#window-cal)"/>
+      <rect x="62" y="132" width="18" height="46" fill="#1a2332"/>
+      <!-- Ventanas -->
+      <rect x="100" y="100" width="22" height="22" fill="url(#window-cal)"/>
+      <rect x="135" y="100" width="22" height="22" fill="url(#window-cal)"/>
+      <rect x="170" y="100" width="22" height="22" fill="url(#window-cal)"/>
     </g>
 
-    <!-- Departamentos segundo nivel (8 unidades por bloque) -->
-    <g stroke="#1a2332" stroke-width="1" fill="none">
-      <rect x="80" y="245" width="40" height="80"/>
-      <rect x="120" y="245" width="40" height="80"/>
-      <rect x="190" y="245" width="40" height="80"/>
-      <rect x="230" y="245" width="40" height="80"/>
-      <rect x="300" y="245" width="40" height="80"/>
-      <rect x="340" y="245" width="40" height="80"/>
+    <!-- Casa 2 -->
+    <g transform="translate(280, 0)">
+      <polygon points="0,80 80,40 240,40 240,160 160,200 0,200" fill="url(#wall-cal)" stroke="#a8a398" stroke-width="1"/>
+      <polygon points="0,80 80,40 240,40 240,80 80,120" fill="url(#roof-cal)" stroke="#3a3a35" stroke-width="1"/>
+      <polygon points="240,40 240,160 160,200 160,80" fill="#000" fill-opacity="0.15"/>
+      <rect x="60" y="130" width="22" height="50" fill="url(#window-cal)"/>
+      <rect x="100" y="100" width="22" height="22" fill="url(#window-cal)"/>
+      <rect x="135" y="100" width="22" height="22" fill="url(#window-cal)"/>
+      <rect x="170" y="100" width="22" height="22" fill="url(#window-cal)"/>
     </g>
-    <text x="410" y="290" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.6">×3 PISOS</text>
-    <text x="410" y="300" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.6">24 UNID</text>
 
-    <!-- Áreas verdes -->
-    <g fill="#1a2332" fill-opacity="0.08">
-      <rect x="80" y="335" width="60" height="15"/>
-      <rect x="200" y="335" width="100" height="15"/>
-      <rect x="360" y="335" width="60" height="15"/>
+    <!-- Casa 3 -->
+    <g transform="translate(560, 0)">
+      <polygon points="0,80 80,40 240,40 240,160 160,200 0,200" fill="url(#wall-cal)" stroke="#a8a398" stroke-width="1"/>
+      <polygon points="0,80 80,40 240,40 240,80 80,120" fill="url(#roof-cal)" stroke="#3a3a35" stroke-width="1"/>
+      <polygon points="240,40 240,160 160,200 160,80" fill="#000" fill-opacity="0.15"/>
+      <rect x="60" y="130" width="22" height="50" fill="url(#window-cal)"/>
+      <rect x="100" y="100" width="22" height="22" fill="url(#window-cal)"/>
+      <rect x="135" y="100" width="22" height="22" fill="url(#window-cal)"/>
+      <rect x="170" y="100" width="22" height="22" fill="url(#window-cal)"/>
     </g>
-    <text x="80" y="328" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.6">ÁREAS VERDES</text>
   </g>
 
-  <!-- Título inferior -->
-  <g transform="translate(120, 530)">
-    <text font-family="'Inter', sans-serif" font-size="10" font-weight="500" letter-spacing="3" fill="#1a2332" fill-opacity="0.6">PROYECTO 01 · ATIZAPÁN, EDO. MÉX.</text>
-    <text y="22" font-family="'Fraunces', serif" font-size="22" font-weight="600" fill="#1a2332">Bosques de Calacoaya</text>
-    <text y="40" font-family="'Inter', sans-serif" font-size="11" fill="#1a2332" fill-opacity="0.7">24 departamentos de 120 m² · 11 casas de 183 m²</text>
+  <!-- Jardín -->
+  <g>
+    <ellipse cx="200" cy="490" rx="100" ry="15" fill="url(#garden-cal)" opacity="0.7"/>
+    <ellipse cx="500" cy="490" rx="120" ry="18" fill="url(#garden-cal)" opacity="0.7"/>
+    <ellipse cx="720" cy="490" rx="80" ry="12" fill="url(#garden-cal)" opacity="0.7"/>
   </g>
 
-  <!-- Sello de coordenadas -->
-  <g transform="translate(680, 510)">
-    <rect x="0" y="0" width="60" height="60" stroke="#1a2332" stroke-width="1" stroke-opacity="0.4" fill="none"/>
-    <text x="30" y="20" font-family="'Inter', sans-serif" font-size="6" fill="#1a2332" fill-opacity="0.5" text-anchor="middle">N ↑</text>
-    <line x1="0" y1="30" x2="60" y2="30" stroke="#1a2332" stroke-width="0.5" stroke-opacity="0.3"/>
-    <text x="30" y="42" font-family="'Inter', sans-serif" font-size="6" fill="#1a2332" fill-opacity="0.5" text-anchor="middle">19°33'N</text>
-    <text x="30" y="52" font-family="'Inter', sans-serif" font-size="6" fill="#1a2332" fill-opacity="0.5" text-anchor="middle">99°13'O</text>
+  <!-- Árboles -->
+  <g>
+    <ellipse cx="100" cy="450" rx="20" ry="40" fill="#3a5a30"/>
+    <rect x="98" y="450" width="4" height="35" fill="#5a4a35"/>
+    <ellipse cx="450" cy="450" rx="22" ry="42" fill="#3a5a30"/>
+    <rect x="448" y="450" width="4" height="38" fill="#5a4a35"/>
+    <ellipse cx="680" cy="450" rx="18" ry="35" fill="#3a5a30"/>
+    <rect x="678" y="450" width="4" height="33" fill="#5a4a35"/>
+  </g>
+
+  <!-- Texto / etiqueta -->
+  <g transform="translate(40, 50)">
+    <text font-family="'Inter', sans-serif" font-size="12" font-weight="500" letter-spacing="3" fill="#1a2332" fill-opacity="0.7">BOSQUES DE CALAC OAYA</text>
+    <text y="20" font-family="'Inter', sans-serif" font-size="10" fill="#1a2332" fill-opacity="0.5">Atizapán · Edo. Méx.</text>
+  </g>
+
+  <!-- Esquina inferior -->
+  <g transform="translate(720, 560)">
+    <text font-family="'Inter', sans-serif" font-size="9" letter-spacing="2" fill="#fafaf9" fill-opacity="0.7" text-anchor="end">24 dept · 11 casas</text>
   </g>
 </svg>

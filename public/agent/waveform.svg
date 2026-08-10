@@ -1,6 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200" fill="none">
-  <!-- Forma de onda animada (estática en SVG, animada en CSS) -->
-  <g stroke="#8b6f47" stroke-width="2.5" stroke-linecap="round" fill="none">
+  <defs>
+    <linearGradient id="wf-grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1f6e3a" stop-opacity="0.3"/>
+      <stop offset="50%" stop-color="#1f6e3a" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#1f6e3a" stop-opacity="0.3"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Waveform con gradiente -->
+  <g stroke="url(#wf-grad)" stroke-width="2.5" stroke-linecap="round">
     <line x1="20" y1="100" x2="20" y2="100"/>
     <line x1="40" y1="80" x2="40" y2="120"/>
     <line x1="60" y1="60" x2="60" y2="140"/>
@@ -33,5 +41,5 @@
   </g>
 
   <!-- Línea base -->
-  <line x1="20" y1="100" x2="580" y2="100" stroke="#1a2332" stroke-width="0.5" stroke-opacity="0.2" stroke-dasharray="4 4"/>
+  <line x1="20" y1="100" x2="580" y2="100" stroke="#1f6e3a" stroke-width="0.5" stroke-opacity="0.2" stroke-dasharray="4 4"/>
 </svg>

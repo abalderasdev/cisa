@@ -1,10 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 56" fill="none" aria-label="Grupo CISA">
-  <!-- Monograma simplificado -->
-  <g transform="translate(0, 0)">
-    <rect x="0" y="0" width="56" height="56" stroke="currentColor" stroke-width="3" fill="none"/>
-    <path d="M 44 18 A 18 18 0 1 0 44 38" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="square"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 80" fill="none">
+  <g transform="translate(0, 5)">
+    <path d="M 35 5
+             C 53 5, 67 19, 67 35
+             C 67 51, 53 65, 35 65
+             C 17 65, 3 51, 3 35
+             C 3 19, 17 5, 35 5
+             Z"
+          fill="#1f6e3a"/>
+    <path d="M 35 14
+             C 21 17, 12 28, 15 42
+             C 18 56, 35 63, 49 56
+             C 35 54, 27 43, 30 31
+             C 33 21, 42 16, 35 14 Z"
+          fill="#a3c947"/>
+    <path d="M 35 14 C 41 17, 48 22, 51 31 C 42 24, 35 21, 35 14 Z"
+          fill="#d4c11a"/>
+    <ellipse cx="35" cy="35" rx="15" ry="15" fill="#fafaf9"/>
   </g>
-  <!-- Texto apilado -->
-  <text x="72" y="24" font-family="'Inter', sans-serif" font-size="9" font-weight="500" letter-spacing="2.5" fill="currentColor" fill-opacity="0.7">GRUPO</text>
-  <text x="72" y="46" font-family="'Fraunces', 'Cormorant Garamond', serif" font-size="22" font-weight="600" letter-spacing="3" fill="currentColor">CISA</text>
+
+  <text x="85" y="28" font-family="'Inter', 'Helvetica Neue', sans-serif" font-size="11" font-weight="500" letter-spacing="3" fill="currentColor" fill-opacity="0.75">GRUPO</text>
+  <text x="85" y="62" font-family="'Cormorant Garamond', 'Times New Roman', Georgia, serif" font-size="34" font-weight="600" letter-spacing="2" fill="currentColor">CISA</text>
 </svg>

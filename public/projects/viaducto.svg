@@ -1,65 +1,121 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
-  <rect width="800" height="600" fill="#f1ebdc"/>
   <defs>
-    <pattern id="grid-via" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-      <line x1="0" y1="0" x2="40" y2="0" stroke="#1a2332" stroke-width="0.5" stroke-opacity="0.08"/>
-      <line x1="0" y1="0" x2="0" y2="40" stroke="#1a2332" stroke-width="0.5" stroke-opacity="0.08"/>
-    </pattern>
+    <linearGradient id="sky-via" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c8d4dc"/>
+      <stop offset="60%" stop-color="#e0d8cc"/>
+      <stop offset="100%" stop-color="#d8cfc0"/>
+    </linearGradient>
+    <linearGradient id="building-via" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#c8c2b8"/>
+      <stop offset="50%" stop-color="#e8e2d8"/>
+      <stop offset="100%" stop-color="#a8a298"/>
+    </linearGradient>
+    <linearGradient id="shadow-via" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.4"/>
+    </linearGradient>
+    <linearGradient id="window-via" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2a3848"/>
+      <stop offset="50%" stop-color="#4a5868"/>
+      <stop offset="100%" stop-color="#3a4858"/>
+    </linearGradient>
+    <linearGradient id="ground-via" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6a6a60"/>
+      <stop offset="100%" stop-color="#4a4a40"/>
+    </linearGradient>
   </defs>
-  <rect width="800" height="600" fill="url(#grid-via)"/>
 
-  <rect x="40" y="40" width="720" height="520" stroke="#1a2332" stroke-width="1" stroke-opacity="0.3" fill="none"/>
-  <text x="60" y="70" font-family="'Inter', sans-serif" font-size="10" font-weight="500" letter-spacing="3" fill="#1a2332" fill-opacity="0.5">REF · 002 — VIAD</text>
-  <text x="740" y="70" font-family="'Inter', sans-serif" font-size="10" font-weight="500" letter-spacing="3" fill="#1a2332" fill-opacity="0.5" text-anchor="end">ESC 1:150</text>
+  <!-- Cielo urbano -->
+  <rect width="800" height="600" fill="url(#sky-via)"/>
 
-  <!-- Perspectiva axonométrica urbana -->
-  <g transform="translate(160, 120)">
-    <!-- Suelo / calle -->
-    <polygon points="0,360 480,360 420,420 60,420" fill="#1a2332" fill-opacity="0.05" stroke="#1a2332" stroke-width="0.5" stroke-opacity="0.3"/>
-    <text x="200" y="395" font-family="'Inter', sans-serif" font-size="9" fill="#1a2332" fill-opacity="0.6" text-anchor="middle">AV. VIADUCTO</text>
+  <!-- Edificios de fondo -->
+  <g opacity="0.5">
+    <rect x="50" y="200" width="60" height="200" fill="#a8a298"/>
+    <rect x="120" y="240" width="80" height="160" fill="#b8b2a8"/>
+    <rect x="640" y="180" width="70" height="220" fill="#a8a298"/>
+    <rect x="720" y="220" width="50" height="180" fill="#b8b2a8"/>
+  </g>
 
-    <!-- Edificio principal (torre) -->
-    <g transform="translate(80, 40)">
-      <!-- Perspectiva isométrica simple -->
-      <polygon points="0,40 60,0 220,0 280,40 280,320 220,360 60,360 0,320" stroke="#1a2332" stroke-width="2" fill="#f1ebdc"/>
-      <!-- Lineas horizontales (pisos) -->
-      <line x1="0" y1="100" x2="280" y2="100" stroke="#1a2332" stroke-width="0.8" stroke-opacity="0.5"/>
-      <line x1="0" y1="160" x2="280" y2="160" stroke="#1a2332" stroke-width="0.8" stroke-opacity="0.5"/>
-      <line x1="0" y1="220" x2="280" y2="220" stroke="#1a2332" stroke-width="0.8" stroke-opacity="0.5"/>
-      <line x1="0" y1="280" x2="280" y2="280" stroke="#1a2332" stroke-width="0.8" stroke-opacity="0.5"/>
-      <!-- Lineas verticales (departamentos) -->
-      <line x1="40" y1="40" x2="40" y2="360" stroke="#1a2332" stroke-width="0.8" stroke-opacity="0.5"/>
-      <line x1="80" y1="40" x2="80" y2="360" stroke="#1a2332" stroke-width="0.8" stroke-opacity="0.5"/>
-      <line x1="120" y1="40" x2="120" y2="360" stroke="#1a2332" stroke-width="0.8" stroke-opacity="0.5"/>
-      <line x1="160" y1="40" x2="160" y2="360" stroke="#1a2332" stroke-width="0.8" stroke-opacity="0.5"/>
-      <line x1="200" y1="40" x2="200" y2="360" stroke="#1a2332" stroke-width="0.8" stroke-opacity="0.5"/>
-      <line x1="240" y1="40" x2="240" y2="360" stroke="#1a2332" stroke-width="0.8" stroke-opacity="0.5"/>
-      <!-- Pisos marcados -->
-      <text x="-10" y="44" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.6" text-anchor="end">N+6</text>
-      <text x="-10" y="104" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.6" text-anchor="end">N+5</text>
-      <text x="-10" y="164" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.6" text-anchor="end">N+4</text>
-      <text x="-10" y="224" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.6" text-anchor="end">N+3</text>
-      <text x="-10" y="284" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.6" text-anchor="end">N+2</text>
-      <text x="-10" y="344" font-family="'Inter', sans-serif" font-size="7" fill="#1a2332" fill-opacity="0.6" text-anchor="end">N+1</text>
-      <!-- PB local comercial -->
-      <text x="140" y="378" font-family="'Inter', sans-serif" font-size="8" fill="#1a2332" fill-opacity="0.7" text-anchor="middle">LOCAL COMERCIAL · PB</text>
-      <!-- Cota de altura -->
-      <line x1="290" y1="40" x2="290" y2="360" stroke="#1a2332" stroke-width="0.5" stroke-opacity="0.3"/>
-      <text x="295" y="200" font-family="'Inter', sans-serif" font-size="8" fill="#1a2332" fill-opacity="0.6">22 m</text>
+  <!-- Suelo -->
+  <rect x="0" y="480" width="800" height="120" fill="url(#ground-via)"/>
+  <rect x="0" y="475" width="800" height="5" fill="#3a3a30"/>
+
+  <!-- Edificio principal (torre moderna con varios pisos) -->
+  <g transform="translate(220, 100)">
+    <!-- Cuerpo principal -->
+    <rect x="0" y="0" width="280" height="380" fill="url(#building-via)" stroke="#5a5a50" stroke-width="1"/>
+
+    <!-- Sombra lateral derecha -->
+    <rect x="260" y="0" width="20" height="380" fill="url(#shadow-via)"/>
+
+    <!-- Franja superior (azotea) -->
+    <rect x="-10" y="-8" width="300" height="14" fill="#5a5a50"/>
+
+    <!-- PB - local comercial (más oscuro, más grande) -->
+    <rect x="0" y="320" width="280" height="60" fill="#3a3a30"/>
+    <rect x="20" y="335" width="240" height="35" fill="#1a1a15" stroke="#5a4a3a" stroke-width="1"/>
+    <rect x="120" y="335" width="40" height="35" fill="#d4c11a" fill-opacity="0.3"/>
+
+    <!-- Ventanas - grid de 6 pisos x 4 ventanas -->
+    <g>
+      <!-- Piso 6 -->
+      <rect x="20" y="20" width="48" height="38" fill="url(#window-via)"/>
+      <rect x="78" y="20" width="48" height="38" fill="url(#window-via)"/>
+      <rect x="136" y="20" width="48" height="38" fill="url(#window-via)"/>
+      <rect x="194" y="20" width="48" height="38" fill="url(#window-via)"/>
+      <!-- Reflejos -->
+      <rect x="22" y="22" width="20" height="14" fill="#a8c8e0" fill-opacity="0.4"/>
+      <rect x="80" y="22" width="20" height="14" fill="#a8c8e0" fill-opacity="0.4"/>
+      <rect x="138" y="22" width="20" height="14" fill="#a8c8e0" fill-opacity="0.4"/>
+      <rect x="196" y="22" width="20" height="14" fill="#a8c8e0" fill-opacity="0.4"/>
+
+      <!-- Piso 5 -->
+      <rect x="20" y="70" width="48" height="38" fill="url(#window-via)"/>
+      <rect x="78" y="70" width="48" height="38" fill="url(#window-via)"/>
+      <rect x="136" y="70" width="48" height="38" fill="url(#window-via)"/>
+      <rect x="194" y="70" width="48" height="38" fill="url(#window-via)"/>
+
+      <!-- Piso 4 -->
+      <rect x="20" y="120" width="48" height="38" fill="url(#window-via)"/>
+      <rect x="78" y="120" width="48" height="38" fill="url(#window-via)"/>
+      <rect x="136" y="120" width="48" height="38" fill="url(#window-via)"/>
+      <rect x="194" y="120" width="48" height="38" fill="url(#window-via)"/>
+
+      <!-- Piso 3 -->
+      <rect x="20" y="170" width="48" height="38" fill="url(#window-via)"/>
+      <rect x="78" y="170" width="48" height="38" fill="url(#window-via)"/>
+      <rect x="136" y="170" width="48" height="38" fill="url(#window-via)"/>
+      <rect x="194" y="170" width="48" height="38" fill="url(#window-via)"/>
+
+      <!-- Piso 2 -->
+      <rect x="20" y="220" width="48" height="38" fill="url(#window-via)"/>
+      <rect x="78" y="220" width="48" height="38" fill="url(#window-via)"/>
+      <rect x="136" y="220" width="48" height="38" fill="url(#window-via)"/>
+      <rect x="194" y="220" width="48" height="38" fill="url(#window-via)"/>
+
+      <!-- Piso 1 -->
+      <rect x="20" y="270" width="48" height="38" fill="url(#window-via)"/>
+      <rect x="78" y="270" width="48" height="38" fill="url(#window-via)"/>
+      <rect x="136" y="270" width="48" height="38" fill="url(#window-via)"/>
+      <rect x="194" y="270" width="48" height="38" fill="url(#window-via)"/>
     </g>
+
+    <!-- Balcones -->
+    <rect x="68" y="56" width="68" height="3" fill="#5a5a50"/>
+    <rect x="126" y="106" width="68" height="3" fill="#5a5a50"/>
+    <rect x="68" y="156" width="68" height="3" fill="#5a5a50"/>
+    <rect x="184" y="206" width="68" height="3" fill="#5a5a50"/>
+    <rect x="68" y="256" width="68" height="3" fill="#5a5a50"/>
+    <rect x="126" y="306" width="68" height="3" fill="#5a5a50"/>
   </g>
 
-  <g transform="translate(120, 530)">
-    <text font-family="'Inter', sans-serif" font-size="10" font-weight="500" letter-spacing="3" fill="#1a2332" fill-opacity="0.6">PROYECTO 02 · CIUDAD DE MÉXICO</text>
-    <text y="22" font-family="'Fraunces', serif" font-size="22" font-weight="600" fill="#1a2332">Viaducto 14</text>
-    <text y="40" font-family="'Inter', sans-serif" font-size="11" fill="#1a2332" fill-opacity="0.7">24 departamentos de 67 m² · 1 local comercial</text>
+  <!-- Texto / etiqueta -->
+  <g transform="translate(40, 50)">
+    <text font-family="'Inter', sans-serif" font-size="12" font-weight="500" letter-spacing="3" fill="#1a2332" fill-opacity="0.85">VIADUCTO 14</text>
+    <text y="20" font-family="'Inter', sans-serif" font-size="10" fill="#1a2332" fill-opacity="0.6">Ciudad de México</text>
   </g>
 
-  <g transform="translate(680, 510)">
-    <rect x="0" y="0" width="60" height="60" stroke="#1a2332" stroke-width="1" stroke-opacity="0.4" fill="none"/>
-    <text x="30" y="20" font-family="'Inter', sans-serif" font-size="6" fill="#1a2332" fill-opacity="0.5" text-anchor="middle">N ↑</text>
-    <line x1="0" y1="30" x2="60" y2="30" stroke="#1a2332" stroke-width="0.5" stroke-opacity="0.3"/>
-    <text x="30" y="42" font-family="'Inter', sans-serif" font-size="6" fill="#1a2332" fill-opacity="0.5" text-anchor="middle">19°22'N</text>
-    <text x="30" y="52" font-family="'Inter', sans-serif" font-size="6" fill="#1a2332" fill-opacity="0.5" text-anchor="middle">99°08'O</text>
+  <g transform="translate(720, 560)">
+    <text font-family="'Inter', sans-serif" font-size="9" letter-spacing="2" fill="#fafaf9" fill-opacity="0.8" text-anchor="end">24 dept · 1 local</text>
   </g>
 </svg>
