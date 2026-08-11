@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 200" role="img" aria-label="Grupo CISA · versión nocturna">
+  <title>Grupo CISA · versión nocturna</title>
+
+  <!-- Isotipo (mismo que la versión clara — los verdes son sólidos y leen bien) -->
+  <g transform="translate(0, 0)">
+    <path fill="#8BC34A" fill-rule="evenodd" d="
+      M 100 16
+      C 138 16, 172 42, 184 78
+      C 188 92, 188 108, 184 122
+      C 178 134, 168 142, 156 144
+      C 152 130, 138 120, 120 118
+      C 90 116, 64 92, 60 64
+      C 58 50, 64 38, 76 28
+      C 84 22, 92 18, 100 16
+      Z
+      M 100 32
+      C 92 34, 84 38, 78 44
+      C 72 50, 70 58, 74 70
+      C 80 92, 100 110, 122 110
+      C 134 110, 144 116, 150 126
+      C 156 122, 162 114, 164 104
+      C 168 82, 158 60, 142 46
+      C 130 36, 116 32, 100 32
+      Z
+    "/>
+    <path fill="#CDDC39" d="
+      M 144 18
+      C 162 24, 176 38, 184 56
+      C 180 46, 172 36, 162 30
+      C 156 26, 148 22, 144 18
+      Z
+    "/>
+    <path fill="#1B5E20" fill-rule="evenodd" d="
+      M 100 44
+      C 124 44, 146 60, 154 84
+      C 160 102, 156 122, 142 134
+      C 138 122, 126 112, 110 110
+      C 84 108, 64 86, 64 60
+      C 64 52, 70 46, 100 44
+      Z
+      M 100 60
+      C 92 60, 84 62, 80 64
+      C 80 84, 96 100, 116 102
+      C 130 104, 138 114, 140 124
+      C 148 116, 152 104, 150 92
+      C 146 74, 124 60, 100 60
+      Z
+    "/>
+  </g>
+
+  <!-- Wordmark en blanco para fondos oscuros -->
+  <g transform="translate(228, 0)" font-family="Manrope, 'Helvetica Neue', Arial, sans-serif" fill="#FFFFFF">
+    <text x="0" y="78" font-size="24" font-weight="600" letter-spacing="6.5">GRUPO</text>
+    <text x="0" y="158" font-size="96" font-weight="800" letter-spacing="-1.5">CISA</text>
+  </g>
+</svg>
