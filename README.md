@@ -1,155 +1,152 @@
-# CISA · Demo de dirección de arte
+# Grupo CISA · Plataforma web
 
-Demo interna para Grupo CISA con las **dos direcciones de arte** que se le presentan al cliente para elegir antes de construir el sitio nuevo.
-
-> Esta demo no es el sitio final. Es la prueba visual de que el copy real, animado sobre la pila real, se ve y se siente distinto en cada dirección.
+> Repositorio del proyecto web de **Grupo CISA**, desarrolladora inmobiliaria mexicana con 30 años en el mercado. Este repo contiene la **evolución completa** del proyecto, desde la dirección de arte hasta el sitio final.
 
 ---
 
-## Las dos direcciones
+## ¿Qué hay aquí?
 
-| | Levantamiento (recomendada) | Patrimonio |
-|---|---|---|
-| **URL local** | `/levantamiento` | `/patrimonio` |
-| **Metáfora** | El plano arquitectónico que se levanta en volumen | El legado familiar que se proyecta al futuro |
-| **Paleta** | Papel cálido · tinta azul oscuro · acento bronce | Marfil · verde profundo · acento latón |
-| **Tipografía** | Fraunces (serif de contraste) + Inter | Cormorant Garamond + Inter |
-| **Layout** | Retícula técnica visible, numeración como en plano | Generoso whitespace, bloques centrados, timeline con peso |
-| **Signature 3D** | Wireframe con líneas finas, polígono que se subdivide en volumen | Material sólido latón + verde, volumen edificable con peso |
-| **Tono** | Técnico, preciso · "somos ingenieros" | Cálido, patrimonial · "somos familia" |
+Tres versiones del proyecto, una por fase. Cada carpeta se mantiene independiente y se puede deployar por separado.
 
-La **dirección recomendada es Levantamiento**: es la única que un competidor no puede copiar sin copiar también el modelo de negocio. La retícula, la numeración de etapas y el polígono que se transforma en volumen son el mensaje maestro de CISA hecho interfaz.
+| Carpeta | Versión | Stack | Estado | Para qué |
+|---------|---------|-------|--------|----------|
+| [`direction-demo/`](./direction-demo) | Demo de dirección de arte | Vite + React 18 + R3F + Tailwind v4 | **Preservado** (Fase 1) | Prueba visual de las dos direcciones de arte propuestas a CISA. Ya no se desarrolla. |
+| [`site-html/`](./site-html) | Sitio final HTML estático | HTML + CSS + JS vanilla | **Demo v2 cerrada** (Fase 2a) | Iteración rápida de copy/visual sin build. Listo para abrir con doble click. |
+| [`site-next/`](./site-next) | Sitio final Next.js | Next.js 16 + React 19 + Tailwind v4 + TypeScript | **Listo para deploy** (Fase 2b) | Producción. Mismo contenido que `site-html/` en React con prerender estático. |
 
 ---
 
-## Stack
+## La historia
 
-- **Vite 6** + **React 18** + **TypeScript** — más ligero que Next.js para una demo, mismo resultado visual
-- **Tailwind v4** + **CSS variables** para tokens — el mismo sistema que se usará en producción
-- **Motion** (sucesor de Framer Motion) — animaciones de entrada y microinteracciones
-- **Lenis** — scroll suave
-- **GSAP ScrollTrigger** — animaciones atadas al scroll
-- **React Three Fiber + drei** — el momento signature 3D (polígono → volumen)
-- **Wouter** — router minimalista
+**Fase 1 · Dirección de arte** (`direction-demo/`)
+Antes de construir el sitio, se le presentaron a CISA **dos direcciones de arte** para elegir:
+- **Levantamiento** (recomendada, la que eligieron) — metáfora del plano arquitectónico que se levanta en volumen. Retícula técnica visible, numeración como en plano, paleta papel/tinta/bronce.
+- **Patrimonio** — metáfora del legado familiar. Marfil, verde profundo, latón. Whitespace generoso, bloques centrados.
 
-Para el sitio final de producción se migrará a **Next.js** con la misma base de tokens, componentes y animaciones. Nada de lo que se escribe aquí se desecha.
+Se construyó una demo en Vite + React Three Fiber para que la junta pudiera **ver y sentir** la diferencia. La dirección recomendada fue Levantamiento. Esta demo se preserva intacta como referencia histórica.
 
----
+**Fase 2a · Sitio final HTML estático** (`site-html/`)
+Una vez elegida la dirección, se construyó el sitio en **HTML estático** para iterar copy y visual rápidamente. Esta versión:
+- Replica el sistema de diseño "Levantamiento" con tokens centrales.
+- Tiene 6 páginas navegables: home, su-terreno, desarrollos, inversión, nosotros, contacto.
+- Usa Manrope como tipografía principal (no Inter — detector AI-flag lo marca como sobre-usado).
+- Logo oficial vectorizado (SVG) integrado en header y footer de todas las páginas.
+- Cero emojis, cero glassmorphism, cero testimonios inventados.
 
-## Estructura
-
-```
-cisa-demo/
-├── src/
-│   ├── app/
-│   │   ├── home.tsx            → portada con selector
-│   │   ├── levantamiento.tsx   → dirección 01
-│   │   └── patrimonio.tsx      → dirección 02
-│   ├── components/
-│   │   ├── shared/             → Button, Container, Section, SignatureMoment
-│   │   ├── levantamiento/      → Hero, NuevaOportunidad, Prueba, Metodo, Footer
-│   │   └── patrimonio/         → mismas piezas, con tokens de Patrimonio
-│   ├── lib/
-│   │   ├── copy/copy.ts        → textos del mensaje maestro
-│   │   └── tokens/             → levantamiento.css, patrimonio.css
-│   └── styles/global.css       → Tailwind import + base
-├── vercel.json                 → rewrites para SPA
-└── README.md
-```
+**Fase 2b · Sitio final Next.js** (`site-next/`)
+Migración del HTML estático a Next.js 16 para producción. Stack:
+- Next.js 16.3 (App Router) + React 19
+- Tailwind v4 con `@theme` en CSS
+- TypeScript estricto
+- Manrope + JetBrains Mono vía `next/font/google`
+- Build con `--webpack` (Turbopack falla con `lightningcss.win32-x64-msvc.node` en Windows — workaround documentado)
+- 7 rutas prerenderizadas como static
+- Listo para deploy a Vercel
 
 ---
 
-## Cómo correr en local
+## Decisiones de diseño que no se ven en el código
+
+| Decisión | Por qué |
+|----------|---------|
+| Manrope en lugar de Inter | Inter está sobre-usado en sitios AI-generated (detector de craft-floor lo flaggea). Manrope es humanista, moderna, optimizada para pantalla. |
+| Base 17px en cuerpo, no 16 | Público meta 45-70 años. 17px es más cómodo de leer sin ser exagerado. |
+| Cero emojis, cero glassmorphism, cero testimonios inventados | Línea editorial de marca: sólida, técnica, transparente. Cero adornos vacíos. |
+| Modalidades asimétricas (1 dark + 3 light) | En lugar de 4 cards iguales, crea jerarquía visual. La ruta principal (Aportación de terreno) domina. |
+| Hero "El terreno es el protagonista" | El polígono del terreno domina el hero, el agente es un bloque integrado, no WOW. |
+| 5 capas de personalización + 10 pendientes | Sistema de copy documenta todo lo que falta, no se oculta. |
+
+---
+
+## Sistema de diseño
+
+El sistema de diseño fuente de verdad está en:
+- [`03-identidad-visual/DESIGN-SYSTEM-CISA.md`](../03-identidad-visual/DESIGN-SYSTEM-CISA.md) — versión completa, 14 secciones.
+- En `site-next/`: tokens implementados en `app/globals.css` con `@theme`.
+- En `site-html/`: variables CSS en el `:root` de cada página.
+
+**Paleta:**
+- Verde institucional: `#1F4D2A` (CTAs, header dark)
+- Verde medio: `#2E7D32` (acentos, isotipo)
+- Verde claro: `#8BC34A` (highlights, polígono)
+- Verde tint: `#E8F5E9` (fondos alternos)
+- Neutros: ink-50 → ink-950 (12 niveles)
+
+**Tipografía:** Manrope (sans, 400-800) + JetBrains Mono (mono, metadatos).
+
+**Espaciado:** escala de 4px.
+
+**Motion:** 150-300ms en hover/transiciones, 400-600ms en scroll reveal. Respetar `prefers-reduced-motion`.
+
+---
+
+## Cómo usar este repo
+
+### Si quieres ver el sitio final rápido
+
+Doble click en `site-html/index.html`. Se abre en el navegador sin servidor, sin build.
+
+### Si quieres el sitio en producción
 
 ```bash
-# 1. Instalar dependencias
+cd site-next
 npm install
-
-# 2. Servidor de desarrollo
-npm run dev
-# Abre http://localhost:5173
-
-# 3. Build de producción
 npm run build
-
-# 4. Preview del build
-npm run preview
+npm start
 ```
 
-Las URLs son:
-- `http://localhost:5173/` — selector de dirección
-- `http://localhost:5173/levantamiento` — dirección 01
-- `http://localhost:5173/patrimonio` — dirección 02
+Abre en `http://localhost:3000`. Ver `site-next/HANDOFF-NEXT.md` para deploy a Vercel.
 
-### Si tu `~/.npmrc` global tiene `os=linux` (típico de WSL o setups viejos)
+### Si quieres ver la dirección de arte
 
-En Windows, ese setting rompe `npm install` porque intenta bajar binarios Linux. Tienes dos opciones:
-
-**Opción A — Temporal, solo para este proyecto (recomendado):**
 ```bash
-npm install --os=win32
-```
-
-**Opción B — Crear un `.npmrc` local solo en tu máquina (no lo commitees):**
-```bash
-echo "os=win32" > .npmrc
+cd direction-demo
 npm install
-rm .npmrc   # antes de commitear
+npm run dev
 ```
 
-**No** commitees un `.npmrc` con `os=win32` al repo: rompe el deploy en Vercel (que corre en Linux).
+Abre en `http://localhost:5173`. Ver `direction-demo/README.md` para detalle.
 
 ---
 
-## Cómo desplegar en Vercel
+## Pendientes
 
-```bash
-# 1. Login (solo la primera vez)
-vercel login
+### Antes de producción
 
-# 2. Deploy a preview
-vercel
+- [ ] **Forms funcionales** — UI lista en las 6 páginas, no envían. Necesitan backend o Formspree/Resend.
+- [ ] **ElevenLabs agent** — botón "Hablar con el agente" apunta a WhatsApp. Pendiente conectar widget cuando el agente esté listo.
+- [ ] **Validar copy y datos con CISA** — equipos, fotos, números de unidades, aliados, certificaciones siguen siendo placeholders.
+- [ ] **Auditoría accesibilidad** — skip link + focus visible listo, falta test con NVDA/VoiceOver.
+- [ ] **Screenshots mobile real** — verificados en desktop 1280×900. Falta mobile real en device.
+- [ ] **Dominio `grupocisa.mx`** — configurar DNS y SSL en Vercel.
 
-# 3. Deploy a producción
-vercel --prod
-```
+### Post-producción
 
-El archivo `vercel.json` ya está configurado con los rewrites necesarios para que las rutas funcionen como SPA. Cada deploy genera una URL tipo `cisa-demo.vercel.app`.
-
-Para tener **dos URLs separadas** (una por dirección) hay que desplegar dos veces con configuración de dominios distintos, o usar Vercel project aliases. La forma más rápida para la demo es dejar las dos rutas en una sola URL (`cisa-demo.vercel.app/levantamiento` y `cisa-demo.vercel.app/patrimonio`).
-
----
-
-## Lo que está placeholder
-
-Marcado explícitamente con `[corchetes]` o texto "FOTO" en la demo:
-
-- Logotipo y colores oficiales de CISA
-- Fotografía real de obra de los 4 proyectos
-- Datos de contacto (teléfono, WhatsApp, correo)
-- Estatus y fecha de cada proyecto
-- Nombre del director de CISA en el copy del hero (la frase "Vender es una operación, desarrollar es un negocio" debe validarse con él)
-
-Nada de esto se publica en la versión final sin confirmación del cliente. **Principio ABDev:** no se publica nada que la empresa no haya confirmado.
+- [ ] Analytics (Plausible o Umami, privacy-first).
+- [ ] CMS para que CISA edite proyectos sin código (Sanity o Contentful).
+- [ ] Optimización de imágenes cuando haya renders reales de obra.
 
 ---
 
-## Lo que demuestra la demo
+## Stack consolidado
 
-1. **Las dos direcciones son viables y distintas.** Si en junta solo se diferencian en color, fallamos; la demo tiene que mostrar que cada dirección lee distinto.
-2. **El copy real funciona.** Cada bloque está escrito con la copy del mensaje maestro, sin lorem ipsum.
-3. **El stack de producción se sostiene.** Lo que se ve aquí es lo que se va a construir, con la misma calidad de animación y diseño.
-4. **El signature moment es el diferenciador.** El polígono que se transforma en volumen es la materialización de la promesa: "su terreno, así se ve desarrollado".
-
----
-
-## Notas para la junta con CISA
-
-- **La pregunta a la junta no es cuál les gusta, sino cuál se parece más a cómo quieren que los perciba un dueño de terreno que no los conoce.** Esa diferencia cambia la respuesta.
-- **Se enseña en un celular, no en una laptop.** El público de originación decide desde el teléfono.
-- **Lleva las dos URLs abiertas.** No recortes la demo a screenshots. El movimiento del signature moment es la pieza que convence.
-- **No prometas lo que no puedes cumplir.** La frase de hero, las cifras de obra y los datos de contacto están en la demo como propuesta, no como verdad publicada.
+| Capa | Tecnología | Dónde |
+|------|-----------|-------|
+| Lenguaje | TypeScript 5 | `site-next/`, `direction-demo/` |
+| Framework | Next.js 16 / Vite 6 | según fase |
+| UI | React 18/19 | según fase |
+| Estilos | Tailwind v4 con `@theme` en CSS | `site-next/`, `direction-demo/` |
+| 3D (solo demo) | React Three Fiber + drei | `direction-demo/` |
+| Animación (solo demo) | Motion + Lenis + GSAP ScrollTrigger | `direction-demo/` |
+| Tipografía | Manrope + JetBrains Mono | vía `next/font/google` en `site-next/`, Google Fonts en `site-html/` |
+| Iconos | SVG inline | todo |
+| Deploy | Vercel | target principal |
 
 ---
 
-*ABDev · Alberto Balderas · Ciudad de México · 2026*
+## Equipo
+
+- **Alberto Balderas** (ABDev) — dirección, desarrollo, copy.
+- **Grupo CISA** — cliente, validaciones, datos.
+
+Plataforma web y dirección de arte desarrolladas por **ABDev** · Ciudad de México · 2026.
