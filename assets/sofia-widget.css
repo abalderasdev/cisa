@@ -1,0 +1,250 @@
+/* ================================================================
+   SOFIA WIDGET · Grupo CISA · ElevenLabs conversational agent
+   v1.0 · ABDev · Alberto Balderas
+   Spec: agente-sofia/integration-spec.md
+   ================================================================ */
+
+/* === Botón flotante (trigger) === */
+.sofia-trigger {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 40;
+  width: auto;
+  min-width: 56px;
+  height: 56px;
+  padding: 0 18px 0 14px;
+  border: 0;
+  border-radius: 8px;
+  background: #1F4D2A;          /* brand-green-dark */
+  color: #FFFFFF;
+  font-family: Manrope, system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(15, 20, 25, 0.18);
+  transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1),
+              background 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sofia-trigger:hover {
+  background: #2E7D32;          /* brand-green */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(15, 20, 25, 0.24);
+}
+
+.sofia-trigger:focus-visible {
+  outline: 3px solid #8BC34A;  /* brand-green-light */
+  outline-offset: 3px;
+}
+
+.sofia-trigger__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  flex: 0 0 auto;
+}
+
+.sofia-trigger__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #8BC34A;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  box-shadow: 0 0 0 2px #1F4D2A;
+}
+
+.sofia-trigger {
+  position: fixed;
+}
+
+.sofia-trigger__inner {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .sofia-trigger {
+    bottom: 16px;
+    left: 16px;
+    padding: 0 14px 0 10px;
+    height: 52px;
+  }
+  .sofia-trigger__avatar {
+    width: 32px;
+    height: 32px;
+  }
+  .sofia-trigger__label {
+    display: none;
+  }
+}
+
+/* === Modal === */
+.sofia-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(15, 20, 25, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sofia-modal[data-open="true"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sofia-modal__panel {
+  background: #FFFFFF;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 420px;
+  max-height: calc(100vh - 48px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 16px 48px rgba(15, 20, 25, 0.32);
+  transform: translateY(8px);
+  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sofia-modal[data-open="true"] .sofia-modal__panel {
+  transform: translateY(0);
+}
+
+.sofia-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.sofia-modal__title {
+  font: 700 18px/1.3 Manrope, system-ui, sans-serif;
+  color: #0F1419;
+  margin: 0;
+}
+
+.sofia-modal__subtitle {
+  font: 400 13px/1.4 Manrope, system-ui, sans-serif;
+  color: #5C636A;
+  margin: 2px 0 0;
+}
+
+.sofia-modal__close {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 0;
+  background: transparent;
+  color: #5C636A;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.sofia-modal__close:hover {
+  background: #F2F4F2;
+  color: #0F1419;
+}
+
+.sofia-modal__body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.sofia-modal__video {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 9 / 16;
+  max-height: 360px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #E8F5E9;          /* brand-green-tint */
+  display: block;
+}
+
+.sofia-modal__status {
+  font: 500 14px/1.4 Manrope, system-ui, sans-serif;
+  color: #5C636A;
+  margin: 0;
+  text-align: center;
+}
+
+.sofia-modal__status--ready {
+  color: #2E7D32;
+}
+
+.sofia-modal__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.sofia-modal__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 48px;
+  padding: 0 20px;
+  border-radius: 8px;
+  background: #1F4D2A;
+  color: #FFFFFF;
+  text-decoration: none;
+  font: 600 15px/1 Manrope, system-ui, sans-serif;
+  border: 0;
+  cursor: pointer;
+  transition: background 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sofia-modal__cta:hover {
+  background: #2E7D32;
+}
+
+.sofia-modal__cta--secondary {
+  background: #F2F4F2;
+  color: #0F1419;
+}
+
+.sofia-modal__cta--secondary:hover {
+  background: #E5E7EB;
+}
+
+.sofia-modal__note {
+  font: 400 12px/1.4 Manrope, system-ui, sans-serif;
+  color: #5C636A;
+  text-align: center;
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sofia-trigger,
+  .sofia-modal,
+  .sofia-modal__panel {
+    transition: none;
+  }
+}
