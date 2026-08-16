@@ -1,4 +1,4 @@
-# Integration spec · Sofía en sitio estático CISA · v1.0
+# Integration spec · Sofía en sitio estático CISA · v1.1
 
 > Especificación técnica para integrar el widget de ElevenLabs en las 6 HTMLs del sitio.
 > Audiencia: dev de ABDev (Alberto) o futuro dev que mantenga el sitio.
@@ -24,8 +24,8 @@ El widget se carga como `<script async>` al final del `<body>` de cada página d
 
 | Variable | Valor actual | Dónde se obtiene |
 |----------|--------------|------------------|
-| `{AGENT_ID}` | `REPLACE_WITH_AGENT_ID` | Se llena al crear el agente en ElevenLabs. Aparece en la URL del embed: `https://elevenlabs.io/convai/embed.js?agent_id=abc123` |
-| `{SERVER_URL}` | `REPLACE_WITH_SERVER_URL` | URL del proxy server-side (ver sección 6). Si ElevenLabs provee conexión directa, este parámetro puede omitirse. |
+| `{AGENT_ID}` | `REPLACE_WITH_AGENT_ID` | Se llena al crear el agente en ElevenLabs. Aparece en la URL del embed. |
+| `{SERVER_URL}` | `REPLACE_WITH_SERVER_URL` | URL del proxy server-side (ver sección 8). Si ElevenLabs provee conexión directa, este parámetro puede omitirse. |
 
 **Nota:** verificar en la documentación de ElevenLabs si el formato del script es exactamente `embed.js` o si conviene usar el `<elevenlabs-convai>` web component. La forma final se define cuando se cree el agente.
 
@@ -37,20 +37,21 @@ Una vez cargado, el widget acepta configuración vía JavaScript:
 <script>
   window.SOFIA_CONFIG = {
     agentId: 'REPLACE_WITH_AGENT_ID',
-    serverUrl: 'REPLACE_WITH_SERVER_URL',     // proxy server-side, nunca directo a ElevenLabs desde frontend si hay secretos
-    position: 'bottom-left',                   // 'bottom-left' para no chocar con WhatsApp FAB
-    primaryColor: '#1F4D2A',                   // brand-green-dark de DESIGN.md
-    accentColor: '#2E7D32',                    // brand-green
-    textColor: '#0F1419',                      // ink-900
-    buttonLabel: '',                           // vacío = solo ícono
-    avatarUrl: '/assets/logo-grupo-cisa.svg',  // logo oficial como avatar
+    serverUrl: 'REPLACE_WITH_SERVER_URL',
+    position: 'bottom-left',
+    primaryColor: '#1F4D2A',
+    accentColor: '#2E7D32',
+    textColor: '#0F1419',
+    buttonLabel: '',
+    avatarUrl: '/assets/sofia-avatar.jpg',
+    introVideoUrl: '/assets/sofia-intro.mp4',
     title: 'Sofía · Grupo CISA',
     subtitle: 'Asistente virtual · responde en minutos',
-    autoOpen: false,                           // no abrir el chat automáticamente
+    autoOpen: false,
     language: 'es-MX',
     voice: {
-      enabled: true,                           // si el canal de voz está activo
-      voiceId: 'REPLACE_WITH_VOICE_ID'         // ver open-questions.md Q1
+      enabled: true,
+      voiceId: 'REPLACE_WITH_VOICE_ID'
     }
   };
 </script>
@@ -71,11 +72,11 @@ El sitio ya tiene un WhatsApp FAB en `bottom-right` (color `#25D366`, 56px). El 
   bottom: 20px !important;
   left: 20px !important;
   right: auto !important;
-  z-index: 40 !important;          /* debajo del header sticky (z-50) pero encima del contenido */
+  z-index: 40 !important;
   width: 56px !important;
   height: 56px !important;
-  border-radius: 8px !important;    /* 8px, no pill, consistente con el sistema */
-  background-color: #1F4D2A !important;  /* brand-green-dark */
+  border-radius: 8px !important;
+  background-color: #1F4D2A !important;
   box-shadow: 0 2px 8px rgba(15, 20, 25, 0.15) !important;
   transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
               box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -88,7 +89,6 @@ El sitio ya tiene un WhatsApp FAB en `bottom-right` (color `#25D366`, 56px). El 
   box-shadow: 0 4px 12px rgba(15, 20, 25, 0.2);
 }
 
-/* En móvil: ajustar margen inferior para no chocar con la barra de navegación si existe */
 @media (max-width: 768px) {
   [data-elevenlabs-widget],
   .elevenlabs-widget,
@@ -98,7 +98,6 @@ El sitio ya tiene un WhatsApp FAB en `bottom-right` (color `#25D366`, 56px). El 
   }
 }
 
-/* Accesibilidad: focus visible */
 [data-elevenlabs-widget]:focus-visible,
 .elevenlabs-widget:focus-visible,
 #elevenlabs-convai-trigger:focus-visible {
@@ -106,8 +105,6 @@ El sitio ya tiene un WhatsApp FAB en `bottom-right` (color `#25D366`, 56px). El 
   outline-offset: 3px !important;
 }
 ```
-
-> Los selectores exactos (`[data-elevenlabs-widget]`, `.elevenlabs-widget`, `#elevenlabs-convai-trigger`) se ajustan cuando se vea el HTML real del widget. La estrategia es idéntica: selectores que apunten al contenedor del botón y aplicar `!important` donde haga falta para sobreescribir los estilos por defecto del iframe / shadow DOM.
 
 ## 4. Triggers por página (mostrar / ocultar el widget)
 
@@ -123,7 +120,7 @@ Sofía **NO debe aparecer** en todas las páginas. La regla está definida en `R
 <!-- En contacto.html, precalificar.html, gracias.html, aviso-de-privacidad.html: NO incluir el script -->
 ```
 
-**Opción alternativa (más DRY, requiere JS central):** crear un archivo `assets/sofia-loader.js` que decida según `window.location.pathname`. Útil si se quiere mantener el patrón de HTML estático sin duplicar el `<script>` en cada página. Ejemplo:
+**Opción alternativa (más DRY):** crear un archivo `assets/sofia-loader.js` que decida según `window.location.pathname`.
 
 ```js
 // assets/sofia-loader.js
@@ -135,7 +132,6 @@ Sofía **NO debe aparecer** en todas las páginas. La regla está definida en `R
   });
   if (isExcluded) return;
 
-  // Cargar el script de ElevenLabs
   var s = document.createElement('script');
   s.src = 'https://elevenlabs.io/convai/embed.js?agent_id=REPLACE_WITH_AGENT_ID&server_url=REPLACE_WITH_SERVER_URL';
   s.async = true;
@@ -144,19 +140,11 @@ Sofía **NO debe aparecer** en todas las páginas. La regla está definida en `R
 })();
 ```
 
-Y en cada HTML, al final del `<body>`:
-
-```html
-<script src="/assets/sofia-loader.js" defer></script>
-```
-
-> Si se opta por el loader, igual hay que incluir el script en todas las páginas; la lógica de exclusión está centralizada. Esto es preferible si en el futuro se agregan más páginas excluidas o reglas de visibilidad.
-
 ## 5. Eventos emitidos por el widget (analytics)
 
 Sofía debe emitir eventos que se integren con el sistema de analytics del sitio (Google Tag Manager / `window.dataLayer`).
 
-**Eventos a implementar** (mapeo tentativo al dataLayer):
+**Eventos a implementar:**
 
 | Evento | Cuándo se dispara | Payload sugerido |
 |--------|-------------------|------------------|
@@ -164,31 +152,10 @@ Sofía debe emitir eventos que se integren con el sistema de analytics del sitio
 | `sofia_widget_opened` | El visitante hace clic en el botón y abre el chat | `{ page_path, source: 'click' \| 'auto' }` |
 | `sofia_widget_closed` | El visitante cierra el chat | `{ duration_seconds, message_count }` |
 | `sofia_conversation_started` | El LLM responde el primer mensaje | `{ page_path, flow_detected: 'terreno' \| 'capital' \| 'general' \| null }` |
-| `sofia_lead_qualified` | El flujo A (dueño de terreno) o B (socio de capital) llega a la captura de datos | `{ flow: 'terreno' \| 'capital', data_keys: ['zona', 'superficie', ...] }` |
+| `sofia_lead_qualified` | El flujo A o B llega a la captura de datos | `{ flow: 'terreno' \| 'capital', data_keys: ['zona', 'superficie', ...] }` |
 | `sofia_handoff_requested` | Se activa el handoff a humano | `{ trigger: 'user_request' \| 'frustration' \| 'out_of_scope' \| 'flow_completed' \| 'limit_reached', conversation_id }` |
 | `sofia_article_recommended` | Sofía recomienda un artículo del blog | `{ article_slug }` |
 | `sofia_error` | El widget falla (ElevenLabs caído, timeout, error de red) | `{ error_code, error_message }` |
-
-**Implementación:** el widget de ElevenLabs expone eventos vía callbacks o `window.postMessage`. Conectar esos eventos a `window.dataLayer.push({...})` para que GTM los recoja.
-
-```js
-// Ejemplo (pseudocódigo, ajustar al SDK real de ElevenLabs)
-window.elevenLabsWidget = window.elevenLabsWidget || {};
-window.elevenLabsWidget.on = function (eventName, callback) {
-  // ElevenLabs emite; nosotros mandamos al dataLayer
-  var handler = function (data) {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: 'sofia_' + eventName,
-      ...data
-    });
-    callback && callback(data);
-  };
-  // bind al event bus real de ElevenLabs
-};
-```
-
-**Importante:** el mapeo exacto de eventos al SDK de ElevenLabs se valida cuando se cree el agente. Este spec es la intención, no la implementación final.
 
 ## 6. Fallback si ElevenLabs está caído
 
@@ -236,31 +203,87 @@ Si el script de ElevenLabs no carga en 5 segundos, o si el widget reporta un err
 </a>
 ```
 
-El mensaje pre-llenado en WhatsApp debe ser contextual cuando se posible:
+Mensajes contextuales según la URL:
 
-- En `/su-terreno` → `Hola, tengo un terreno y quiero saber si aplica para desarrollo con CISA.`
-- En `/inversion` → `Hola, me interesa participar como socio de capital en un proyecto de CISA.`
-- En cualquier otra página → `Hola, necesito información sobre Grupo CISA.`
+- `/su-terreno` → "Hola, tengo un terreno y quiero saber si aplica para desarrollo con CISA."
+- `/inversion` → "Hola, me interesa participar como socio de capital en un proyecto de CISA."
+- Cualquier otra → "Hola, necesito información sobre Grupo CISA."
 
-Esto se puede implementar pasando el `href` correcto por página o, mejor, con JS que detecte la URL:
+## 7. Assets de Sofía
 
-```js
-// sofia-fallback.js
-(function () {
-  var path = window.location.pathname;
-  var msg = 'Hola, necesito información sobre Grupo CISA.';
-  if (path.indexOf('su-terreno') >= 0) {
-    msg = 'Hola, tengo un terreno y quiero saber si aplica para desarrollo con CISA.';
-  } else if (path.indexOf('inversion') >= 0) {
-    msg = 'Hola, me interesa participar como socio de capital en un proyecto de CISA.';
-  }
-  var encoded = encodeURIComponent(msg);
-  var a = document.getElementById('sofia-fallback');
-  if (a) a.href = 'https://wa.me/525517964940?text=' + encoded;
-})();
+Sofía tiene **avatar** y **video introductorio** listos en el repo, esperando solo que se cree el agente en ElevenLabs para activarse.
+
+### 7.1 Avatar (foto de perfil)
+
+| Campo | Valor |
+|-------|-------|
+| Path local | `assets/sofia-avatar.jpg` |
+| URL en producción | `https://cisa.abdev.click/assets/sofia-avatar.jpg` (o el dominio de Vercel) |
+| Formato | JPG, 900×1600 px (vertical 9:16) |
+| Peso | 65 KB |
+| Origen | Foto base entregada por el cliente. Vectorizada/retoque pendiente si se requiere. |
+| Uso | Foto de perfil en el widget de ElevenLabs, en la firma de los mensajes de WhatsApp Business, en el modal de bienvenida del sitio |
+
+### 7.2 Video introductorio
+
+| Campo | Valor |
+|-------|-------|
+| Path local | `assets/sofia-intro.mp4` |
+| URL en producción | `https://cisa.abdev.click/assets/sofia-intro.mp4` |
+| Formato | MP4 (H.264), 768P, 6 segundos |
+| Peso | 482 KB |
+| Loop | Una vez, sin loop. Silenciado. |
+| Generado desde | `assets/sofia-avatar.jpg` como primer frame |
+| Uso | Se reproduce automáticamente al iniciar una conversación. Sin audio en el video — el audio lo pone ElevenLabs cuando habla. |
+
+### 7.3 Comportamiento esperado
+
+- Al cargar la página donde Sofía debe aparecer: el video no se reproduce todavía (lazy load).
+- Al click del usuario en el widget de Sofía:
+  1. Se abre el modal
+  2. Se reproduce `sofia-intro.mp4` una vez en el área del avatar
+  3. Inicia la conversación de voz con ElevenLabs
+  4. Al terminar la intro, el video se pausa y queda como poster mientras ElevenLabs responde
+- En mobile: el video ocupa el área del avatar, no se expande a pantalla completa
+- Si el usuario cierra el widget: el video se pausa
+- Si el usuario regresa: el video se reproduce de nuevo desde el inicio
+
+### 7.4 Especificaciones técnicas
+
+```html
+<video
+  id="sofia-intro"
+  src="assets/sofia-intro.mp4"
+  poster="assets/sofia-avatar.jpg"
+  autoplay
+  muted
+  playsinline
+  aria-label="Sofía se presenta"
+></video>
 ```
 
-## 7. Variables de entorno · dónde va la API key
+CSS necesario:
+
+```css
+#sofia-intro {
+  width: 100%;
+  max-width: 280px;
+  aspect-ratio: 9 / 16;
+  border-radius: 12px;
+  object-fit: cover;
+  background: var(--brand-green-tint, #E8F5E9);
+}
+```
+
+### 7.5 Decisiones pendientes
+
+- [ ] Si el video debe tener audio (voz de Sofía saludando "Hola, soy Sofía, ¿en qué te ayudo?"). ElevenLabs puede generarlo cuando se cree el agente.
+- [ ] Si el video se reproduce en TODAS las páginas o solo en `/su-terreno.html` (donde el CTA principal es precalificar).
+- [ ] Si debe haber un video alternativo más corto (3 seg) para mostrar cuando la conversación ya está activa.
+- [ ] Optimización a WebM (VP9) además de MP4 para navegadores que lo prefieran (ahorra ~30% de peso).
+- [ ] Validar el avatar con Alberto — si la foto necesita retoque (encuadre, fondo, color) antes de salir a producción.
+
+## 8. Variables de entorno · dónde va la API key
 
 **La API key de ElevenLabs NUNCA va en el frontend.** El sitio es estático y todo el código se sirve al cliente. Si la key queda expuesta en el HTML o en el JS, cualquiera puede extraerla y abusar de la cuenta de ElevenLabs de CISA.
 
@@ -282,12 +305,11 @@ ElevenLabs API (con API key en variable de entorno)
 | **Cloudflare Workers** | Archivo `worker.js`, deploy con `wrangler`. Variables en dashboard. | Free tier: 100,000 req/día |
 | **Supabase Edge Functions** | Si en el futuro se migra a Supabase, función Deno. | Free tier generoso |
 
-**Recomendación: Vercel Functions.** Es el mismo host que el sitio. Un solo lugar para deployar, un solo dashboard para secrets.
+**Recomendación: Vercel Functions.** Es el mismo host que el sitio.
 
-**Esqueleto del proxy** (`/api/sofia/conversation.js` o similar):
+**Esqueleto del proxy** (`/api/sofia/message.js`):
 
 ```js
-// /api/sofia/message.js
 export default async function handler(req, res) {
   const { message, conversationId } = req.body;
 
@@ -295,9 +317,13 @@ export default async function handler(req, res) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'xi-api-key': process.env.ELEVENLABS_API_KEY  // ← variable de entorno, nunca en cliente
+      'xi-api-key': process.env.ELEVENLABS_API_KEY
     },
-    body: JSON.stringify({ agent_id: process.env.ELEVENLABS_AGENT_ID, message, conversation_id: conversationId })
+    body: JSON.stringify({
+      agent_id: process.env.ELEVENLABS_AGENT_ID,
+      message,
+      conversation_id: conversationId
+    })
   });
 
   const data = await response.json();
@@ -313,23 +339,21 @@ export default async function handler(req, res) {
 | `ELEVENLABS_AGENT_ID` | `agent_abc123` | Alberto, al crear el agente |
 | `ELEVENLABS_SERVER_URL` | `https://cisa.vercel.app/api/sofia` | Alberto, según el dominio |
 
-> El widget de ElevenLabs que se carga en el frontend NO necesita la API key si todo el tráfico pasa por el proxy. El embed público de ElevenLabs puede funcionar con el agent_id solo, pero **si se quiere evitar exponer el agent_id** también, se enruta todo por el proxy. Decisión que se toma al momento de integración.
-
-## 8. Manejo de errores y timeouts
+## 9. Manejo de errores y timeouts
 
 - **Timeout de carga del widget:** 5 segundos (ver sección 6). Si no carga, fallback a WhatsApp.
 - **Timeout de respuesta del LLM:** 30 segundos. Si excede, mostrar mensaje de "Un momento, estoy consultando" y reintentar una vez. Si reintenta y falla, ofrecer transferencia a humano o WhatsApp.
 - **Error de red:** capturar en `sofia_error` event, ofrecer fallback.
 - **Pérdida de sesión:** si la conversación se corta (recarga de página, etc.), Sofía recuerda el contexto solo si el visitante no cerró la pestaña. Si cerró, empieza de nuevo (por diseño, para no violar privacidad).
 
-## 9. Cumplimiento de privacidad y cookies
+## 10. Cumplimiento de privacidad y cookies
 
 - **Sin cookies de tracking** en el frontend del widget. ElevenLabs puede setear las suyas; verificar en su documentación.
-- **Sin almacenamiento en `localStorage`** del lado de Sofía. La memoria es solo de sesión. Los borradores de formulario sí usan `localStorage`; ese sistema es separado.
+- **Sin almacenamiento en `localStorage`** del lado de Sofía. La memoria es solo de sesión.
 - **Aviso de privacidad:** el sitio debe tener un enlace a `/aviso-de-privacidad` cerca del widget o en el footer. El aviso debe mencionar que el sitio usa un agente conversacional de IA provisto por ElevenLabs, y que las conversaciones pueden ser revisadas por el equipo de CISA para mejorar el servicio.
-- **Botón de "no quiero continuar"** dentro del widget: el visitante debe poder cerrar el chat y borrar la conversación. El widget estándar de ElevenLabs lo provee.
+- **Botón de "no quiero continuar"** dentro del widget: el visitante debe poder cerrar el chat y borrar la conversación.
 
-## 10. Pruebas mínimas antes de producción
+## 11. Pruebas mínimas antes de producción
 
 | Test | Qué se valida |
 |------|---------------|
@@ -346,7 +370,7 @@ export default async function handler(req, res) {
 | Mobile (375px, 412px) | Botón no tapa contenido, abre correctamente |
 | Accesibilidad (NVDA / VoiceOver) | Botón tiene aria-label, foco visible, mensajes se anuncian |
 
-## 11. Checklist de deploy
+## 12. Checklist de deploy
 
 Antes de marcar como listo para producción:
 
@@ -365,8 +389,11 @@ Antes de marcar como listo para producción:
 - [ ] Auditoría de accesibilidad básica hecha
 - [ ] Aviso de privacidad actualizado mencionando el agente conversacional
 - [ ] Política de retención de conversaciones definida (propuesta: 30 días, después se borra del dashboard de ElevenLabs)
+- [ ] Avatar JPG validado por Alberto (encuadre, color, fondo)
+- [ ] Video introductorio MP4 validado por Alberto (gesto, duración, lighting)
 
 ---
 
 *ABDev · Alberto Balderas · Agosto 2026*
 *Spec forward-looking: el agente sale de alcance del proyecto actual (`PENDIENTES-WEB.md` sección 2.3). Este spec define cómo se integra cuando se reactive.*
+*v1.1 · agrega sección 7 (Assets: avatar + video introductorio) y referencia en sección 2 (SOFIA_CONFIG.avatarUrl, .introVideoUrl).*
