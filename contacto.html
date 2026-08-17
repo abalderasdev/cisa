@@ -1071,6 +1071,7 @@
         <a href="su-terreno.html">Modalidades</a>
         <a href="nosotros.html#metodo">Método</a>
         <a href="desarrollos.html">Obra</a>
+        <a href="contenido.html">Contenido</a>
         <a href="index.html#agente">Agente</a>
         <a href="nosotros.html#equipo">Equipo</a>
       </nav>
@@ -1327,8 +1328,44 @@
     })();
   </script>
 
+
+<style>
+  .staging-banner {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 999999;
+    background: #FFD600;
+    color: #1A1A1A;
+    text-align: center;
+    padding: 9px 16px;
+    font: 600 13px/1.4 Manrope, system-ui, -apple-system, sans-serif;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-bottom: 2px solid #1A1A1A;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  body { padding-top: 42px; }
+  @media (max-width: 768px) {
+    .staging-banner { font-size: 11px; padding: 7px 12px; letter-spacing: 0.04em; }
+    body { padding-top: 38px; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .staging-banner { animation: staging-pulse 4s ease-in-out infinite; }
+  }
+  @keyframes staging-pulse {
+    0%, 100% { background: #FFD600; }
+    50% { background: #FFE066; }
+  }
+</style>
+<div class="staging-banner" role="status" aria-live="polite">
+  STAGING &middot; Entorno de pruebas &middot; Los cambios aqu&iacute; NO se publican a producci&oacute;n
+</div>
 <!-- impeccable-live-start -->
-<script src="http://localhost:8400/live.js?token=69d77af5-caf5-4232-b4e2-438531c2632a"></script>
+
+<script src="http://localhost:8400/live.js?token=3f87fded-f0fd-443b-b263-0899ea0c9c27"></script>
 <!-- impeccable-live-end -->
-</body>
+
+<!-- Formularios con memoria persistente + envio por WhatsApp · spec: PENDIENTES-WEB.md seccion 1.1 -->
+<link rel="stylesheet" href="assets/form-memoria.css" />
+<script src="assets/form-memoria.js" defer></script></body>
 </html>
