@@ -230,4 +230,19 @@
     var preload = new Image();
     preload.src = SOFIA_CONFIG.greetingVideo;
   }, 4000);
+
+  // === Hide FAB when #agente is in view (Sofia is already there as a hero video) ===
+  var agenteSection = document.getElementById('agente');
+  if (agenteSection && 'IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting && entry.intersectionRatio > 0.15) {
+          fab.classList.add('sofia-fab--hidden');
+        } else {
+          fab.classList.remove('sofia-fab--hidden');
+        }
+      });
+    }, { threshold: [0, 0.15, 0.3, 0.5, 0.8, 1] });
+    observer.observe(agenteSection);
+  }
 })();
