@@ -1495,14 +1495,15 @@
           <div class="agent__visual agent__visual--video">
             <div class="agent__video-frame">
               <video
+                id="sofia-agent-video"
                 class="agent__video"
-                src="assets/sofia-intro.mp4"
+                src="assets/sofia-writing-loop.mp4"
                 poster="assets/sofia-avatar.jpg"
                 autoplay
                 loop
                 muted
                 playsinline
-                aria-label="Sofía, asistente virtual de Grupo CISA, se presenta"></video>
+                aria-label="Sofía, asistente virtual de Grupo CISA, trabajando"></video>
               <div class="agent__video-overlay">
                 <div class="agent__video-tag">
                   <span class="agent__status-dot" aria-hidden="true"></span>
@@ -1512,7 +1513,6 @@
                 <div class="agent__video-role">Asistente virtual de Grupo CISA</div>
               </div>
             </div>
-            <div class="agent__powered">Desarrollado por ABDev · Video por ElevenLabs</div>
           </div>
         </div>
       </div>
@@ -1787,5 +1787,8 @@
 
 <!-- Sofia widget · ElevenLabs placeholder · spec: agente-sofia/integration-spec.md -->
 <script src="assets/sofia-widget.js" defer></script>
+
+<!-- Sofia video switch · comportamiento: loop escribiendo → saludo al click -->
+<script src="assets/sofia-video-switch.js" defer></script>
 </body>
 </html>
