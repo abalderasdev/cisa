@@ -293,6 +293,63 @@
       object-fit: cover;
       display: block;
     }
+
+    /* === Métricas de mercado flotantes (overlay sobre el video) === */
+    .terrain__metrics {
+      position: absolute; inset: 0;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .metric {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid var(--ink-200);
+      border-left: 3px solid var(--brand-green);
+      border-radius: 4px;
+      padding: 6px 10px;
+      min-width: 80px;
+      box-shadow: 0 2px 8px rgba(15, 20, 25, 0.10);
+      opacity: 0;
+      transform: translateY(6px);
+      animation: metric-in 600ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .metric__label {
+      font: 600 9px/1 var(--font-mono);
+      color: var(--ink-500);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 3px;
+    }
+    .metric__value {
+      font: 800 16px/1 var(--font-mono);
+      color: var(--brand-green-dark);
+      letter-spacing: -0.01em;
+    }
+    .metric__unit {
+      font: 500 9px/1.2 var(--font-mono);
+      color: var(--ink-500);
+      margin-top: 2px;
+    }
+    /* Posiciones escalonadas alrededor del video (no chocan con tags fijas) */
+    .metric--abs    { top:  6%; left:  4%; animation-delay: 400ms; }
+    .metric--cost   { top:  6%; right: 4%; animation-delay: 900ms; }
+    .metric--dens   { bottom: 38%; left:  2%; animation-delay: 1400ms; }
+    .metric--time   { bottom: 38%; right: 2%; animation-delay: 1900ms; }
+    .metric--margin { bottom:  4%; left: 50%; transform: translateX(-50%) translateY(6px); animation-delay: 2400ms; }
+    .metric--margin { animation-name: metric-in-center; }
+    @keyframes metric-in {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes metric-in-center {
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    @media (max-width: 600px) {
+      .metric { min-width: 64px; padding: 4px 8px; }
+      .metric__value { font-size: 13px; }
+      .metric__label, .metric__unit { font-size: 8px; }
+    }
     /* Etiquetas flotantes tipo plano arquitectónico */
     .terrain__tags {
       position: absolute; inset: 0; pointer-events: none;
@@ -1039,11 +1096,40 @@
                 preload="auto"
                 aria-label="Animación del proceso de desarrollo: del terreno al plano, con datos de mercado"></video>
 
-              <!-- Etiquetas tipo plano -->
+              <!-- Etiquetas tipo plano (datos fijos del proyecto) -->
               <div class="terrain__tags">
                 <span class="terrain__tag terrain__tag--tl">VÉRTICE 02 · 19.43°N</span>
                 <span class="terrain__tag terrain__tag--tr">USO DE SUELO H4</span>
                 <span class="terrain__tag terrain__tag--br">SUP. 480 m²</span>
+              </div>
+
+              <!-- Datos de mercado flotantes (overlays HTML con tipografía real) -->
+              <div class="terrain__metrics" aria-label="Datos de mercado analizados para el desarrollo">
+                <div class="metric metric--abs">
+                  <div class="metric__label">ABSORCIÓN</div>
+                  <div class="metric__value">1.8%</div>
+                  <div class="metric__unit">/mes</div>
+                </div>
+                <div class="metric metric--cost">
+                  <div class="metric__label">COSTO M² CONST.</div>
+                  <div class="metric__value">$18,500</div>
+                  <div class="metric__unit">MXN</div>
+                </div>
+                <div class="metric metric--dens">
+                  <div class="metric__label">DENSIDAD</div>
+                  <div class="metric__value">80</div>
+                  <div class="metric__unit">viv/ha</div>
+                </div>
+                <div class="metric metric--time">
+                  <div class="metric__label">TIEMPO OBRA</div>
+                  <div class="metric__value">18</div>
+                  <div class="metric__unit">meses</div>
+                </div>
+                <div class="metric metric--margin">
+                  <div class="metric__label">MARGEN</div>
+                  <div class="metric__value">22%</div>
+                  <div class="metric__unit">s/ingreso</div>
+                </div>
               </div>
 
               <div class="terrain__corner terrain__corner--tl"></div>
