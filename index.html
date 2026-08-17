@@ -288,6 +288,11 @@
     .terrain__svg {
       position: absolute; inset: 0; width: 100%; height: 100%;
     }
+    .terrain__video {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
     /* Etiquetas flotantes tipo plano arquitectónico */
     .terrain__tags {
       position: absolute; inset: 0; pointer-events: none;
@@ -1020,59 +1025,19 @@
             </div>
           </div>
 
-          <!-- Polígono protagonista -->
+          <!-- Polígono protagonista (video animado) -->
           <div class="hero__terrain" aria-hidden="true">
             <div class="terrain">
               <div class="terrain__bg"></div>
-              <svg class="terrain__svg" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
-                <!-- Eje norte -->
-                <g stroke="var(--ink-300)" stroke-width="0.8" fill="none">
-                  <line x1="250" y1="20" x2="250" y2="40"/>
-                  <text x="250" y="14" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="var(--ink-500)" font-weight="600">N</text>
-                </g>
-                <!-- Polígono principal del terreno -->
-                <polygon points="80,360 160,200 290,180 380,240 400,360 240,400"
-                         fill="var(--brand-green-tint)"
-                         stroke="var(--brand-green-dark)"
-                         stroke-width="2.5"
-                         stroke-linejoin="round"/>
-                <!-- Polígono de volumen edificable (proyección) -->
-                <polygon points="290,180 340,140 430,160 380,240"
-                         fill="var(--brand-green-light)"
-                         fill-opacity="0.55"
-                         stroke="var(--brand-green-dark)"
-                         stroke-width="1.5"
-                         stroke-linejoin="round"/>
-                <polygon points="380,240 430,160 450,300 400,360"
-                         fill="var(--brand-green)"
-                         fill-opacity="0.40"
-                         stroke="var(--brand-green-dark)"
-                         stroke-width="1.5"
-                         stroke-linejoin="round"/>
-                <!-- Líneas internas (retícula de uso) -->
-                <g stroke="var(--brand-green-dark)" stroke-width="0.6" stroke-dasharray="2,3" opacity="0.5">
-                  <line x1="160" y1="200" x2="160" y2="360"/>
-                  <line x1="240" y1="180" x2="240" y2="400"/>
-                  <line x1="80" y1="280" x2="400" y2="280"/>
-                </g>
-                <!-- Vértices numerados -->
-                <g fill="var(--brand-green-dark)">
-                  <circle cx="80"  cy="360" r="5"/>
-                  <circle cx="160" cy="200" r="5"/>
-                  <circle cx="290" cy="180" r="5"/>
-                  <circle cx="380" cy="240" r="5"/>
-                  <circle cx="400" cy="360" r="5"/>
-                  <circle cx="240" cy="400" r="5"/>
-                </g>
-                <g fill="white" font-family="JetBrains Mono" font-size="9" font-weight="700" text-anchor="middle">
-                  <text x="80"  y="364">01</text>
-                  <text x="160" y="204">02</text>
-                  <text x="290" y="184">03</text>
-                  <text x="380" y="244">04</text>
-                  <text x="400" y="364">05</text>
-                  <text x="240" y="404">06</text>
-                </g>
-              </svg>
+              <video
+                class="terrain__video"
+                src="assets/hero-terrain.mp4"
+                autoplay
+                loop
+                muted
+                playsinline
+                preload="auto"
+                aria-label="Animación del proceso de desarrollo: del terreno al plano, con datos de mercado"></video>
 
               <!-- Etiquetas tipo plano -->
               <div class="terrain__tags">
