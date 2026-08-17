@@ -473,6 +473,15 @@
       border: 1.5px solid var(--ink-200);
       border-radius: var(--radius-lg);
       padding: 32px;
+      scroll-margin-top: 120px;
+    }
+    #precalificar:target {
+      animation: form-pulse 1.6s ease-out 1;
+    }
+    @keyframes form-pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.0); border-color: var(--ink-200); }
+      30%  { box-shadow: 0 0 0 12px rgba(46, 125, 50, 0.18); border-color: var(--brand-green); }
+      100% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); border-color: var(--ink-200); }
     }
     .revelation__form h3 { margin-bottom: 4px; font-size: 20px; }
     .form__microcopy {
@@ -1434,7 +1443,7 @@
             <p>Si tiene un terreno urbano o periurbano, ha visto las mismas dos opciones una y otra vez: venderlo de golpe, casi siempre por debajo de lo que vale, o conservarlo pagando predial mientras algo llega.</p>
             <p>Hay una <strong>tercera vía que pocos le explican</strong>: aportarlo a un desarrollo, conservar participación y cobrar en metros construidos. La revisión inicial es sin costo y no lo compromete a aportarlo.</p>
           </div>
-          <aside class="revelation__form" aria-label="Formulario de precalificación de terreno">
+          <aside class="revelation__form" id="precalificar" aria-label="Formulario de precalificación de terreno">
             <h3>Cuéntenos sobre su terreno</h3>
             <p class="form__microcopy">3 minutos · sin costo · sin compromiso</p>
             <form action="https://formspree.io/f/REPLACE_WITH_FORM_ID" method="POST" novalidate>
@@ -1477,7 +1486,7 @@
     <!-- ============================================================
          BLOQUE 8 · OBJECIONES
          ============================================================ -->
-    <section class="section" id="precalificar" aria-labelledby="faq-title">
+    <section class="section" id="faq" aria-labelledby="faq-title">
       <div class="container">
         <header class="section-header">
           <h2 id="faq-title">Lo que todos preguntan antes de dar el primer paso.</h2>

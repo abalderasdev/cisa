@@ -47,9 +47,11 @@
   trigger.setAttribute('type', 'button');
   trigger.innerHTML =
     '<span class="sofia-trigger__inner">' +
-      '<img class="sofia-trigger__avatar" src="' + SOFIA_CONFIG.avatarUrl + '" alt="" width="36" height="36" />' +
+      '<span class="sofia-trigger__avatar-wrap">' +
+        '<img class="sofia-trigger__avatar" src="' + SOFIA_CONFIG.avatarUrl + '" alt="" width="36" height="36" />' +
+        '<span class="sofia-trigger__dot" aria-hidden="true"></span>' +
+      '</span>' +
       '<span class="sofia-trigger__label">Hablar con Sofía</span>' +
-      '<span class="sofia-trigger__dot" aria-hidden="true"></span>' +
     '</span>';
   document.body.appendChild(trigger);
 

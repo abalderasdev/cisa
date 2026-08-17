@@ -711,6 +711,70 @@
       text-align: center;
     }
 
+    /* Visual del agente — video de Sofía (reemplaza chat estático) */
+    .agent__visual--video {
+      max-width: 360px;
+      padding: 16px;
+    }
+    .agent__video-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 9 / 16;
+      max-height: 480px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--ink-900);
+    }
+    .agent__video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .agent__video-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 16px;
+      background: linear-gradient(to top, rgba(15,20,25,0.85) 0%, rgba(15,20,25,0.35) 35%, transparent 60%);
+      color: #FFFFFF;
+      pointer-events: none;
+    }
+    .agent__video-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      align-self: flex-start;
+      padding: 5px 10px;
+      background: rgba(15,20,25,0.55);
+      backdrop-filter: blur(6px);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    .agent__video-tag .agent__status-dot {
+      background: #8BC34A;
+      box-shadow: 0 0 0 2px rgba(139, 195, 74, 0.3);
+      animation: agent-pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes agent-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.85); }
+    }
+    .agent__video-name {
+      font: 800 22px/1.1 Manrope, system-ui, sans-serif;
+      margin-bottom: 2px;
+    }
+    .agent__video-role {
+      font-size: 13px;
+      opacity: 0.85;
+    }
+
     /* ================================================================
        BLOQUE 7 · Equipo
        ================================================================ */
@@ -928,7 +992,7 @@
               Grupo CISA convierte terrenos con potencial en desarrollos rentables. Diseñamos, gestionamos, construimos y comercializamos. Y compartimos el resultado con quien aporta el predio o el capital.
             </p>
             <div class="hero__ctas">
-              <a href="#precalificar" class="btn btn--primary btn--lg">Precalificar mi terreno</a>
+              <a href="su-terreno.html#precalificar" class="btn btn--primary btn--lg">Precalificar mi terreno</a>
               <a href="#modalidades" class="btn btn--secondary--green btn--lg">Conocer la empresa ↓</a>
             </div>
 
@@ -1069,7 +1133,7 @@
               </div>
               <h3>Aportación de terreno</h3>
               <p>Si tiene un terreno urbano o periurbano, lo desarrollamos bajo una figura jurídica con reglas escritas. Usted conserva participación en el proyecto.</p>
-              <a href="#precalificar" class="mod__cta">Empezar por mi terreno <span class="mod__cta-arrow">→</span></a>
+              <a href="su-terreno.html#precalificar" class="mod__cta">Empezar por mi terreno <span class="mod__cta-arrow">→</span></a>
             </div>
           </article>
 
@@ -1115,7 +1179,7 @@
     <!-- ============================================================
          BLOQUE 3 · LA GRAN REVELACIÓN + FORMULARIO
          ============================================================ -->
-    <section class="section" id="precalificar" aria-labelledby="revelation-title">
+    <section class="section" id="revelacion" aria-labelledby="revelation-title">
       <div class="container">
         <div class="revelation">
           <div class="revelation__copy">
@@ -1376,33 +1440,27 @@
             </div>
           </div>
 
-          <div class="agent__visual" aria-hidden="true">
-            <div class="agent__visual-head">
-              <div class="agent__avatar">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
-                </svg>
-              </div>
-              <div>
-                <div class="agent__visual-name">Asistente CISA</div>
-                <div class="agent__visual-status">
-                  <span class="agent__status-dot"></span>
-                  Disponible · responde en segundos
+          <div class="agent__visual agent__visual--video">
+            <div class="agent__video-frame">
+              <video
+                class="agent__video"
+                src="assets/sofia-intro.mp4"
+                poster="assets/sofia-avatar.jpg"
+                autoplay
+                loop
+                muted
+                playsinline
+                aria-label="Sofía, asistente virtual de Grupo CISA, se presenta"></video>
+              <div class="agent__video-overlay">
+                <div class="agent__video-tag">
+                  <span class="agent__status-dot" aria-hidden="true"></span>
+                  <span>En vivo · responde en segundos</span>
                 </div>
+                <div class="agent__video-name">Sofía</div>
+                <div class="agent__video-role">Asistente virtual de Grupo CISA</div>
               </div>
             </div>
-            <div class="agent__msg agent__msg--in">Hola, soy el asistente de Grupo CISA. ¿En qué le ayudo? Tengo información sobre terrenos, desarrollos e inversión.</div>
-            <div class="agent__msg agent__msg--out">Tengo un terreno en Jilotzingo, ¿qué opciones tengo?</div>
-            <div class="agent__msg agent__msg--in">Entendido. Para revisar si su terreno aplica, necesito municipio, superficie aproximada y si conoce el uso de suelo. ¿Empezamos?</div>
-            <div class="agent__input">
-              <span>Escriba su mensaje…</span>
-              <button type="button" aria-label="Enviar mensaje">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                </svg>
-              </button>
-            </div>
-            <div class="agent__powered">Desarrollado por ABDev · Powered by ElevenLabs</div>
+            <div class="agent__powered">Desarrollado por ABDev · Video por ElevenLabs</div>
           </div>
         </div>
       </div>
@@ -1502,7 +1560,7 @@
         <div class="closing__grid">
           <div class="closing__col">
             <h4>Si tiene un terreno</h4>
-            <a href="#precalificar" class="btn btn--primary-dark btn--lg">Precalificar mi terreno</a>
+            <a href="su-terreno.html#precalificar" class="btn btn--primary-dark btn--lg">Precalificar mi terreno</a>
           </div>
           <div class="closing__col">
             <h4>Si prefiere atención humana</h4>
