@@ -1,25 +1,19 @@
 /* ================================================================
-   SOFIA WIDGET · Grupo CISA · Three-state FAB
-   v2.0 · ABDev · Alberto Balderas
-   Spec: agente-sofia/integration-spec.md
+   SOFIA WIDGET · Grupo CISA · Modal-based trigger
+   v1.2 · ABDev · Alberto Balderas
 
    Behaviors implemented:
-   - FAB: round button (72px desktop, 60px mobile) bottom-left.
-   - Idle state: <video> inside the FAB loops the writing clip
-     (sofia-writing-loop.mp4) muted, autoplay, playsinline.
-   - Hover state: on mouseenter, swap the <video> src to the greeting
-     clip (sofia-greeting.mp4) and play it once. On mouseleave, after
-     800ms, return to the writing loop.
-   - Touch: a single tap on mobile fires the hover so the greeting
-     plays; a second tap (or any tap after the first idle beat) fires
-     the click.
-   - Click state: when ElevenLabs agent_id is configured, load the
-     official convai embed and let it open inline (the script attaches
-     its own UI). When it is not configured yet, open WhatsApp as the
-     fallback channel.
-   - Pulse ring around the FAB draws attention without being annoying.
-   - Excluded on /contacto, /precalificar, /gracias, /aviso-de-privacidad
-     (per spec section 4). CSS is also auto-injected.
+   - Floating button (bottom-right) opens modal
+   - Modal shows intro video on open (sofia-intro.mp4, autoplay loop muted)
+   - Two CTAs in modal: "Hablar con Sofía" (primary, ElevenLabs when
+     configured, disabled otherwise) + WhatsApp link (always available).
+   - Fallback if ElevenLabs is unavailable after 5s: show WhatsApp CTA.
+   - Closes on Esc, on backdrop click, on close button.
+   - Pauses video when modal closes.
+   - Hides on excluded pages (contacto, gracias, aviso-de-privacidad,
+     precalificar) per spec section 4.
+   - When the visitor scrolls into the #agente section, the button
+     fades out and becomes non-interactive (Sofia is already on screen).
    ================================================================ */
 (function () {
   'use strict';
@@ -40,13 +34,11 @@
   // === Config ===
   var SOFIA_CONFIG = {
     agentId:        'REPLACE_WITH_AGENT_ID', // from ElevenLabs dashboard
+    avatarUrl:      'assets/sofia-avatar.jpg',
+    introVideoUrl:  'assets/sofia-intro.mp4',
     whatsappNumber: '525517964940',
     fallbackMessage:'Hola, necesito información sobre Grupo CISA.',
-    writingVideo:   'assets/sofia-writing-loop.mp4',
-    greetingVideo:  'assets/sofia-greeting.mp4',
-    poster:         'assets/sofia-avatar.jpg',
-    // ms to wait after mouseleave before swapping back to writing loop
-    returnToIdleMs: 800
+    fallbackTimeoutMs: 5000
   };
 
   // === Inject CSS if not already ===
@@ -57,189 +49,165 @@
     document.head.appendChild(link);
   }
 
-  // === Build the FAB ===
-  var fab = document.createElement('button');
-  fab.className = 'sofia-fab';
-  fab.setAttribute('type', 'button');
-  fab.setAttribute('aria-label', 'Hablar con Sofía, asistente virtual de Grupo CISA');
-
-  // Inner structure: pulse ring > video > online dot
-  fab.innerHTML =
-    '<span class="sofia-fab__ring" aria-hidden="true"></span>' +
-    '<span class="sofia-fab__inner">' +
-      '<video class="sofia-fab__video" autoplay loop muted playsinline ' +
-             'preload="auto" poster="' + SOFIA_CONFIG.poster + '" ' +
-             'aria-hidden="true">' +
-        '<source src="' + SOFIA_CONFIG.writingVideo + '" type="video/mp4">' +
-      '</video>' +
+  // === Build the trigger button (horizontal pill, text + dot) ===
+  var trigger = document.createElement('button');
+  trigger.className = 'sofia-trigger';
+  trigger.setAttribute('type', 'button');
+  trigger.setAttribute('aria-label', 'Hablar con Sofía, asistente virtual de Grupo CISA');
+  trigger.innerHTML =
+    '<span class="sofia-trigger__avatar-wrap">' +
+      '<img class="sofia-trigger__avatar" src="' + SOFIA_CONFIG.avatarUrl + '" alt="" width="36" height="36" />' +
+      '<span class="sofia-trigger__dot" aria-hidden="true"></span>' +
     '</span>' +
-    '<span class="sofia-fab__dot" aria-hidden="true"></span>';
-  document.body.appendChild(fab);
+    '<span class="sofia-trigger__label">Hablar con Sofía</span>';
+  document.body.appendChild(trigger);
 
-  var video = fab.querySelector('.sofia-fab__video');
-  var inGreeting = false;
-  var returnTimer = null;
-  var conversationStarted = false;
+  // === Build the modal ===
+  var modal = document.createElement('div');
+  modal.className = 'sofia-modal';
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-modal', 'true');
+  modal.setAttribute('aria-labelledby', 'sofia-modal-title');
+  modal.setAttribute('aria-describedby', 'sofia-modal-status');
+  modal.setAttribute('data-open', 'false');
+  modal.setAttribute('hidden', '');
+  modal.innerHTML =
+    '<div class="sofia-modal__panel">' +
+      '<div class="sofia-modal__header">' +
+        '<div>' +
+          '<h2 class="sofia-modal__title" id="sofia-modal-title">Hola, soy Sofía</h2>' +
+          '<p class="sofia-modal__subtitle">Asistente virtual de Grupo CISA</p>' +
+        '</div>' +
+        '<button class="sofia-modal__close" type="button" aria-label="Cerrar">×</button>' +
+      '</div>' +
+      '<div class="sofia-modal__body">' +
+        '<video class="sofia-modal__video" id="sofia-modal-video" ' +
+               'src="' + SOFIA_CONFIG.introVideoUrl + '" ' +
+               'poster="' + SOFIA_CONFIG.avatarUrl + '" ' +
+               'autoplay loop muted playsinline></video>' +
+        '<p class="sofia-modal__status" id="sofia-modal-status">Conectando con Sofía…</p>' +
+        '<div class="sofia-modal__actions">' +
+          '<button class="sofia-modal__cta" type="button" id="sofia-modal-talk" disabled>' +
+            'Hablar con Sofía' +
+          '</button>' +
+          '<a class="sofia-modal__cta sofia-modal__cta--secondary" ' +
+             'href="https://wa.me/' + SOFIA_CONFIG.whatsappNumber + '?text=' +
+             encodeURIComponent(SOFIA_CONFIG.fallbackMessage) + '" ' +
+             'target="_blank" rel="noopener noreferrer">' +
+            'Escríbenos por WhatsApp' +
+          '</a>' +
+        '</div>' +
+        '<p class="sofia-modal__note">Respondemos en menos de 48 horas hábiles.</p>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(modal);
 
-  function playWriting() {
-    if (video.src && video.src.indexOf(SOFIA_CONFIG.writingVideo) !== -1) {
-      var p = video.play();
-      if (p && p.catch) p.catch(function () {});
-      return;
-    }
-    video.loop = true;
-    video.src = SOFIA_CONFIG.writingVideo;
-    var p = video.play();
-    if (p && p.catch) p.catch(function () {});
-  }
+  // === Element references ===
+  var video     = modal.querySelector('#sofia-modal-video');
+  var status    = modal.querySelector('#sofia-modal-status');
+  var talkBtn   = modal.querySelector('#sofia-modal-talk');
+  var closeBtn  = modal.querySelector('.sofia-modal__close');
+  var fallbackTimer = null;
+  var opened = false;
+  var elevenLabsReady = false;
 
-  function playGreeting() {
-    if (video.src && video.src.indexOf(SOFIA_CONFIG.greetingVideo) !== -1) {
+  // === Open / close ===
+  function openModal() {
+    if (opened) return;
+    opened = true;
+    modal.removeAttribute('hidden');
+    requestAnimationFrame(function () {
+      modal.setAttribute('data-open', 'true');
+    });
+    if (video && video.play) {
       video.currentTime = 0;
-      var p = video.play();
-      if (p && p.catch) p.catch(function () {});
-      return;
+      var pp = video.play();
+      if (pp && pp.catch) pp.catch(function () {});
     }
-    video.loop = false;
-    video.src = SOFIA_CONFIG.greetingVideo;
-    var p = video.play();
-    if (p && p.catch) p.catch(function () {});
-  }
-
-  // === Hover behavior (mouse) ===
-  fab.addEventListener('mouseenter', function () {
-    if (returnTimer) { clearTimeout(returnTimer); returnTimer = null; }
-    if (inGreeting) return;
-    inGreeting = true;
-    playGreeting();
-  });
-
-  fab.addEventListener('mouseleave', function () {
-    if (!inGreeting) return;
-    inGreeting = false;
-    returnTimer = setTimeout(function () {
-      returnTimer = null;
-      if (inGreeting) return; // user hovered again during the wait
-      playWriting();
-    }, SOFIA_CONFIG.returnToIdleMs);
-  });
-
-  // === Touch behavior (mobile single-tap = hover; double-tap = click) ===
-  var lastTap = 0;
-  fab.addEventListener('touchstart', function (e) {
-    var now = Date.now();
-    if (now - lastTap < 350) {
-      // Double tap: treat as click
-      e.preventDefault();
-      fab.click();
-      lastTap = 0;
-    } else {
-      // Single tap: trigger greeting
-      if (returnTimer) { clearTimeout(returnTimer); returnTimer = null; }
-      if (!inGreeting) {
-        inGreeting = true;
-        playGreeting();
+    fallbackTimer = setTimeout(function () {
+      if (!elevenLabsReady) {
+        status.textContent = 'En este momento no podemos conectar. Te dejamos WhatsApp.';
+        status.classList.remove('sofia-modal__status--ready');
+        talkBtn.disabled = true;
+        talkBtn.textContent = 'No disponible ahora';
       }
-      lastTap = now;
-      // After a moment without a second tap, return to writing loop
-      setTimeout(function () {
-        if (lastTap === now && inGreeting) {
-          inGreeting = false;
-          playWriting();
-        }
-      }, 1500);
-    }
-  }, { passive: true });
-
-  // === Click behavior ===
-  fab.addEventListener('click', function (e) {
-    // Avoid double-firing on touch devices (touchstart already handled double-tap)
-    if (e && e.sourceCapabilities && e.sourceCapabilities.firesTouchEvents && lastTap && Date.now() - lastTap < 500) {
-      return;
-    }
-    if (conversationStarted) return;
-    conversationStarted = true;
-    fab.classList.add('sofia-fab--loading');
-
-    // Analytics
+    }, SOFIA_CONFIG.fallbackTimeoutMs);
+    window.addEventListener('sofia_widget_loaded', onSofiaReady, { once: true });
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
-      event: 'sofia_fab_clicked',
+      event: 'sofia_widget_opened',
       page_path: window.location.pathname,
-      has_agent_id: !!SOFIA_CONFIG.agentId && SOFIA_CONFIG.agentId !== 'REPLACE_WITH_AGENT_ID'
+      source: 'click'
     });
-
-    var hasRealAgent = SOFIA_CONFIG.agentId && SOFIA_CONFIG.agentId !== 'REPLACE_WITH_AGENT_ID';
-
-    if (hasRealAgent) {
-      // Load the official ElevenLabs convai embed; it attaches its own
-      // UI to the body. We mark the FAB as active so it can be re-opened
-      // if the visitor closes the agent panel.
-      var s = document.createElement('script');
-      s.src = 'https://elevenlabs.io/convai/embed.js?agent_id=' + encodeURIComponent(SOFIA_CONFIG.agentId);
-      s.async = true;
-      s.id = 'elevenlabs-convai';
-      s.addEventListener('load', function () {
-        fab.classList.remove('sofia-fab--loading');
-        fab.classList.add('sofia-fab--active');
-        window.dispatchEvent(new Event('sofia_el_loaded'));
-        window.dataLayer.push({ event: 'sofia_el_loaded' });
-      });
-      s.addEventListener('error', function () {
-        fab.classList.remove('sofia-fab--loading');
-        window.dataLayer.push({ event: 'sofia_el_load_error' });
-        openWhatsAppFallback();
-      });
-      document.body.appendChild(s);
-
-      // Safety fallback: if ElevenLabs script doesn't fire any event in
-      // 8s, treat as unavailable and open WhatsApp.
-      setTimeout(function () {
-        if (!fab.classList.contains('sofia-fab--active')) {
-          fab.classList.remove('sofia-fab--loading');
-          openWhatsAppFallback();
-        }
-      }, 8000);
-    } else {
-      // No agent_id yet -> WhatsApp fallback.
-      openWhatsAppFallback();
-    }
-  });
-
-  function openWhatsAppFallback() {
-    var url = 'https://wa.me/' + SOFIA_CONFIG.whatsappNumber +
-              '?text=' + encodeURIComponent(SOFIA_CONFIG.fallbackMessage);
-    window.open(url, '_blank', 'noopener,noreferrer');
-    fab.classList.remove('sofia-fab--loading');
-    fab.classList.add('sofia-fab--active');
-    window.dataLayer.push({ event: 'sofia_whatsapp_fallback_opened' });
   }
 
-  // === Visibility / lifecycle ===
-  document.addEventListener('visibilitychange', function () {
-    if (document.hidden) {
-      video.pause();
-    } else {
-      var p = video.play();
-      if (p && p.catch) p.catch(function () {});
+  function closeModal() {
+    modal.setAttribute('data-open', 'false');
+    setTimeout(function () {
+      modal.setAttribute('hidden', '');
+    }, 220);
+    if (video && video.pause) video.pause();
+    if (fallbackTimer) {
+      clearTimeout(fallbackTimer);
+      fallbackTimer = null;
     }
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: 'sofia_widget_closed' });
+  }
+
+  function onSofiaReady() {
+    elevenLabsReady = true;
+    if (fallbackTimer) {
+      clearTimeout(fallbackTimer);
+      fallbackTimer = null;
+    }
+    if (video && video.pause) video.pause();
+    status.textContent = 'Lista para escucharte.';
+    status.classList.add('sofia-modal__status--ready');
+    talkBtn.disabled = false;
+    talkBtn.textContent = 'Iniciar conversación';
+  }
+
+  // === Wire events ===
+  trigger.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', function (e) {
+    if (e.target === modal) closeModal();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && opened) closeModal();
+  });
+  talkBtn.addEventListener('click', function () {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: 'sofia_conversation_started' });
+    // For now (placeholder agent_id), show a note.
+    status.textContent = 'En producción: aquí se conecta ElevenLabs con agent_id ' + SOFIA_CONFIG.agentId;
   });
 
-  // Preload the greeting clip after idle so the hover swap is instant
-  setTimeout(function () {
-    var preload = new Image();
-    preload.src = SOFIA_CONFIG.greetingVideo;
-  }, 4000);
+  // === Load ElevenLabs script (no-op until agent_id is real) ===
+  if (SOFIA_CONFIG.agentId && SOFIA_CONFIG.agentId !== 'REPLACE_WITH_AGENT_ID') {
+    var s = document.createElement('script');
+    s.src = 'https://elevenlabs.io/convai/embed.js?agent_id=' + encodeURIComponent(SOFIA_CONFIG.agentId);
+    s.async = true;
+    s.id = 'elevenlabs-convai';
+    s.addEventListener('load', function () {
+      window.dispatchEvent(new Event('sofia_widget_loaded'));
+    });
+    s.addEventListener('error', function () {
+      window.dispatchEvent(new Event('sofia_error'));
+    });
+    document.body.appendChild(s);
+  }
 
-  // === Hide FAB when #agente is in view (Sofia is already there as a hero video) ===
+  // === Hide the trigger when #agente is in view (Sofia already on screen) ===
   var agenteSection = document.getElementById('agente');
   if (agenteSection && 'IntersectionObserver' in window) {
     var observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting && entry.intersectionRatio > 0.15) {
-          fab.classList.add('sofia-fab--hidden');
+          trigger.classList.add('sofia-trigger--hidden');
         } else {
-          fab.classList.remove('sofia-fab--hidden');
+          trigger.classList.remove('sofia-trigger--hidden');
         }
       });
     }, { threshold: [0, 0.15, 0.3, 0.5, 0.8, 1] });
