@@ -58,9 +58,12 @@
 
   function fetchConfig() {
     return fetch('/api/sofia-config', { credentials: 'omit', cache: 'no-cache' })
-      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (r) {
+        if (!r.ok) throw new Error('sofia-config HTTP ' + r.status);
+        return r.json();
+      })
       .then(function (data) {
-        if (!data) return;
+        if (!data) throw new Error('sofia-config empty body');
         if (data.agentId)         SOFIA_CONFIG.agentId = data.agentId;
         if (data.whatsappNumber)  SOFIA_CONFIG.whatsappNumber = data.whatsappNumber;
         if (data.fallbackMessage) SOFIA_CONFIG.fallbackMessage = data.fallbackMessage;
@@ -70,8 +73,32 @@
           'data-sofia-agent',
           data.configured ? 'live' : 'fallback'
         );
+        // Expose the config for the console and for analytics.
+        SOFIA_CONFIG._source = data.source || 'unknown';
+        SOFIA_CONFIG._configured = Boolean(data.configured);
+        if (window.console && console.info) {
+          console.info('[sofia] config loaded from /api/sofia-config', {
+            agentId: SOFIA_CONFIG.agentId,
+            configured: SOFIA_CONFIG._configured,
+            source: SOFIA_CONFIG._source
+          });
+        }
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: 'sofia_config_loaded',
+          agent_configured: SOFIA_CONFIG._configured,
+          agent_id: SOFIA_CONFIG.agentId,
+          source: SOFIA_CONFIG._source
+        });
       })
-      .catch(function () { /* network error: keep defaults */ });
+      .catch(function (err) {
+        if (window.console && console.warn) {
+          console.warn('[sofia] could not load /api/sofia-config, using defaults', err);
+        }
+        document.documentElement.setAttribute('data-sofia-agent', 'fallback');
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ event: 'sofia_config_failed', reason: String(err) });
+      });
   }
 
   function mountWidget() {
