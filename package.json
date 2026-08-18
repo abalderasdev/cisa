@@ -1,0 +1,17 @@
+{
+  "name": "cisa-site",
+  "version": "1.0.0",
+  "description": "Sitio web estático de Grupo CISA con sistema de edición en vivo (impeccable).",
+  "private": true,
+  "scripts": {
+    "dev": "node .impeccable/scripts/live-server.mjs",
+    "impeccable": "node .impeccable/scripts/live-server.mjs",
+    "impeccable:doctor": "node .impeccable/scripts/doctor.mjs",
+    "impeccable:stop": "node .impeccable/scripts/live-server.mjs stop",
+    "impeccable:audit": "node .impeccable/scripts/live-server.mjs --audit"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {}
+}
