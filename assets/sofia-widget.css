@@ -467,3 +467,118 @@ elevenlabs-convai#sofia-elevenlabs-widget {
     animation: none !important;
   }
 }
+
+/* ================================================================
+   IN-SECTION MODE (v1.7)
+   When a [data-sofia-section] button inside #agente is clicked,
+   the widget transforms the section in place: the intro video
+   fades out, an inline voice orb fades in, and the user can talk
+   to Sofia without leaving the section.
+   ================================================================ */
+
+/* In conversation mode, hide the intro video and the section CTA,
+   and show the inline orb + status + stop button. */
+section[data-sofia-conversation="true"] .agent__video {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 280ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+section[data-sofia-conversation="true"] [data-sofia-section] {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: opacity 200ms, transform 200ms;
+}
+section[data-sofia-conversation="true"] [data-sofia-section-status] {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  animation: sofia-fade-in 320ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes sofia-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.sofia-section__status {
+  font: 500 15px/1.4 Manrope, system-ui, sans-serif;
+  color: #5C636A;
+  text-align: center;
+  margin: 0;
+}
+.sofia-section__status--ready { color: #2E7D32; }
+.sofia-section__orb {
+  width: 140px;
+  height: 140px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 8px auto;
+}
+.sofia-section__orb-core {
+  position: relative;
+  z-index: 2;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #1F4D2A;
+  box-shadow: 0 4px 16px rgba(31, 77, 42, 0.32);
+}
+.sofia-section__orb-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 80px;
+  height: 80px;
+  margin: -40px 0 0 -40px;
+  border-radius: 50%;
+  border: 2px solid #1F4D2A;
+  opacity: 0;
+  pointer-events: none;
+}
+.sofia-section__orb[data-voice-state="connecting"] .sofia-section__orb-core {
+  animation: sofia-orb-pulse 1.4s ease-in-out infinite;
+}
+.sofia-section__orb[data-voice-state="connecting"] .sofia-section__orb-ring {
+  animation: sofia-orb-ring 1.4s ease-out infinite;
+}
+.sofia-section__orb[data-voice-state="listening"] .sofia-section__orb-ring {
+  animation: sofia-orb-ring 1.6s ease-out infinite;
+}
+.sofia-section__orb[data-voice-state="listening"] .sofia-section__orb-ring:nth-child(2) { animation-delay: 0.4s; }
+.sofia-section__orb[data-voice-state="listening"] .sofia-section__orb-ring:nth-child(3) { animation-delay: 0.8s; }
+.sofia-section__orb[data-voice-state="listening"] .sofia-section__orb-core {
+  animation: sofia-orb-pulse 0.9s ease-in-out infinite;
+}
+.sofia-section__orb[data-voice-state="speaking"] .sofia-section__orb-ring {
+  animation: sofia-orb-ring 1.0s ease-out infinite;
+  border-color: #2E7D32;
+}
+.sofia-section__orb[data-voice-state="speaking"] .sofia-section__orb-ring:nth-child(2) { animation-delay: 0.25s; }
+.sofia-section__orb[data-voice-state="speaking"] .sofia-section__orb-ring:nth-child(3) { animation-delay: 0.5s; }
+.sofia-section__orb[data-voice-state="speaking"] .sofia-section__orb-core {
+  background: #2E7D32;
+  animation: sofia-orb-pulse 0.6s ease-in-out infinite;
+}
+.sofia-section__orb[data-voice-state="ended"] .sofia-section__orb-core {
+  background: #5C636A;
+}
+.sofia-section__orb[data-voice-state="ended"] .sofia-section__orb-ring { display: none; }
+.sofia-section__stop {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px;
+  height: 44px;
+  border-radius: 8px;
+  background: #1F4D2A;
+  color: #FFFFFF;
+  border: 0;
+  font: 600 14px/1 Manrope, system-ui, sans-serif;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 150ms;
+}
+.sofia-section__stop:hover { background: #2E7D32; }

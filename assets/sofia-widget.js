@@ -1,31 +1,22 @@
 /* ================================================================
    SOFIA WIDGET · Grupo CISA · Modal-based trigger
-   v1.6 · ABDev · Alberto Balderas
+   v1.7 · ABDev · Alberto Balderas
 
-   v1.6 changes (UX rework):
-   - Modal has two visual states: `intro` (large, with intro video)
-     and `active` (compact pill, with voice-animation orb). When the
-     conversation starts the modal collapses to `active` so the page
-     stays visible behind the conversation. No dark overlay in active.
-   - Intro video plays in loop until the modal is closed, NOT when
-     ElevenLabs finishes loading. This stops the "video cuts at 1s"
-     bug from v1.5.
-   - "Ready" is now reached only when `widget.startConversation` is
-     actually a function on the custom element instance (not just when
-     `customElements.whenDefined` resolves). This stops the
-     "Aún no está lista" false negative on the first click.
-   - The native ElevenLabs FAB is now clipped away with a wrapper
-     `<div>` styled with `clip-path: inset(100%)` so its shadow-DOM
-     button is also clipped (shadow DOM is opaque to outside CSS).
-   - Any element with `[data-sofia-open]` opens the modal without
-     scrolling. The "Hablar con el agente" button in the #agente
-     section was changed from `<a href="#">` to
-     `<button data-sofia-open>` so it no longer jumps to top.
-   - When the conversation ends, the modal returns to the `intro`
-     state with a friendly message (no auto-reopen of a stuck dialog).
-
-   v1.5 change: switched ElevenLabs integration to the official
-   `<elevenlabs-convai>` custom element + unpkg widget-embed script.
+   v1.7 changes:
+   - ElevenLabs widget-embed script is now loaded EAGERLY on page
+     load (not on modal open). The bundle is heavy (React + WebGL +
+     Orb shaders) and the previous 5s fallback timer expired before
+     it finished downloading. Loading eagerly gives it as much time
+     as the user spends reading the page.
+   - Fallback timer raised from 5s → 30s.
+   - New "in-section" mode: a button with [data-sofia-section] in
+     the #agente section transforms the section instead of opening
+     the modal. The intro video fades out, the voice-orb fades in,
+     and the page stays scrolled to the section while the user
+     talks to Sofia. This removes the visual duplication of having
+     the same video playing in both the section and the modal.
+   - Any element with [data-sofia-open] still opens the floating
+     modal (used by the green FAB).
    ================================================================ */
 (function () {
   'use strict';
@@ -50,14 +41,72 @@
     introVideoUrl:    'assets/sofia-intro.mp4',
     whatsappNumber:   '525517964940',
     fallbackMessage:  'Hola, necesito información sobre Grupo CISA.',
-    fallbackTimeoutMs: 5000
+    fallbackTimeoutMs: 30000
   };
 
-  // === Bootstrap: load config from Vercel function, then mount widget ===
+  // === Bootstrap ===
   bootstrap();
 
   function bootstrap() {
-    fetchConfig().then(mountWidget).catch(mountWidget);
+    // Load config first, then mount the widget. The ElevenLabs script
+    // is heavy, so we don't load it immediately — we wait for the user
+    // to scroll near the FAB or near the #agente section. That gives
+    // the script time to download before the user actually clicks,
+    // without penalizing the initial page load.
+    fetchConfig().then(function () {
+      mountWidget();
+      scheduleScriptLoad();
+    }).catch(function () {
+      mountWidget();
+      scheduleScriptLoad();
+    });
+  }
+
+  function scheduleScriptLoad() {
+    if (!SOFIA_CONFIG.agentId || SOFIA_CONFIG.agentId === 'REPLACE_WITH_AGENT_ID') return;
+    if (document.getElementById('elevenlabs-convai-script')) return;
+
+    // Trigger 1: the FAB enters the viewport (user scrolled enough
+    // that they could plausibly click it).
+    var fab = document.querySelector('.sofia-trigger');
+    // Trigger 2: the #agente section enters the viewport.
+    var agenteSection = document.getElementById('agente');
+
+    var triggered = false;
+    function trigger() {
+      if (triggered) return;
+      triggered = true;
+      loadElevenLabsScriptEagerly();
+      // Also disconnect observers
+      if (fab && fab._sofiaObs) fab._sofiaObs.disconnect();
+      if (agenteSection && agenteSection._sofiaObs) agenteSection._sofiaObs.disconnect();
+    }
+
+    if ('IntersectionObserver' in window) {
+      if (fab) {
+        var obs1 = new IntersectionObserver(function (entries) {
+          if (entries.some(function (e) { return e.isIntersecting; })) trigger();
+        }, { threshold: 0.1 });
+        obs1.observe(fab);
+        fab._sofiaObs = obs1;
+      }
+      if (agenteSection) {
+        var obs2 = new IntersectionObserver(function (entries) {
+          if (entries.some(function (e) { return e.isIntersecting; })) trigger();
+        }, { threshold: 0.1 });
+        obs2.observe(agenteSection);
+        agenteSection._sofiaObs = obs2;
+      }
+    } else {
+      // Fallback: just load after a 2s delay.
+      setTimeout(trigger, 2000);
+    }
+
+    // Hard fallback: if the user has not scrolled at all within 8s,
+    // load the script anyway. This handles the case where the page is
+    // short (no scroll possible) or the user immediately clicks the
+    // FAB without scrolling.
+    setTimeout(trigger, 8000);
   }
 
   function fetchConfig() {
@@ -103,8 +152,58 @@
       });
   }
 
+  function loadElevenLabsScriptEagerly() {
+    if (!SOFIA_CONFIG.agentId || SOFIA_CONFIG.agentId === 'REPLACE_WITH_AGENT_ID') return;
+    if (document.getElementById('elevenlabs-convai-script')) return;
+    if (window.console && console.info) {
+      console.info('[sofia] loading elevenlabs script eagerly in background…');
+    }
+    var s = document.createElement('script');
+    s.src = 'https://unpkg.com/@elevenlabs/convai-widget-embed';
+    s.async = true;
+    s.id = 'elevenlabs-convai-script';
+    s.addEventListener('load', function () {
+      if (window.console && console.info) {
+        console.info('[sofia] elevenlabs script loaded (eager)');
+      }
+      // Once the script is loaded, wait for the custom element to be
+      // upgraded, then poll for startConversation to be a real function.
+      waitForStartConversation();
+    });
+    s.addEventListener('error', function () {
+      if (window.console && console.warn) {
+        console.warn('[sofia] elevenlabs script failed to load (eager)');
+      }
+    });
+    document.body.appendChild(s);
+  }
+
+  function waitForStartConversation() {
+    // The custom element is registered when the script runs. We poll
+    // for a real instance method (not just the class being defined).
+    var attempts = 0;
+    var maxAttempts = 200; // ~20s
+    (function poll() {
+      var widget = document.getElementById('sofia-elevenlabs-widget');
+      if (widget && typeof widget.startConversation === 'function') {
+        if (window.console && console.info) {
+          console.info('[sofia] startConversation available (eager load)');
+        }
+        onSofiaReady();
+        return;
+      }
+      if (attempts++ > maxAttempts) {
+        if (window.console && console.warn) {
+          console.warn('[sofia] startConversation never appeared after 20s polling');
+        }
+        return;
+      }
+      setTimeout(poll, 100);
+    })();
+  }
+
   function mountWidget() {
-    // === Inject CSS if not already ===
+    // === Inject CSS ===
     if (!document.querySelector('link[href*="sofia-widget.css"]')) {
       var link = document.createElement('link');
       link.rel = 'stylesheet';
@@ -112,7 +211,7 @@
       document.head.appendChild(link);
     }
 
-    // === Build the trigger button (horizontal pill, text + dot) ===
+    // === Build the FAB trigger (bottom-right) ===
     var trigger = document.createElement('button');
     trigger.className = 'sofia-trigger';
     trigger.setAttribute('type', 'button');
@@ -125,7 +224,7 @@
       '<span class="sofia-trigger__label">Hablar con Sofía</span>';
     document.body.appendChild(trigger);
 
-    // === Build the modal (two states: intro | active) ===
+    // === Build the modal (intro state + active state) ===
     var modal = document.createElement('div');
     modal.className = 'sofia-modal';
     modal.setAttribute('role', 'dialog');
@@ -137,7 +236,6 @@
     modal.setAttribute('hidden', '');
     modal.innerHTML =
       '<div class="sofia-modal__panel">' +
-        // === INTRO state: video + status + CTAs ===
         '<div class="sofia-modal__intro">' +
           '<div class="sofia-modal__header">' +
             '<div class="sofia-modal__id">' +
@@ -171,7 +269,6 @@
             '<p class="sofia-modal__note">Respondemos en menos de 48 horas hábiles.</p>' +
           '</div>' +
         '</div>' +
-        // === ACTIVE state: voice animation orb + end-call control ===
         '<div class="sofia-modal__active" aria-hidden="true">' +
           '<div class="sofia-modal__active-header">' +
             '<img class="sofia-modal__active-avatar" src="' + SOFIA_CONFIG.avatarUrl + '" alt="" width="40" height="40" />' +
@@ -205,15 +302,30 @@
       '</div>';
     document.body.appendChild(modal);
 
-    // === Build a clipped wrapper for the ElevenLabs custom element ===
-    // Shadow DOM is opaque to outside CSS, so we have to clip the
-    // host element visually. `clip-path: inset(100%)` removes the
-    // element from rendering while keeping it functional, and
-    // `clip-path` is honored across the shadow boundary.
+    // === Build the clipped host for the ElevenLabs custom element ===
+    // Shadow DOM is opaque to outside CSS. We host the widget inside
+    // a wrapper that uses `clip-path: inset(100%)` so the native FAB
+    // never paints. The custom element stays functional — its methods
+    // are reachable from the outside.
     var widgetHost = document.createElement('div');
     widgetHost.id = 'sofia-widget-host';
     widgetHost.setAttribute('aria-hidden', 'true');
     document.body.appendChild(widgetHost);
+
+    // Inject the custom element into the host (only when we have a
+    // real agent id).
+    var widget = null;
+    if (SOFIA_CONFIG.agentId && SOFIA_CONFIG.agentId !== 'REPLACE_WITH_AGENT_ID') {
+      widget = document.createElement('elevenlabs-convai');
+      widget.id = 'sofia-elevenlabs-widget';
+      widget.setAttribute('agent-id', SOFIA_CONFIG.agentId);
+      widget.setAttribute('avatar-image-url', new URL(SOFIA_CONFIG.avatarUrl, window.location.href).href);
+      widget.setAttribute('action-text', 'Hablar con Sofía');
+      widget.setAttribute('start-call-text', 'Iniciar conversación');
+      widget.setAttribute('end-call-text', 'Terminar');
+      widget.setAttribute('dismissible', 'true');
+      widgetHost.appendChild(widget);
+    }
 
     // === Element references ===
     var introBlock  = modal.querySelector('.sofia-modal__intro');
@@ -225,15 +337,10 @@
     var orb         = modal.querySelector('.sofia-modal__orb');
     var introClose  = modal.querySelector('.sofia-modal__intro [data-sofia-close]');
     var endBtn      = modal.querySelector('[data-sofia-end]');
-    var muteBtn     = modal.querySelector('[data-sofia-mute]');
     var fallbackTimer = null;
     var opened = false;
     var elevenLabsReady = false;
-    var elevenLabsScriptLoading = false;
-    var widget = null;       // <elevenlabs-convai>
-    var session = null;     // active conversation
 
-    // === Set state ===
     function setState(next) {
       if (next === 'active') {
         modal.setAttribute('data-state', 'active');
@@ -247,9 +354,8 @@
     }
 
     function setVoiceState(voiceNext) {
-      if (voiceState) voiceState.setAttribute('data-voice-state', voiceNext);
-      if (orb) orb.setAttribute('data-voice-state', voiceNext);
       if (voiceState) {
+        voiceState.setAttribute('data-voice-state', voiceNext);
         var labels = {
           connecting: 'Conectando…',
           listening:  'Te escucha',
@@ -262,9 +368,84 @@
       }
     }
 
-    // === Open / close ===
+    // === Section mode: transform the #agente section in place ===
+    function startInSection(sectionEl) {
+      if (!sectionEl) return;
+      if (window.console && console.info) {
+        console.info('[sofia] in-section mode starting');
+      }
+      // If the script is not yet loading, load it now.
+      if (!document.getElementById('elevenlabs-convai-script')) {
+        loadElevenLabsScriptEagerly();
+      }
+      // Mark section as in conversation mode
+      sectionEl.setAttribute('data-sofia-conversation', 'true');
+      // Pause the section video if present
+      var sectionVideo = sectionEl.querySelector('video');
+      if (sectionVideo && sectionVideo.pause) {
+        try { sectionVideo.pause(); } catch (_) {}
+        sectionVideo.setAttribute('data-sofia-was-autoplay', '1');
+      }
+      // Hide the section CTA while we are in the conversation
+      var sectionCta = sectionEl.querySelector('[data-sofia-section]');
+      if (sectionCta) sectionCta.setAttribute('data-sofia-hidden', 'true');
+      // Show the in-section status block if present
+      var statusBlock = sectionEl.querySelector('[data-sofia-section-status]');
+      if (statusBlock) statusBlock.removeAttribute('hidden');
+      // Update section status to ready/connecting
+      var sectionStatus = sectionEl.querySelector('.sofia-section__status');
+      if (sectionStatus) sectionStatus.textContent = 'Conectando…';
+      // Try to start the conversation
+      setVoiceState('connecting');
+      if (widget && typeof widget.startConversation === 'function') {
+        try {
+          widget.startConversation();
+          if (window.console && console.info) {
+            console.info('[sofia] widget.startConversation() called (in-section)');
+          }
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({ event: 'sofia_in_section_started' });
+        } catch (err) {
+          if (window.console && console.warn) {
+            console.warn('[sofia] startConversation (in-section) failed', err);
+          }
+          if (sectionStatus) {
+            sectionStatus.textContent = 'No se pudo conectar. Te dejamos WhatsApp.';
+          }
+          stopInSection(sectionEl);
+        }
+      } else {
+        if (sectionStatus) {
+          sectionStatus.textContent = 'Aún no está lista. Espera un momento o usa WhatsApp.';
+        }
+        if (window.console && console.warn) {
+          console.warn('[sofia] widget not ready when in-section triggered');
+        }
+      }
+    }
+
+    function stopInSection(sectionEl) {
+      if (!sectionEl) return;
+      sectionEl.removeAttribute('data-sofia-conversation');
+      var sectionVideo = sectionEl.querySelector('video');
+      if (sectionVideo && sectionVideo.play && sectionVideo.getAttribute('data-sofia-was-autoplay') === '1') {
+        try { sectionVideo.play(); } catch (_) {}
+        sectionVideo.removeAttribute('data-sofia-was-autoplay');
+      }
+      var sectionCta = sectionEl.querySelector('[data-sofia-section]');
+      if (sectionCta) sectionCta.removeAttribute('data-sofia-hidden');
+      var statusBlock = sectionEl.querySelector('[data-sofia-section-status]');
+      if (statusBlock) statusBlock.setAttribute('hidden', '');
+    }
+
+    // === Open / close modal ===
     function openModal() {
       if (opened) return;
+      // If the script is not yet loading (user clicked before the
+      // IntersectionObserver fired), load it now.
+      if (!document.getElementById('elevenlabs-convai-script')) {
+        loadElevenLabsScriptEagerly();
+      }
       opened = true;
       modal.removeAttribute('hidden');
       requestAnimationFrame(function () {
@@ -280,7 +461,6 @@
       if (!elevenLabsReady) {
         startFallbackTimer();
       }
-      ensureElevenLabsLoaded();
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({
         event: 'sofia_widget_opened',
@@ -291,17 +471,9 @@
     }
 
     function closeModal() {
-      // If a conversation is active, end it first.
-      if (session && typeof session.endSession === 'function') {
-        try { session.endSession(); } catch (_) {}
-        session = null;
-      }
       modal.setAttribute('data-open', 'false');
       setState('intro');
-      setTimeout(function () {
-        modal.setAttribute('hidden', '');
-      }, 240);
-      // Pause intro video only when the modal is fully closed.
+      setTimeout(function () { modal.setAttribute('hidden', ''); }, 240);
       if (video && video.pause) {
         try { video.pause(); } catch (_) {}
       }
@@ -320,30 +492,25 @@
         clearTimeout(fallbackTimer);
         fallbackTimer = null;
       }
-      // DO NOT pause the intro video here. v1.5 paused it when the
-      // script finished loading, which cut playback at ~1s. The video
-      // now plays uninterrupted until the modal closes.
       status.textContent = 'Lista para escucharte.';
       status.classList.add('sofia-modal__status--ready');
       talkBtn.disabled = false;
       talkBtn.querySelector('.sofia-modal__cta-text').textContent = 'Iniciar conversación';
+      // Update any in-section status too
+      var sectionStatus = document.querySelector('#agente .sofia-section__status');
+      if (sectionStatus) {
+        sectionStatus.textContent = 'Lista para escucharte. Click para hablar.';
+        sectionStatus.classList.add('sofia-section__status--ready');
+      }
     }
 
     // === Wire events ===
     trigger.addEventListener('click', openModal);
     introClose.addEventListener('click', closeModal);
     endBtn.addEventListener('click', function () {
-      if (session && typeof session.endSession === 'function') {
-        try { session.endSession(); } catch (_) {}
+      if (widget && typeof widget.endConversation === 'function') {
+        try { widget.endConversation(); } catch (_) {}
       }
-    });
-    muteBtn.addEventListener('click', function () {
-      if (!session) return;
-      // The ElevenLabs SDK exposes a muted property on the
-      // microphone track; toggling is a UX nicety, not a hard req.
-      var nextMuted = muteBtn.getAttribute('data-muted') !== 'true';
-      muteBtn.setAttribute('data-muted', String(nextMuted));
-      setVoiceState(nextMuted ? 'muted' : 'listening');
     });
     modal.addEventListener('click', function (e) {
       if (e.target === modal && modal.getAttribute('data-state') === 'intro') closeModal();
@@ -352,12 +519,32 @@
       if (e.key === 'Escape' && opened) closeModal();
     });
 
-    // Any element with [data-sofia-open] opens the modal without scrolling.
+    // Click delegation: any [data-sofia-open] opens the modal,
+    // any [data-sofia-section] transforms its enclosing section.
     document.addEventListener('click', function (e) {
       var opener = e.target.closest('[data-sofia-open]');
-      if (!opener) return;
-      e.preventDefault();
-      openModal();
+      if (opener) {
+        e.preventDefault();
+        openModal();
+        return;
+      }
+      var sectionOpener = e.target.closest('[data-sofia-section]');
+      if (sectionOpener) {
+        e.preventDefault();
+        var section = sectionOpener.closest('section') || document.getElementById('agente');
+        startInSection(section);
+        return;
+      }
+      var sectionStopper = e.target.closest('[data-sofia-section-stop]');
+      if (sectionStopper) {
+        e.preventDefault();
+        var section2 = sectionStopper.closest('section') || document.getElementById('agente');
+        stopInSection(section2);
+        if (widget && typeof widget.endConversation === 'function') {
+          try { widget.endConversation(); } catch (_) {}
+        }
+        return;
+      }
     });
 
     // === Talk button: collapse modal and start conversation ===
@@ -365,7 +552,7 @@
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({ event: 'sofia_conversation_start_clicked' });
       if (SOFIA_CONFIG.agentId === 'REPLACE_WITH_AGENT_ID') {
-        status.textContent = 'En producción: aquí se conecta ElevenLabs con agent_id configurado vía Vercel env var SOFIA_AGENT_ID.';
+        status.textContent = 'En producción: agent_id configurado vía Vercel env var SOFIA_AGENT_ID.';
         return;
       }
       if (!widget || typeof widget.startConversation !== 'function') {
@@ -380,12 +567,9 @@
       try {
         widget.startConversation();
         if (window.console && console.info) {
-          console.info('[sofia] widget.startConversation() called');
+          console.info('[sofia] widget.startConversation() called (modal)');
         }
         window.dataLayer.push({ event: 'sofia_conversation_started' });
-        // Move the modal to the compact `active` state. The page stays
-        // visible behind it; the dark overlay is removed in CSS for
-        // data-state="active".
         setState('active');
       } catch (err) {
         if (window.console && console.warn) {
@@ -397,33 +581,8 @@
       }
     });
 
-    // === Load ElevenLabs script + custom element on first open ===
-    function ensureElevenLabsLoaded() {
-      if (elevenLabsScriptLoading) return;
-      if (elevenLabsReady) return;
-      if (!SOFIA_CONFIG.agentId || SOFIA_CONFIG.agentId === 'REPLACE_WITH_AGENT_ID') {
-        status.textContent = 'Aún no configurado. Escríbenos por WhatsApp.';
-        talkBtn.disabled = true;
-        talkBtn.querySelector('.sofia-modal__cta-text').textContent = 'No disponible aún';
-        return;
-      }
-      elevenLabsScriptLoading = true;
-
-      // === Inject the custom element into the clipped host ===
-      widget = widgetHost.querySelector('elevenlabs-convai');
-      if (!widget) {
-        widget = document.createElement('elevenlabs-convai');
-        widget.id = 'sofia-elevenlabs-widget';
-        widget.setAttribute('agent-id', SOFIA_CONFIG.agentId);
-        widget.setAttribute('avatar-image-url', new URL(SOFIA_CONFIG.avatarUrl, window.location.href).href);
-        widget.setAttribute('action-text', 'Hablar con Sofía');
-        widget.setAttribute('start-call-text', 'Iniciar conversación');
-        widget.setAttribute('end-call-text', 'Terminar');
-        widget.setAttribute('dismissible', 'true');
-        widgetHost.appendChild(widget);
-      }
-
-      // === Register event listeners BEFORE loading the script ===
+    // === Wire conversation events on the custom element ===
+    if (widget) {
       widget.addEventListener('conversationStarted', function () {
         if (window.console && console.info) {
           console.info('[sofia] conversation started with ElevenLabs');
@@ -431,6 +590,9 @@
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({ event: 'sofia_elevenlabs_conversation_started' });
         setVoiceState('listening');
+        // Also reflect in section status
+        var sectionStatus = document.querySelector('#agente .sofia-section__status');
+        if (sectionStatus) sectionStatus.textContent = 'Te escucha. Habla con Sofía.';
       });
       widget.addEventListener('conversationEnded', function () {
         if (window.console && console.info) {
@@ -439,61 +601,20 @@
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({ event: 'sofia_elevenlabs_conversation_ended' });
         setVoiceState('ended');
-        // Return to the intro state with a friendly message.
-        setState('intro');
-        status.textContent = 'Conversación terminada. ¿Quieres intentarlo de nuevo o prefieres WhatsApp?';
-        status.classList.remove('sofia-modal__status--ready');
-        talkBtn.disabled = false;
-        talkBtn.querySelector('.sofia-modal__cta-text').textContent = 'Iniciar conversación';
-      });
-
-      // === Load the official unpkg script (registers the custom element) ===
-      if (document.getElementById('elevenlabs-convai-script')) {
-        waitForCustomElement();
-        return;
-      }
-      var s = document.createElement('script');
-      s.src = 'https://unpkg.com/@elevenlabs/convai-widget-embed';
-      s.async = true;
-      s.id = 'elevenlabs-convai-script';
-      s.addEventListener('load', function () {
-        if (window.console && console.info) {
-          console.info('[sofia] elevenlabs convai-widget-embed script loaded');
+        // If in section mode, return section to its normal state
+        var section = document.getElementById('agente');
+        if (section && section.getAttribute('data-sofia-conversation') === 'true') {
+          stopInSection(section);
         }
-        waitForCustomElement();
-      });
-      s.addEventListener('error', function () {
-        elevenLabsScriptLoading = false;
-        if (window.console && console.warn) {
-          console.warn('[sofia] elevenlabs convai-widget-embed script failed to load');
+        // If in modal mode, return modal to intro
+        if (opened) {
+          setState('intro');
+          status.textContent = 'Conversación terminada. ¿Quieres intentarlo de nuevo o prefieres WhatsApp?';
+          status.classList.remove('sofia-modal__status--ready');
+          talkBtn.disabled = false;
+          talkBtn.querySelector('.sofia-modal__cta-text').textContent = 'Iniciar conversación';
         }
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({ event: 'sofia_elevenlabs_script_failed' });
-        window.dispatchEvent(new Event('sofia_error'));
       });
-      document.body.appendChild(s);
-
-      // === Wait for startConversation to be a real function ===
-      // customElements.whenDefined only means the class is registered,
-      // not that the instance method exists. We poll for the actual
-      // method on the element so the CTA only enables when truly ready.
-      function waitForCustomElement() {
-        var attempts = 0;
-        var maxAttempts = 100; // ~10s at 100ms intervals
-        (function poll() {
-          if (widget && typeof widget.startConversation === 'function') {
-            onSofiaReady();
-            return;
-          }
-          if (attempts++ > maxAttempts) {
-            if (window.console && console.warn) {
-              console.warn('[sofia] startConversation never appeared after 10s');
-            }
-            return;
-          }
-          setTimeout(poll, 100);
-        })();
-      }
     }
 
     function startFallbackTimer() {
@@ -504,11 +625,16 @@
           status.classList.remove('sofia-modal__status--ready');
           talkBtn.disabled = true;
           talkBtn.querySelector('.sofia-modal__cta-text').textContent = 'No disponible ahora';
+          // Also reflect in section status
+          var sectionStatus = document.querySelector('#agente .sofia-section__status');
+          if (sectionStatus) {
+            sectionStatus.textContent = 'En este momento no podemos conectar.';
+          }
         }
       }, SOFIA_CONFIG.fallbackTimeoutMs);
     }
 
-    // === Hide the trigger when #agente is in view (Sofia already on screen) ===
+    // === Hide the trigger when #agente is in view ===
     var agenteSection = document.getElementById('agente');
     if (agenteSection && 'IntersectionObserver' in window) {
       var observer = new IntersectionObserver(function (entries) {
