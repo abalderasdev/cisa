@@ -1,6 +1,13 @@
 /* ================================================================
    SOFIA WIDGET · Grupo CISA · Modal-based trigger
-   v1.7 · ABDev · Alberto Balderas
+   v1.7.1 · ABDev · Alberto Balderas
+
+   v1.7.1 change: when the ElevenLabs widget fires a "permission
+   denied" error (typically because the agent has an unsupported
+   audio tag like [warmly] in the first message, or is not
+   published), we now listen for the `elevenlabs-agent:error`
+   custom event and surface a clearer message to the user instead
+   of just the generic "no podemos conectar".
 
    v1.7 changes:
    - ElevenLabs widget-embed script is now loaded EAGERLY on page
@@ -166,8 +173,22 @@
       if (window.console && console.info) {
         console.info('[sofia] elevenlabs script loaded (eager)');
       }
-      // Once the script is loaded, wait for the custom element to be
-      // upgraded, then poll for startConversation to be a real function.
+      // Listen for permission-denied errors that the widget fires
+      // when the agent config is invalid (e.g. audio tag in
+      // first_message, unpublished agent, missing voice). These
+      // surface as custom events on `document`.
+      document.addEventListener('elevenlabs-agent:error', function (e) {
+        var msg = (e && e.detail && e.detail.message) || 'unknown';
+        if (window.console && console.error) {
+          console.error('[sofia] ElevenLabs agent error: ' + msg);
+        }
+        if (typeof msg === 'string' && /permission/i.test(msg)) {
+          // Show a clearer message to the user and steer them to WhatsApp.
+          setAgentErrorState('El agente necesita un ajuste en su configuración. Mientras tanto, escríbenos por WhatsApp.');
+        } else {
+          setAgentErrorState('En este momento no podemos conectar. Te dejamos WhatsApp.');
+        }
+      });
       waitForStartConversation();
     });
     s.addEventListener('error', function () {
@@ -176,6 +197,29 @@
       }
     });
     document.body.appendChild(s);
+  }
+
+  // === Surface agent-side errors on the modal and section status ===
+  function setAgentErrorState(message) {
+    var modalStatus = document.querySelector('#sofia-modal-status');
+    if (modalStatus) {
+      modalStatus.textContent = message;
+      modalStatus.classList.remove('sofia-modal__status--ready');
+    }
+    var talkBtn = document.querySelector('#sofia-modal-talk');
+    if (talkBtn) {
+      talkBtn.disabled = true;
+      var txt = talkBtn.querySelector('.sofia-modal__cta-text');
+      if (txt) txt.textContent = 'No disponible ahora';
+    }
+    var sectionStatus = document.querySelector('#agente .sofia-section__status');
+    if (sectionStatus) {
+      sectionStatus.textContent = 'Sofía necesita un ajuste de configuración. Te dejamos WhatsApp.';
+      sectionStatus.classList.remove('sofia-section__status--ready');
+    }
+    // Drop the FAB dot so the user does not think the agent is online.
+    var dot = document.querySelector('.sofia-trigger__dot');
+    if (dot) dot.setAttribute('data-sofia-dot-state', 'error');
   }
 
   function waitForStartConversation() {
