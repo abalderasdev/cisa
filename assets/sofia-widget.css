@@ -1,7 +1,37 @@
 /* ================================================================
    SOFIA WIDGET · Grupo CISA · Modal-based trigger stylesheet
-   v1.2 · ABDev · Alberto Balderas
+   v1.5 · ABDev · Alberto Balderas
+
+   v1.5 change: hide the native ElevenLabs floating button so only
+   our brand-green trigger is visible. The custom element is mounted
+   off-screen and we drive the conversation via startConversation().
    ================================================================ */
+
+/* === Hide the native ElevenLabs floating button ===
+   The custom element <elevenlabs-convai> is mounted invisibly so we
+   can control it programmatically (startConversation() in widget).
+   The element uses shadow DOM, so we have to position the host off
+   screen and zero it out. We keep it functional so the agent
+   connection still works. */
+elevenlabs-convai#sofia-elevenlabs-widget {
+  position: fixed !important;
+  bottom: -9999px !important;
+  right: -9999px !important;
+  left: auto !important;
+  top: auto !important;
+  width: 0 !important;
+  height: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  overflow: hidden !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
 
 /* === Trigger button · bottom-right, horizontal pill === */
 .sofia-trigger {

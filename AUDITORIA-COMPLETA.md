@@ -1,7 +1,56 @@
 # Auditoría completa · Sitio CISA
 **Fecha:** 19 ago 2026
-**Versión auditada:** main @ `0546c54`
+**Versión auditada:** main @ `e10f2fc` (pre-fix) → v1.5 (post-fix)
 **URL auditada:** `https://cisa1.vercel.app/`
+
+---
+
+## v1.5 — Fix del approach de ElevenLabs (este commit)
+
+**Síntoma reportado por Alberto (consola del browser):**
+
+```
+sofia-widget.js:80  [sofia] config loaded from /api/sofia-config Object
+sofia-widget.js:296 [sofia] elevenlabs embed script failed to load
+```
+
+**Causa raíz:**
+
+El widget v1.4 inyectaba el script de ElevenLabs desde la URL:
+
+```
+https://elevenlabs.io/convai/embed.js?agent_id=agent_3901kz9chpm4emwv9mq37eh2np4t
+```
+
+Esa ruta es **404** desde 2024/2025. La ruta oficial actual de ElevenLabs es el custom element `<elevenlabs-convai>` + script desde `unpkg.com`:
+
+```html
+<elevenlabs-convai agent-id="agent_xxx"></elevenlabs-convai>
+<script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+```
+
+**Fix v1.5 aplicado:**
+
+1. Script de ElevenLabs cambia a la URL oficial: `https://unpkg.com/@elevenlabs/convai-widget-embed`
+2. El custom element `<elevenlabs-convai id="sofia-elevenlabs-widget">` se inyecta al body (off-screen, oculto por CSS)
+3. Cuando el usuario hace click en "Hablar con Sofía" → `widget.startConversation()`
+4. Eventos `conversationStarted` / `conversationEnded` cierran/reabren nuestro modal custom
+5. CSS agresivo oculta el FAB nativo de ElevenLabs para que solo se vea el nuestro verde
+
+**Validación end-to-end:**
+
+```bash
+GET https://cisa1.vercel.app/api/sofia-config
+→ { "agentId": "agent_3901kz9...", "configured": true, "source": "env" }  ✅
+
+HEAD https://unpkg.com/@elevenlabs/convai-widget-embed
+→ 200 OK  ✅
+
+HEAD https://elevenlabs.io/convai/embed.js?agent_id=agent_3901kz9...
+→ 404 Not Found  ✅ (confirma que la URL vieja está rota)
+```
+
+
 
 ---
 

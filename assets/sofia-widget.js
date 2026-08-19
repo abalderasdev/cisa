@@ -1,25 +1,20 @@
 /* ================================================================
    SOFIA WIDGET · Grupo CISA · Modal-based trigger
-   v1.3 · ABDev · Alberto Balderas
+   v1.5 · ABDev · Alberto Balderas
 
-   v1.3 change: SOFIA_CONFIG is loaded from /api/sofia-config (a
-   Vercel serverless function) so the team can update the ElevenLabs
-   agent_id and the WhatsApp fallback number via Vercel Environment
-   Variables without redeploying. Falls back to hardcoded defaults
-   if the function is unreachable or returns an error.
+   v1.5 change: switched ElevenLabs integration from the deprecated
+   `https://elevenlabs.io/convai/embed.js?agent_id=XXX` endpoint
+   (which 404s as of 2025) to the official approach using the
+   `<elevenlabs-convai>` custom element + the unpkg widget-embed
+   script. The custom element is mounted off-screen (so its built-in
+   floating button never appears) and we drive the conversation via
+   `widget.startConversation()` when the user clicks the primary CTA
+   in our modal. ElevenLabs' own modal opens on top of everything
+   when a conversation starts; our modal hides itself at that point.
 
-   Behaviors implemented:
-   - Floating button (bottom-right) opens modal
-   - Modal shows intro video on open (sofia-intro.mp4, autoplay loop muted)
-   - Two CTAs in modal: "Hablar con Sofía" (primary, ElevenLabs when
-     configured, disabled otherwise) + WhatsApp link (always available).
-   - Fallback if ElevenLabs is unavailable after 5s: show WhatsApp CTA.
-   - Closes on Esc, on backdrop click, on close button.
-   - Pauses video when modal closes.
-   - Hides on excluded pages (contacto, gracias, aviso-de-privacidad,
-     precalificar) per spec section 4.
-   - When the visitor scrolls into the #agente section, the button
-     fades out and becomes non-interactive (Sofia is already on screen).
+   v1.4 change: load ElevenLabs script on first modal open (not on
+   mount) to avoid the race where the script's `sofia_widget_loaded`
+   event fired before we registered the listener.
    ================================================================ */
 (function () {
   'use strict';
@@ -244,23 +239,39 @@
     });
     talkBtn.addEventListener('click', function () {
       window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({ event: 'sofia_conversation_started' });
+      window.dataLayer.push({ event: 'sofia_conversation_start_clicked' });
       if (SOFIA_CONFIG.agentId === 'REPLACE_WITH_AGENT_ID') {
         status.textContent = 'En producción: aquí se conecta ElevenLabs con agent_id configurado vía Vercel env var SOFIA_AGENT_ID.';
+        return;
+      }
+      var widget = document.getElementById('sofia-elevenlabs-widget');
+      if (widget && typeof widget.startConversation === 'function') {
+        status.textContent = 'Conectando con Sofía…';
+        try {
+          widget.startConversation();
+          if (window.console && console.info) {
+            console.info('[sofia] widget.startConversation() called');
+          }
+          window.dataLayer.push({ event: 'sofia_conversation_started' });
+        } catch (err) {
+          if (window.console && console.warn) {
+            console.warn('[sofia] startConversation failed', err);
+          }
+          status.textContent = 'No se pudo iniciar. Te dejamos WhatsApp.';
+          window.dataLayer.push({ event: 'sofia_start_failed', reason: String(err) });
+        }
       } else {
-        status.textContent = 'Iniciando conversación con ElevenLabs agent_id ' + SOFIA_CONFIG.agentId + '…';
+        status.textContent = 'Aún no está lista. Espera un momento o usa WhatsApp.';
+        if (window.console && console.warn) {
+          console.warn('[sofia] widget element not ready, startConversation unavailable');
+        }
       }
     });
 
-    // === Load ElevenLabs script on first open ===
+    // === Load ElevenLabs script + custom element on first open ===
     function ensureElevenLabsLoaded() {
       if (elevenLabsScriptLoading) return;
-      if (document.getElementById('elevenlabs-convai')) {
-        // Script tag already in DOM (e.g. a previous click already started it).
-        // Just register the listener and let the existing script fire.
-        elevenLabsScriptLoading = true;
-        return;
-      }
+      if (elevenLabsReady) return;
       if (!SOFIA_CONFIG.agentId || SOFIA_CONFIG.agentId === 'REPLACE_WITH_AGENT_ID') {
         // No real agent_id. Keep the modal in WhatsApp-only mode and
         // make sure the CTA is disabled so visitors don't think it works.
@@ -270,34 +281,108 @@
         return;
       }
       elevenLabsScriptLoading = true;
-      // Always register the listener BEFORE injecting the script so we
-      // never miss the 'sofia_widget_loaded' event.
-      window.addEventListener('sofia_widget_loaded', onSofiaReady, { once: true });
+
+      // === Step 1: inject the custom element (off-screen, hidden) ===
+      // The custom element is what actually connects to ElevenLabs. We
+      // mount it invisibly (CSS in sofia-widget.css hides its built-in
+      // floating button) and drive the conversation via startConversation().
+      var widget = document.getElementById('sofia-elevenlabs-widget');
+      if (!widget) {
+        widget = document.createElement('elevenlabs-convai');
+        widget.id = 'sofia-elevenlabs-widget';
+        widget.setAttribute('agent-id', SOFIA_CONFIG.agentId);
+        widget.setAttribute('avatar-image-url', new URL(SOFIA_CONFIG.avatarUrl, window.location.href).href);
+        widget.setAttribute('action-text', 'Hablar con Sofía');
+        widget.setAttribute('start-call-text', 'Iniciar conversación');
+        widget.setAttribute('end-call-text', 'Terminar');
+        widget.setAttribute('dismissible', 'true');
+        // We drive the widget programmatically; the native button is hidden by CSS.
+        document.body.appendChild(widget);
+      }
+
+      // === Step 2: register event listeners BEFORE loading the script ===
+      // Per ElevenLabs docs, the custom element fires these custom events.
+      widget.addEventListener('conversationStarted', function () {
+        if (window.console && console.info) {
+          console.info('[sofia] conversation started with ElevenLabs');
+        }
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ event: 'sofia_elevenlabs_conversation_started' });
+        // Hide our modal so ElevenLabs' own UI takes the screen
+        modal.setAttribute('data-open', 'false');
+        setTimeout(function () { modal.setAttribute('hidden', ''); }, 220);
+      });
+      widget.addEventListener('conversationEnded', function () {
+        if (window.console && console.info) {
+          console.info('[sofia] conversation ended');
+        }
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ event: 'sofia_elevenlabs_conversation_ended' });
+        // Re-open our modal so the user can retry or switch to WhatsApp
+        modal.removeAttribute('hidden');
+        requestAnimationFrame(function () { modal.setAttribute('data-open', 'true'); });
+        status.textContent = 'Conversación terminada. ¿Quieres intentarlo de nuevo o prefieres WhatsApp?';
+        status.classList.remove('sofia-modal__status--ready');
+      });
+
+      // === Step 3: load the official unpkg script (registers the custom element) ===
+      if (document.getElementById('elevenlabs-convai-script')) {
+        // Script already injected (e.g. duplicate click); just wire ready state.
+        waitForCustomElement();
+        return;
+      }
       var s = document.createElement('script');
-      s.src = 'https://elevenlabs.io/convai/embed.js?agent_id=' + encodeURIComponent(SOFIA_CONFIG.agentId);
+      s.src = 'https://unpkg.com/@elevenlabs/convai-widget-embed';
       s.async = true;
-      s.id = 'elevenlabs-convai';
+      s.id = 'elevenlabs-convai-script';
       s.addEventListener('load', function () {
         if (window.console && console.info) {
-          console.info('[sofia] elevenlabs embed script loaded');
+          console.info('[sofia] elevenlabs convai-widget-embed script loaded');
         }
-        // If the script auto-fires the event before we registered the
-        // listener (shouldn't happen, but defensive), our listener above
-        // would miss it. Instead, dispatch ourselves with a small delay.
-        setTimeout(function () {
-          if (!elevenLabsReady) {
-            window.dispatchEvent(new Event('sofia_widget_loaded'));
-          }
-        }, 50);
+        waitForCustomElement();
       });
       s.addEventListener('error', function () {
         elevenLabsScriptLoading = false;
         if (window.console && console.warn) {
-          console.warn('[sofia] elevenlabs embed script failed to load');
+          console.warn('[sofia] elevenlabs convai-widget-embed script failed to load');
         }
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ event: 'sofia_elevenlabs_script_failed' });
         window.dispatchEvent(new Event('sofia_error'));
       });
       document.body.appendChild(s);
+
+      // === Step 4: wait for custom element to upgrade, then enable the CTA ===
+      function waitForCustomElement() {
+        if (window.customElements && customElements.whenDefined) {
+          customElements.whenDefined('elevenlabs-convai').then(function () {
+            onSofiaReady();
+          }).catch(function (e) {
+            if (window.console && console.warn) {
+              console.warn('[sofia] whenDefined failed', e);
+            }
+            // Fallback: poll for startConversation availability
+            pollForStartConversation(0);
+          });
+        } else {
+          // Browser without customElements.whenDefined (shouldn't happen on modern browsers)
+          pollForStartConversation(0);
+        }
+      }
+
+      function pollForStartConversation(attempts) {
+        if (widget && typeof widget.startConversation === 'function') {
+          onSofiaReady();
+          return;
+        }
+        if (attempts > 30) {
+          if (window.console && console.warn) {
+            console.warn('[sofia] startConversation never appeared after 30 polls');
+          }
+          return;
+        }
+        setTimeout(function () { pollForStartConversation(attempts + 1); }, 100);
+      }
     }
 
     function startFallbackTimer() {
