@@ -171,6 +171,7 @@
     var fallbackTimer = null;
     var opened = false;
     var elevenLabsReady = false;
+    var elevenLabsScriptLoading = false;
 
     // === Open / close ===
     function openModal() {
@@ -185,15 +186,17 @@
         var pp = video.play();
         if (pp && pp.catch) pp.catch(function () {});
       }
-      fallbackTimer = setTimeout(function () {
-        if (!elevenLabsReady) {
-          status.textContent = 'En este momento no podemos conectar. Te dejamos WhatsApp.';
-          status.classList.remove('sofia-modal__status--ready');
-          talkBtn.disabled = true;
-          talkBtn.textContent = 'No disponible ahora';
-        }
-      }, SOFIA_CONFIG.fallbackTimeoutMs);
-      window.addEventListener('sofia_widget_loaded', onSofiaReady, { once: true });
+      // Start the safety timeout only if ElevenLabs is not already ready
+      // and the script is not already loading. If neither, we'll just show
+      // the WhatsApp CTA after the timeout.
+      if (!elevenLabsReady) {
+        startFallbackTimer();
+      }
+      // Load ElevenLabs the first time the user opens the modal. This
+      // avoids the race where the embed script loads on page load and
+      // fires 'sofia_widget_loaded' before the user opens the modal and
+      // registers the listener.
+      ensureElevenLabsLoaded();
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({
         event: 'sofia_widget_opened',
@@ -249,19 +252,64 @@
       }
     });
 
-    // === Load ElevenLabs script (no-op until a real agent_id is configured) ===
-    if (SOFIA_CONFIG.agentId && SOFIA_CONFIG.agentId !== 'REPLACE_WITH_AGENT_ID') {
+    // === Load ElevenLabs script on first open ===
+    function ensureElevenLabsLoaded() {
+      if (elevenLabsScriptLoading) return;
+      if (document.getElementById('elevenlabs-convai')) {
+        // Script tag already in DOM (e.g. a previous click already started it).
+        // Just register the listener and let the existing script fire.
+        elevenLabsScriptLoading = true;
+        return;
+      }
+      if (!SOFIA_CONFIG.agentId || SOFIA_CONFIG.agentId === 'REPLACE_WITH_AGENT_ID') {
+        // No real agent_id. Keep the modal in WhatsApp-only mode and
+        // make sure the CTA is disabled so visitors don't think it works.
+        status.textContent = 'Aún no configurado. Escríbenos por WhatsApp.';
+        talkBtn.disabled = true;
+        talkBtn.textContent = 'No disponible aún';
+        return;
+      }
+      elevenLabsScriptLoading = true;
+      // Always register the listener BEFORE injecting the script so we
+      // never miss the 'sofia_widget_loaded' event.
+      window.addEventListener('sofia_widget_loaded', onSofiaReady, { once: true });
       var s = document.createElement('script');
       s.src = 'https://elevenlabs.io/convai/embed.js?agent_id=' + encodeURIComponent(SOFIA_CONFIG.agentId);
       s.async = true;
       s.id = 'elevenlabs-convai';
       s.addEventListener('load', function () {
-        window.dispatchEvent(new Event('sofia_widget_loaded'));
+        if (window.console && console.info) {
+          console.info('[sofia] elevenlabs embed script loaded');
+        }
+        // If the script auto-fires the event before we registered the
+        // listener (shouldn't happen, but defensive), our listener above
+        // would miss it. Instead, dispatch ourselves with a small delay.
+        setTimeout(function () {
+          if (!elevenLabsReady) {
+            window.dispatchEvent(new Event('sofia_widget_loaded'));
+          }
+        }, 50);
       });
       s.addEventListener('error', function () {
+        elevenLabsScriptLoading = false;
+        if (window.console && console.warn) {
+          console.warn('[sofia] elevenlabs embed script failed to load');
+        }
         window.dispatchEvent(new Event('sofia_error'));
       });
       document.body.appendChild(s);
+    }
+
+    function startFallbackTimer() {
+      if (fallbackTimer) return;
+      fallbackTimer = setTimeout(function () {
+        if (!elevenLabsReady) {
+          status.textContent = 'En este momento no podemos conectar. Te dejamos WhatsApp.';
+          status.classList.remove('sofia-modal__status--ready');
+          talkBtn.disabled = true;
+          talkBtn.textContent = 'No disponible ahora';
+        }
+      }, SOFIA_CONFIG.fallbackTimeoutMs);
     }
 
     // === Hide the trigger when #agente is in view (Sofia already on screen) ===
