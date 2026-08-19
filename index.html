@@ -1772,8 +1772,12 @@
 <script src="http://localhost:8400/live.js?token=260496c0-7a81-47a3-9d47-897f1aede735"></script>
 <!-- impeccable-live-end -->
 
-<!-- Sofia widget · ElevenLabs placeholder · spec: agente-sofia/integration-spec.md -->
-<script src="assets/sofia-widget.js" defer></script>
+<!-- Sofia widget · ElevenLabs placeholder · spec: agente-sofia/integration-spec.md
+     NOTE: must come AFTER the impeccable live script tag, but
+     use async so it is not blocked by the live.js load (which
+     points at localhost:8400 and 30-60s timeouts when the
+     impeccable helper is not running on the visitor's machine). -->
+<script src="assets/sofia-widget.js" async></script>
 
 <!-- Sofia widget · ElevenLabs placeholder · spec: agente-sofia/integration-spec.md -->
 </body>
