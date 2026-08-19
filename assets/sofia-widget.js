@@ -1,6 +1,18 @@
 /* ================================================================
    SOFIA WIDGET · Grupo CISA · Modal-based trigger
-   v1.7.1 · ABDev · Alberto Balderas
+   v1.7.2 · ABDev · Alberto Balderas
+
+   v1.7.2 change: the `<elevenlabs-convai>` custom element is now
+   created ONLY after `customElements.get('elevenlabs-convai')`
+   returns the registered class. Before this, we created the
+   element on mountWidget() and the browser kept it as a plain
+   HTMLElement because the script had not yet registered the
+   upgrade. As a result, the custom methods (startConversation,
+   endSession, etc.) never appeared on the instance and the
+   widget silently fell back to "no podemos conectar" even
+   though the script itself was loading fine. v1.7.2 fixes the
+   upgrade path so the methods become available as soon as the
+   class is registered.
 
    v1.7.1 change: when the ElevenLabs widget fires a "permission
    denied" error (typically because the agent has an unsupported
@@ -223,27 +235,85 @@
   }
 
   function waitForStartConversation() {
-    // The custom element is registered when the script runs. We poll
-    // for a real instance method (not just the class being defined).
+    // The custom element is registered when the script runs. We now
+    // (v1.7.2) CREATE the element only after the class is registered,
+    // so the browser upgrades it on construction and the custom
+    // methods are available immediately.
+    if (!window.customElements || !window.customElements.get) {
+      // Old browser — fall back to the old create-then-poll approach.
+      createWidgetElementEarly();
+      return pollForStartConversation(0);
+    }
     var attempts = 0;
     var maxAttempts = 200; // ~20s
     (function poll() {
-      var widget = document.getElementById('sofia-elevenlabs-widget');
-      if (widget && typeof widget.startConversation === 'function') {
-        if (window.console && console.info) {
-          console.info('[sofia] startConversation available (eager load)');
+      var ceClass = window.customElements.get('elevenlabs-convai');
+      if (ceClass) {
+        if (!document.getElementById('sofia-elevenlabs-widget')) {
+          var host = document.getElementById('sofia-widget-host');
+          if (host) {
+            var w = document.createElement('elevenlabs-convai');
+            w.id = 'sofia-elevenlabs-widget';
+            w.setAttribute('agent-id', SOFIA_CONFIG.agentId);
+            w.setAttribute('avatar-image-url', new URL(SOFIA_CONFIG.avatarUrl, window.location.href).href);
+            w.setAttribute('action-text', 'Hablar con Sofía');
+            w.setAttribute('start-call-text', 'Iniciar conversación');
+            w.setAttribute('end-call-text', 'Terminar');
+            w.setAttribute('dismissible', 'true');
+            host.appendChild(w);
+            if (window.console && console.info) {
+              console.info('[sofia] created <elevenlabs-convai> AFTER class registration (v1.7.2 fix)');
+            }
+          }
         }
-        onSofiaReady();
-        return;
+        // Now poll for the startConversation method on the (now upgraded)
+        // instance.
+        return pollForStartConversation(0);
       }
       if (attempts++ > maxAttempts) {
         if (window.console && console.warn) {
-          console.warn('[sofia] startConversation never appeared after 20s polling');
+          console.warn('[sofia] customElements.get("elevenlabs-convai") never resolved after 20s');
         }
         return;
       }
       setTimeout(poll, 100);
     })();
+  }
+
+  function pollForStartConversation(attempts) {
+    var widget = document.getElementById('sofia-elevenlabs-widget');
+    if (widget && typeof widget.startConversation === 'function') {
+      if (window.console && console.info) {
+        console.info('[sofia] startConversation available (eager load)');
+      }
+      onSofiaReady();
+      return;
+    }
+    if (attempts++ > 200) {
+      if (window.console && console.warn) {
+        console.warn('[sofia] startConversation never appeared after 20s polling');
+      }
+      return;
+    }
+    setTimeout(function () { pollForStartConversation(attempts); }, 100);
+  }
+
+  // Legacy fallback for browsers without customElements.get support.
+  // Creates the element early and polls for the method to appear after
+  // the script eventually registers the class.
+  function createWidgetElementEarly() {
+    var host = document.getElementById('sofia-widget-host');
+    if (!host) return;
+    if (document.getElementById('sofia-elevenlabs-widget')) return;
+    var w = document.createElement('elevenlabs-convai');
+    w.id = 'sofia-elevenlabs-widget';
+    w.setAttribute('agent-id', SOFIA_CONFIG.agentId);
+    w.setAttribute('avatar-image-url', new URL(SOFIA_CONFIG.avatarUrl, window.location.href).href);
+    w.setAttribute('action-text', 'Hablar con Sofía');
+    w.setAttribute('start-call-text', 'Iniciar conversación');
+    w.setAttribute('end-call-text', 'Terminar');
+    w.setAttribute('dismissible', 'true');
+    host.appendChild(w);
   }
 
   function mountWidget() {
@@ -358,18 +428,16 @@
 
     // Inject the custom element into the host (only when we have a
     // real agent id).
+    //
+    // IMPORTANT (v1.7.2): we MUST NOT create the <elevenlabs-convai>
+    // element before the ElevenLabs script has registered it. If we
+    // do, the browser creates it as a plain HTMLElement and the
+    // upgrade happens too late — the custom methods (startConversation,
+    // endSession, etc.) never appear on the instance and the widget
+    // silently fails. We now create the element lazily, only after
+    // the script has loaded AND customElements.get('elevenlabs-convai')
+    // is truthy.
     var widget = null;
-    if (SOFIA_CONFIG.agentId && SOFIA_CONFIG.agentId !== 'REPLACE_WITH_AGENT_ID') {
-      widget = document.createElement('elevenlabs-convai');
-      widget.id = 'sofia-elevenlabs-widget';
-      widget.setAttribute('agent-id', SOFIA_CONFIG.agentId);
-      widget.setAttribute('avatar-image-url', new URL(SOFIA_CONFIG.avatarUrl, window.location.href).href);
-      widget.setAttribute('action-text', 'Hablar con Sofía');
-      widget.setAttribute('start-call-text', 'Iniciar conversación');
-      widget.setAttribute('end-call-text', 'Terminar');
-      widget.setAttribute('dismissible', 'true');
-      widgetHost.appendChild(widget);
-    }
 
     // === Element references ===
     var introBlock  = modal.querySelector('.sofia-modal__intro');
