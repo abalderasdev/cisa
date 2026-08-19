@@ -1,18 +1,40 @@
 /* ================================================================
    SOFIA WIDGET · Grupo CISA · Modal-based trigger stylesheet
-   v1.5 · ABDev · Alberto Balderas
+   v1.6 · ABDev · Alberto Balderas
 
-   v1.5 change: hide the native ElevenLabs floating button so only
-   our brand-green trigger is visible. The custom element is mounted
-   off-screen and we drive the conversation via startConversation().
+   v1.6 changes (UX rework):
+   - Two modal states: `intro` (full panel, video, CTAs) and
+     `active` (compact pill, voice-orb animation, mic/end).
+   - No dark overlay in `active` state so the page stays visible
+     while the user is talking to Sofia.
+   - Voice-orb CSS animation reacts to data-voice-state.
+   - Clipped host for the ElevenLabs custom element so its native
+     FAB does not appear on screen.
    ================================================================ */
 
 /* === Hide the native ElevenLabs floating button ===
-   The custom element <elevenlabs-convai> is mounted invisibly so we
-   can control it programmatically (startConversation() in widget).
-   The element uses shadow DOM, so we have to position the host off
-   screen and zero it out. We keep it functional so the agent
-   connection still works. */
+   Shadow DOM is opaque to outside CSS. We can't style into the
+   custom element, so we host it inside a wrapper that uses
+   `clip-path: inset(100%)` to remove the entire element from
+   rendering. `clip-path` is honored across the shadow boundary,
+   so the internal FAB is also clipped. The custom element stays
+   functional — startConversation() still works. */
+#sofia-widget-host {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip-path: inset(100%) !important;
+  -webkit-clip-path: inset(100%) !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  z-index: -1 !important;
+}
+/* Belt-and-suspenders: also style the host element directly in case
+   someone inlines it elsewhere. */
 elevenlabs-convai#sofia-elevenlabs-widget {
   position: fixed !important;
   bottom: -9999px !important;
@@ -119,7 +141,7 @@ elevenlabs-convai#sofia-elevenlabs-widget {
   .sofia-trigger { min-width: 200px; }
 }
 
-/* === Modal === */
+/* === Modal · common === */
 .sofia-modal {
   position: fixed;
   inset: 0;
@@ -131,11 +153,24 @@ elevenlabs-convai#sofia-elevenlabs-widget {
   padding: 24px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+              padding 240ms cubic-bezier(0.4, 0, 0.2, 1),
+              align-items 240ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 .sofia-modal[data-open="true"] {
   opacity: 1;
   pointer-events: auto;
+}
+
+/* === ACTIVE state: collapse to a compact pill in the bottom-right ===
+   No dark overlay, no centered flex — anchor to bottom-right so the
+   page stays visible behind the conversation. */
+.sofia-modal[data-state="active"] {
+  background: transparent !important;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 20px;
 }
 .sofia-modal__panel {
   background: #FFFFFF;
@@ -148,17 +183,45 @@ elevenlabs-convai#sofia-elevenlabs-widget {
   flex-direction: column;
   box-shadow: 0 16px 48px rgba(15, 20, 25, 0.32);
   transform: translateY(8px);
-  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: max-width 280ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-radius 280ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1),
+              transform 240ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 .sofia-modal[data-open="true"] .sofia-modal__panel {
   transform: translateY(0);
 }
+.sofia-modal[data-state="active"] .sofia-modal__panel {
+  max-width: 340px;
+  border-radius: 24px;
+  box-shadow: 0 16px 40px rgba(15, 20, 25, 0.28), 0 2px 8px rgba(15, 20, 25, 0.14);
+}
+
+/* === Block-level show/hide per state === */
+.sofia-modal__intro  { display: flex; flex-direction: column; flex: 1 1 auto; }
+.sofia-modal__active { display: none; flex-direction: column; align-items: stretch; padding: 18px 18px 20px; gap: 16px; }
+.sofia-modal[data-state="active"] .sofia-modal__intro  { display: none; }
+.sofia-modal[data-state="active"] .sofia-modal__active { display: flex; }
+
+/* === INTRO state · header === */
 .sofia-modal__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 18px 20px 14px;
   border-bottom: 1px solid #E5E7EB;
+}
+.sofia-modal__id {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sofia-modal__avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #E8F5E9;
 }
 .sofia-modal__title {
   font: 700 18px/1.3 Manrope, system-ui, sans-serif;
@@ -185,6 +248,8 @@ elevenlabs-convai#sofia-elevenlabs-widget {
   line-height: 1;
 }
 .sofia-modal__close:hover { background: #F2F4F2; color: #0F1419; }
+
+/* === INTRO state · body === */
 .sofia-modal__body {
   padding: 20px;
   display: flex;
@@ -192,14 +257,20 @@ elevenlabs-convai#sofia-elevenlabs-widget {
   align-items: center;
   gap: 16px;
 }
-.sofia-modal__video {
+.sofia-modal__video-wrap {
   width: 100%;
   max-width: 320px;
   aspect-ratio: 9 / 16;
   max-height: 360px;
   border-radius: 12px;
-  object-fit: cover;
+  overflow: hidden;
   background: #E8F5E9;            /* brand-green-tint */
+}
+.sofia-modal__video {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  object-fit: cover;
   display: block;
 }
 .sofia-modal__status {
@@ -219,6 +290,7 @@ elevenlabs-convai#sofia-elevenlabs-widget {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   width: 100%;
   height: 48px;
   padding: 0 20px;
@@ -248,10 +320,150 @@ elevenlabs-convai#sofia-elevenlabs-widget {
   margin: 0;
 }
 
+/* === ACTIVE state · header (compact) === */
+.sofia-modal__active-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sofia-modal__active-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #E8F5E9;
+}
+.sofia-modal__active-meta {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.sofia-modal__active-name {
+  font: 700 14px/1.2 Manrope, system-ui, sans-serif;
+  color: #0F1419;
+}
+.sofia-modal__active-state {
+  font: 500 12px/1.3 Manrope, system-ui, sans-serif;
+  color: #5C636A;
+  margin-top: 2px;
+}
+.sofia-modal__active-state[data-voice-state="speaking"]   { color: #1F4D2A; }
+.sofia-modal__active-state[data-voice-state="listening"]  { color: #2E7D32; }
+.sofia-modal__active-state[data-voice-state="connecting"]{ color: #B5693A; }
+.sofia-modal__active-state[data-voice-state="muted"]     { color: #B5693A; }
+.sofia-modal__active-state[data-voice-state="ended"]     { color: #5C636A; }
+
+/* === ACTIVE state · voice orb === */
+.sofia-modal__orb {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin: 4px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sofia-modal__orb-core {
+  position: relative;
+  z-index: 2;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #1F4D2A;
+  box-shadow: 0 4px 16px rgba(31, 77, 42, 0.32);
+}
+.sofia-modal__orb-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 80px;
+  height: 80px;
+  margin: -40px 0 0 -40px;
+  border-radius: 50%;
+  border: 2px solid #1F4D2A;
+  opacity: 0;
+  pointer-events: none;
+}
+/* Connecting state: gentle pulse */
+.sofia-modal__orb[data-voice-state="connecting"] .sofia-modal__orb-core {
+  animation: sofia-orb-pulse 1.4s ease-in-out infinite;
+}
+.sofia-modal__orb[data-voice-state="connecting"] .sofia-modal__orb-ring {
+  animation: sofia-orb-ring 1.4s ease-out infinite;
+}
+/* Listening state: rings expand outward */
+.sofia-modal__orb[data-voice-state="listening"] .sofia-modal__orb-ring {
+  animation: sofia-orb-ring 1.6s ease-out infinite;
+}
+.sofia-modal__orb[data-voice-state="listening"] .sofia-modal__orb-ring:nth-child(2) { animation-delay: 0.4s; }
+.sofia-modal__orb[data-voice-state="listening"] .sofia-modal__orb-ring:nth-child(3) { animation-delay: 0.8s; }
+.sofia-modal__orb[data-voice-state="listening"] .sofia-modal__orb-core {
+  animation: sofia-orb-pulse 0.9s ease-in-out infinite;
+}
+/* Speaking state: bigger rings, faster */
+.sofia-modal__orb[data-voice-state="speaking"] .sofia-modal__orb-ring {
+  animation: sofia-orb-ring 1.0s ease-out infinite;
+  border-color: #2E7D32;
+}
+.sofia-modal__orb[data-voice-state="speaking"] .sofia-modal__orb-ring:nth-child(2) { animation-delay: 0.25s; }
+.sofia-modal__orb[data-voice-state="speaking"] .sofia-modal__orb-ring:nth-child(3) { animation-delay: 0.5s; }
+.sofia-modal__orb[data-voice-state="speaking"] .sofia-modal__orb-core {
+  background: #2E7D32;
+  animation: sofia-orb-pulse 0.6s ease-in-out infinite;
+}
+/* Muted state: dim core, no animation */
+.sofia-modal__orb[data-voice-state="muted"] .sofia-modal__orb-core {
+  background: #5C636A;
+  animation: none;
+}
+.sofia-modal__orb[data-voice-state="muted"] .sofia-modal__orb-ring { display: none; }
+/* Ended state: dim core */
+.sofia-modal__orb[data-voice-state="ended"] .sofia-modal__orb-core {
+  background: #5C636A;
+}
+.sofia-modal__orb[data-voice-state="ended"] .sofia-modal__orb-ring { display: none; }
+
+@keyframes sofia-orb-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.08); }
+}
+@keyframes sofia-orb-ring {
+  0%   { transform: scale(0.6); opacity: 0.6; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* === ACTIVE state · actions === */
+.sofia-modal__active-actions {
+  display: flex;
+  justify-content: center;
+}
+.sofia-modal__mic {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 0;
+  background: #F2F4F2;
+  color: #0F1419;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 150ms cubic-bezier(0.4, 0, 0.2, 1), color 150ms;
+}
+.sofia-modal__mic:hover { background: #E5E7EB; }
+.sofia-modal__mic[data-muted="true"] {
+  background: #B5693A;
+  color: #FFFFFF;
+}
+.sofia-modal__mic[data-muted="true"]:hover { background: #8C4F2A; }
+
 @media (prefers-reduced-motion: reduce) {
   .sofia-trigger,
   .sofia-modal,
   .sofia-modal__panel {
     transition: none;
+  }
+  .sofia-modal__orb-core,
+  .sofia-modal__orb-ring {
+    animation: none !important;
   }
 }
