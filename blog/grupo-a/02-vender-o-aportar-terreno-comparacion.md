@@ -5,6 +5,7 @@ audience: dueno-de-terreno
 date: 2026-08-08
 read_time_min: 9
 kicker: Decisión patrimonial
+image: /assets/blog/grupo-a/02-vender-o-aportar-terreno-comparacion.png
 description: "Vender o aportar el terreno a un desarrollo no son la misma operación. Esta guía compara las dos opciones con honestidad, sin prometer cifras mágicas."
 ---
 

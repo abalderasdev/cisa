@@ -5,6 +5,7 @@ audience: dueno-de-terreno
 date: 2026-08-08
 read_time_min: 9
 kicker: Figura jurídica
+image: /assets/blog/grupo-a/07-que-es-aportacion-de-terreno.png
 description: "Qué es la aportación de terreno a un desarrollo, qué figura jurídica se usa, qué se entrega y qué se recibe. Explicado sin tecnicismos."
 ---
 

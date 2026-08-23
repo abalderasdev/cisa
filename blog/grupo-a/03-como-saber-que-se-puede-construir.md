@@ -5,6 +5,7 @@ audience: dueno-de-terreno
 date: 2026-08-08
 read_time_min: 8
 kicker: Uso de suelo explicado en simple
+image: /assets/blog/grupo-a/03-como-saber-que-se-puede-construir.png
 description: "Qué puede revisar usted solo en su terreno para saber si se puede construir, qué tipo de construcción cabe, y cuándo sí necesita un estudio formal."
 ---
 

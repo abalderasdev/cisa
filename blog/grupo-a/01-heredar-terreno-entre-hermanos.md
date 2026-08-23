@@ -5,6 +5,7 @@ audience: dueno-de-terreno
 date: 2026-08-08
 read_time_min: 8
 kicker: Sucesión entre copropietarios
+image: /assets/blog/grupo-a/01-heredar-terreno-entre-hermanos.png
 description: "Qué hacer cuando un terreno se hereda entre varios hermanos y no todos quieren lo mismo. Opciones reales, riesgos y una salida que no sea vender."
 ---
 

@@ -5,6 +5,7 @@ audience: dueno-de-terreno
 date: 2026-08-08
 read_time_min: 7
 kicker: Costo real de un activo improductivo
+image: /assets/blog/grupo-a/06-cuanto-cuesta-terreno-parado.png
 description: "Tener un terreno parado cuesta más de lo que parece. Predial, mantenimiento, riesgo y costo de oportunidad: lo que de verdad se paga cada año por no decidir."
 ---
 

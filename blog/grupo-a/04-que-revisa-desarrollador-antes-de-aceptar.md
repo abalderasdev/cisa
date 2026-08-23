@@ -5,6 +5,7 @@ audience: dueno-de-terreno
 date: 2026-08-08
 read_time_min: 8
 kicker: Criterios técnicos y jurídicos
+image: /assets/blog/grupo-a/04-que-revisa-desarrollador-antes-de-aceptar.png
 description: "Lo que un desarrollador serio revisa en su terreno antes de aceptarlo, explicado en lenguaje claro. Lo que aplica, lo que no, y por qué."
 ---
 

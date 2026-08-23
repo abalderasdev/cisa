@@ -5,6 +5,7 @@ audience: dueno-de-terreno
 date: 2026-08-08
 read_time_min: 10
 kicker: Técnico · normatividad Edomex
+image: /assets/blog/grupo-a/05-leer-uso-de-suelo-edomex.png
 description: "Cómo se lee un certificado de uso de suelo en el Estado de México. Qué significa cada clave, qué hacer con la información y cuándo hace falta un abogado."
 ---
 

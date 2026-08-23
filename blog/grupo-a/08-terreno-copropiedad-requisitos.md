@@ -5,6 +5,7 @@ audience: dueno-de-terreno
 date: 2026-08-08
 read_time_min: 9
 kicker: Copropiedad y desarrollo
+image: /assets/blog/grupo-a/08-terreno-copropiedad-requisitos.png
 description: "Qué se necesita para desarrollar un terreno que está en copropiedad. Cómo se decide, qué pasa si no todos están de acuerdo y qué revisar antes de avanzar."
 ---
 
