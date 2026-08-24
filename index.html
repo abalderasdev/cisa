@@ -1093,6 +1093,59 @@
         scroll-behavior: auto !important;
       }
     }
+
+    /* === Variant Toggle (solo preview) === */
+    .variant-toggle {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 99999;
+      background: var(--bg-dark, #0F1419);
+      color: white;
+      padding: 10px 14px;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(15, 20, 25, 0.30);
+      font-family: 'JetBrains Mono', monospace;
+      display: flex; flex-direction: column; gap: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.10);
+    }
+    .variant-toggle__label {
+      font-size: 9px; font-weight: 600;
+      letter-spacing: 0.12em;
+      color: rgba(255, 255, 255, 0.55);
+    }
+    .variant-toggle__btns {
+      display: flex; gap: 4px;
+    }
+    .variant-toggle__btn {
+      width: 36px; height: 36px;
+      background: rgba(255, 255, 255, 0.06);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: 6px;
+      font: 700 14px/1 'JetBrains Mono', monospace;
+      cursor: pointer;
+      transition: background 150ms, border-color 150ms, transform 100ms;
+    }
+    .variant-toggle__btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--brand-green-light, #8BC34A);
+    }
+    .variant-toggle__btn:active { transform: scale(0.94); }
+    .variant-toggle__btn.is-active {
+      background: var(--brand-green-light, #8BC34A);
+      color: var(--bg-dark, #0F1419);
+      border-color: var(--brand-green-light, #8BC34A);
+    }
+    .variant-toggle__hint {
+      font-size: 9px;
+      color: rgba(255, 255, 255, 0.45);
+      letter-spacing: 0.04em;
+    }
+    @media (max-width: 600px) {
+      .variant-toggle { bottom: 12px; left: 12px; padding: 8px 10px; }
+      .variant-toggle__btn { width: 30px; height: 30px; font-size: 12px; }
+    }
   </style>
 </head>
 <body>
