@@ -510,6 +510,100 @@
     .mod__cta-arrow { transition: transform 200ms; }
     .mod:hover .mod__cta-arrow { transform: translateX(2px); }
 
+    /* === Variante B · fondo verde oscuro CISA, tarjetas verde-light === */
+    #modalidades[data-variant="b"] {
+      background: var(--bg-dark);
+      color: rgba(255, 255, 255, 0.92);
+    }
+    #modalidades[data-variant="b"] .section-header h2 { color: white; }
+    #modalidades[data-variant="b"] .section-header p { color: rgba(255,255,255,0.72); }
+    #modalidades[data-variant="b"] .mod {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      backdrop-filter: blur(2px);
+    }
+    #modalidades[data-variant="b"] .mod:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--brand-green-light);
+    }
+    #modalidades[data-variant="b"] .mod h3 { color: white; }
+    #modalidades[data-variant="b"] .mod p { color: rgba(255,255,255,0.72); }
+    #modalidades[data-variant="b"] .mod__icon { color: var(--brand-green-light); }
+    #modalidades[data-variant="b"] .mod__label { color: var(--brand-green-light); }
+    #modalidades[data-variant="b"] .mod__cta { color: var(--brand-green-light); }
+    /* Invertir la primaria: tarjeta verde-light con texto oscuro */
+    #modalidades[data-variant="b"] .mod--primary {
+      background: var(--brand-green-light);
+      color: var(--bg-dark);
+      border-color: var(--brand-green-light);
+    }
+    #modalidades[data-variant="b"] .mod--primary h3 { color: var(--bg-dark); }
+    #modalidades[data-variant="b"] .mod--primary p { color: rgba(15, 20, 25, 0.78); }
+    #modalidades[data-variant="b"] .mod--primary .mod__icon { color: var(--bg-dark); }
+    #modalidades[data-variant="b"] .mod--primary .mod__label { color: var(--bg-dark); }
+    #modalidades[data-variant="b"] .mod--primary .mod__cta { color: var(--bg-dark); }
+    #modalidades[data-variant="b"] .mod--primary .mod__cta-arrow { color: var(--bg-dark); }
+    #modalidades[data-variant="b"] .mod--primary:hover {
+      background: var(--brand-green);
+      border-color: var(--brand-green);
+    }
+    #modalidades[data-variant="b"] .mod--primary:hover h3 { color: white; }
+    #modalidades[data-variant="b"] .mod--primary:hover p { color: rgba(255,255,255,0.85); }
+    #modalidades[data-variant="b"] .mod--primary:hover .mod__icon,
+    #modalidades[data-variant="b"] .mod--primary:hover .mod__label,
+    #modalidades[data-variant="b"] .mod--primary:hover .mod__cta,
+    #modalidades[data-variant="b"] .mod--primary:hover .mod__cta-arrow { color: white; }
+
+    /* === Variante C · video de fondo de planos verdes (mismo video del hero) === */
+    #modalidades[data-variant="c"] {
+      position: relative;
+      background: var(--bg-dark);
+      color: white;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    #modalidades[data-variant="c"]::before {
+      content: "";
+      position: absolute; inset: 0;
+      background-image: url('assets/hero-terrain.mp4');
+      background-size: cover; background-position: center;
+      opacity: 0.18;
+      z-index: -2;
+    }
+    #modalidades[data-variant="c"]::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(31,77,42,0.85), rgba(15,20,25,0.92));
+      z-index: -1;
+    }
+    #modalidades[data-variant="c"] .section-header h2 { color: white; }
+    #modalidades[data-variant="c"] .section-header p { color: rgba(255,255,255,0.78); }
+    #modalidades[data-variant="c"] .mod {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(8px);
+    }
+    #modalidades[data-variant="c"] .mod:hover {
+      background: rgba(255, 255, 255, 0.10);
+      border-color: var(--brand-green-light);
+      transform: translateY(-2px);
+    }
+    #modalidades[data-variant="c"] .mod h3 { color: white; }
+    #modalidades[data-variant="c"] .mod p { color: rgba(255,255,255,0.78); }
+    #modalidades[data-variant="c"] .mod__icon { color: var(--brand-green-light); }
+    #modalidades[data-variant="c"] .mod__label { color: var(--brand-green-light); }
+    #modalidades[data-variant="c"] .mod__cta { color: var(--brand-green-light); }
+    #modalidades[data-variant="c"] .mod--primary {
+      background: var(--brand-green);
+      border-color: var(--brand-green);
+    }
+    #modalidades[data-variant="c"] .mod--primary h3,
+    #modalidades[data-variant="c"] .mod--primary p { color: white; }
+    #modalidades[data-variant="c"] .mod--primary .mod__icon,
+    #modalidades[data-variant="c"] .mod--primary .mod__label,
+    #modalidades[data-variant="c"] .mod--primary .mod__cta,
+    #modalidades[data-variant="c"] .mod--primary .mod__cta-arrow { color: white; }
+
     /* ================================================================
        BLOQUE 3 · La gran revelación + formulario
        ================================================================ */
@@ -1165,7 +1259,7 @@
     <!-- ============================================================
          BLOQUE 2 · MODALIDADES (4 caminos)
          ============================================================ -->
-    <section class="section section--cream" id="modalidades" aria-labelledby="mod-title">
+    <section class="section section--cream" id="modalidades" data-variant="a" aria-labelledby="mod-title">
       <div class="container">
         <header class="section-header">
           <h2 id="mod-title">Cuatro caminos para trabajar con Grupo CISA.</h2>
@@ -1757,6 +1851,7 @@
      points at localhost:8400 and 30-60s timeouts when the
      impeccable helper is not running on the visitor's machine). -->
 <script src="assets/sofia-widget.js" async></script>
+<script src="assets/variant-toggler.js" defer></script>
 
 <!-- Sofia widget · ElevenLabs placeholder · spec: agente-sofia/integration-spec.md -->
 </body>
