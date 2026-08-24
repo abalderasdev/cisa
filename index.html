@@ -604,6 +604,163 @@
     #modalidades[data-variant="c"] .mod--primary .mod__cta,
     #modalidades[data-variant="c"] .mod--primary .mod__cta-arrow { color: white; }
 
+    /* === Variantes compartidas B y C para #metodo y #agente === */
+
+    /* === VARIANTE B · Verde oscuro CISA === */
+    #metodo[data-variant="b"], #agente[data-variant="b"] {
+      background: var(--bg-dark);
+      color: rgba(255, 255, 255, 0.92);
+    }
+    #metodo[data-variant="b"] .section-header h2,
+    #agente[data-variant="b"] .section-header h2 { color: white; }
+    #metodo[data-variant="b"] .section-header p,
+    #agente[data-variant="b"] .section-header p { color: rgba(255,255,255,0.72); }
+
+    /* método B */
+    #metodo[data-variant="b"] .step__num {
+      background: var(--bg-dark);
+      border-color: var(--brand-green-light);
+      color: var(--brand-green-light);
+    }
+    #metodo[data-variant="b"] .step h4 { color: white; }
+    #metodo[data-variant="b"] .step p { color: rgba(255,255,255,0.65); }
+    #metodo[data-variant="b"] .step__time { color: var(--brand-green-light); }
+
+    /* agente B */
+    #agente[data-variant="b"] .agent__copy p { color: rgba(255,255,255,0.75); }
+    #agente[data-variant="b"] .agent__bullets li { color: rgba(255,255,255,0.80); }
+    #agente[data-variant="b"] .agent__bullets li::before { background: var(--brand-green-light); }
+    #agente[data-variant="b"] .agent__visual {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(2px);
+    }
+    #agente[data-variant="b"] .agent__visual-head { border-color: rgba(255,255,255,0.10); }
+    #agente[data-variant="b"] .agent__visual-name { color: white; }
+    #agente[data-variant="b"] .agent__visual-status { color: rgba(255,255,255,0.65); }
+    #agente[data-variant="b"] .agent__msg--in {
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.90);
+    }
+    #agente[data-variant="b"] .agent__msg--out {
+      background: var(--brand-green-light);
+      color: var(--bg-dark);
+    }
+    #agente[data-variant="b"] .agent__input {
+      background: rgba(255, 255, 255, 0.08);
+    }
+    #agente[data-variant="b"] .agent__input span { color: rgba(255,255,255,0.55); }
+
+    /* === VARIANTE C · Verde + café estilo Rennale · esquinas redondeadas, transparencias, look orgánico === */
+    /* tokens locales para la variante C — solo aplican dentro de cada sección */
+    #modalidades[data-variant="c"], #metodo[data-variant="c"], #agente[data-variant="c"] {
+      --c-warm: #6B4226;          /* café tierra */
+      --c-warm-light: #8B5A36;    /* café claro */
+      --c-cream-warm: #F5EFE6;    /* crema cálida */
+      --c-leaf: #4F7942;          /* verde hoja */
+      --c-leaf-light: #7BA468;    /* verde hoja claro */
+      --c-mist: rgba(245, 239, 230, 0.65);
+      background: var(--c-cream-warm);
+      color: #2A1F18;
+      border-radius: 32px;
+    }
+    /* Solo en C aplicamos el radius de 32px a la sección + padding para que se vea flotante */
+    #modalidades[data-variant="c"],
+    #metodo[data-variant="c"],
+    #agente[data-variant="c"] {
+      margin: 32px 16px;
+      box-shadow: 0 20px 60px rgba(107, 66, 38, 0.12);
+      padding-block: 56px;
+    }
+    #modalidades[data-variant="c"] .container,
+    #metodo[data-variant="c"] .container,
+    #agente[data-variant="c"] .container { padding-inline: 16px; }
+    #modalidades[data-variant="c"] .section-header h2,
+    #metodo[data-variant="c"] .section-header h2,
+    #agente[data-variant="c"] .section-header h2 { color: var(--c-warm); }
+    #modalidades[data-variant="c"] .section-header p,
+    #metodo[data-variant="c"] .section-header p,
+    #agente[data-variant="c"] .section-header p { color: rgba(42, 31, 24, 0.72); }
+
+    /* Modalidades C: cards con radius grande, sombra suave, look orgánico */
+    #modalidades[data-variant="c"] .mod {
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(107, 66, 38, 0.10);
+      border-radius: 24px;
+      box-shadow: 0 8px 24px rgba(107, 66, 38, 0.10);
+    }
+    #modalidades[data-variant="c"] .mod:hover {
+      background: rgba(255, 255, 255, 0.75);
+      box-shadow: 0 16px 40px rgba(107, 66, 38, 0.18);
+      transform: translateY(-4px);
+    }
+    #modalidades[data-variant="c"] .mod h3 { color: var(--c-warm); }
+    #modalidades[data-variant="c"] .mod p { color: rgba(42, 31, 24, 0.72); }
+    #modalidades[data-variant="c"] .mod__icon { color: var(--c-leaf); }
+    #modalidades[data-variant="c"] .mod__label { color: var(--c-leaf); }
+    #modalidades[data-variant="c"] .mod__cta { color: var(--c-warm); }
+    /* Modalidad primaria C: verde hoja con texto café */
+    #modalidades[data-variant="c"] .mod--primary {
+      background: linear-gradient(135deg, var(--c-leaf) 0%, var(--c-leaf-light) 100%);
+      border-color: transparent;
+      color: white;
+    }
+    #modalidades[data-variant="c"] .mod--primary h3,
+    #modalidades[data-variant="c"] .mod--primary p { color: white; }
+    #modalidades[data-variant="c"] .mod--primary .mod__icon,
+    #modalidades[data-variant="c"] .mod--primary .mod__label,
+    #modalidades[data-variant="c"] .mod--primary .mod__cta { color: white; }
+
+    /* Método C: 8 steps con look orgánico */
+    #metodo[data-variant="c"] .step {
+      background: rgba(255, 255, 255, 0.50);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 20px;
+      border: 1px solid rgba(107, 66, 38, 0.10);
+    }
+    #metodo[data-variant="c"] .step__num {
+      background: var(--c-leaf);
+      border-color: var(--c-leaf);
+      color: white;
+    }
+    #metodo[data-variant="c"] .step h4 { color: var(--c-warm); }
+    #metodo[data-variant="c"] .step p { color: rgba(42, 31, 24, 0.70); }
+    #metodo[data-variant="c"] .step__time { color: var(--c-leaf); }
+
+    /* Agente C: chat bubble café/tierra */
+    #agente[data-variant="c"] .agent__copy p { color: rgba(42, 31, 24, 0.75); }
+    #agente[data-variant="c"] .agent__bullets li { color: rgba(42, 31, 24, 0.78); }
+    #agente[data-variant="c"] .agent__bullets li::before { background: var(--c-leaf); }
+    #agente[data-variant="c"] .agent__visual {
+      background: rgba(255, 255, 255, 0.60);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(107, 66, 38, 0.10);
+      border-radius: 28px;
+      box-shadow: 0 12px 32px rgba(107, 66, 38, 0.14);
+    }
+    #agente[data-variant="c"] .agent__visual-head { border-color: rgba(107, 66, 38, 0.12); }
+    #agente[data-variant="c"] .agent__visual-name { color: var(--c-warm); }
+    #agente[data-variant="c"] .agent__visual-status { color: rgba(42, 31, 24, 0.60); }
+    #agente[data-variant="c"] .agent__avatar {
+      background: var(--c-leaf);
+    }
+    #agente[data-variant="c"] .agent__msg--in {
+      background: rgba(255, 255, 255, 0.80);
+      color: var(--c-warm);
+    }
+    #agente[data-variant="c"] .agent__msg--out {
+      background: var(--c-warm);
+      color: white;
+    }
+    #agente[data-variant="c"] .agent__input {
+      background: rgba(255, 255, 255, 0.80);
+    }
+    #agente[data-variant="c"] .agent__input span { color: rgba(42, 31, 24, 0.55); }
+
     /* ================================================================
        BLOQUE 3 · La gran revelación + formulario
        ================================================================ */
@@ -1094,57 +1251,75 @@
       }
     }
 
-    /* === Variant Toggle (solo preview) === */
+    /* === Variant Toggle (visible en todas las páginas para revisión del cliente) === */
     .variant-toggle {
       position: fixed;
-      bottom: 20px;
-      left: 20px;
-      z-index: 99999;
-      background: var(--bg-dark, #0F1419);
+      top: 96px;
+      right: 16px;
+      z-index: 99998;
+      background: rgba(15, 20, 25, 0.96);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       color: white;
-      padding: 10px 14px;
-      border-radius: 10px;
-      box-shadow: 0 8px 24px rgba(15, 20, 25, 0.30);
+      padding: 12px 14px;
+      border-radius: 14px;
+      box-shadow: 0 12px 32px rgba(15, 20, 25, 0.35);
       font-family: 'JetBrains Mono', monospace;
-      display: flex; flex-direction: column; gap: 6px;
+      display: flex; flex-direction: column; gap: 8px;
       border: 1px solid rgba(255, 255, 255, 0.10);
+      max-width: 220px;
     }
     .variant-toggle__label {
-      font-size: 9px; font-weight: 600;
-      letter-spacing: 0.12em;
+      font-size: 9px; font-weight: 700;
+      letter-spacing: 0.14em;
       color: rgba(255, 255, 255, 0.55);
     }
     .variant-toggle__btns {
-      display: flex; gap: 4px;
+      display: flex; gap: 6px;
     }
     .variant-toggle__btn {
-      width: 36px; height: 36px;
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      padding: 8px 4px;
       background: rgba(255, 255, 255, 0.06);
       color: white;
       border: 1px solid rgba(255, 255, 255, 0.10);
-      border-radius: 6px;
-      font: 700 14px/1 'JetBrains Mono', monospace;
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
       cursor: pointer;
       transition: background 150ms, border-color 150ms, transform 100ms;
+    }
+    .variant-toggle__btn span {
+      font-size: 14px; font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .variant-toggle__btn small {
+      font-size: 8px; font-weight: 500;
+      color: rgba(255, 255, 255, 0.55);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
     .variant-toggle__btn:hover {
       background: rgba(255, 255, 255, 0.12);
       border-color: var(--brand-green-light, #8BC34A);
     }
-    .variant-toggle__btn:active { transform: scale(0.94); }
+    .variant-toggle__btn:active { transform: scale(0.95); }
     .variant-toggle__btn.is-active {
       background: var(--brand-green-light, #8BC34A);
       color: var(--bg-dark, #0F1419);
       border-color: var(--brand-green-light, #8BC34A);
     }
+    .variant-toggle__btn.is-active small { color: rgba(15, 20, 25, 0.65); }
     .variant-toggle__hint {
       font-size: 9px;
       color: rgba(255, 255, 255, 0.45);
       letter-spacing: 0.04em;
+      line-height: 1.3;
     }
     @media (max-width: 600px) {
-      .variant-toggle { bottom: 12px; left: 12px; padding: 8px 10px; }
-      .variant-toggle__btn { width: 30px; height: 30px; font-size: 12px; }
+      .variant-toggle { top: auto; bottom: 12px; right: 12px; left: 12px; max-width: none; }
+      .variant-toggle__btns { gap: 4px; }
+      .variant-toggle__btn { padding: 6px 4px; }
     }
   </style>
 </head>
@@ -1430,7 +1605,7 @@
     <!-- ============================================================
          BLOQUE 4 · MÉTODO (8 etapas)
          ============================================================ -->
-    <section class="section section--alt" id="metodo" aria-labelledby="method-title">
+    <section class="section section--alt" id="metodo" data-variant="a" aria-labelledby="method-title">
       <div class="container">
         <header class="section-header">
           <h2 id="method-title">Ocho etapas. En todo momento sabe en cuál está su proyecto.</h2>
@@ -1602,7 +1777,7 @@
     <!-- ============================================================
          BLOQUE 6 · EL AGENTE — integrado, no WOW
          ============================================================ -->
-    <section class="section section--cream" id="agente" aria-labelledby="agent-title">
+    <section class="section section--cream" id="agente" data-variant="a" aria-labelledby="agent-title">
       <div class="container">
         <header class="section-header">
           <h2 id="agent-title">¿No quiere llenar formularios? Hable con nuestro agente.</h2>
