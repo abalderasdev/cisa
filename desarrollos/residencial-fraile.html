@@ -132,6 +132,8 @@
 
     .dev-galeria{padding:64px 0;background:var(--paper);}
     .dev-galeria__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:24px;}
+    .dev-galeria__placeholder{margin-top:24px;background:var(--bg-section);border:1.5px dashed var(--ink-300);border-radius:var(--radius-lg);padding:56px 24px;text-align:center;}
+    .dev-galeria__placeholder-inner{max-width:560px;margin:0 auto;}
     .dev-galeria__item{border-radius:var(--radius-md);overflow:hidden;aspect-ratio:4/3;background:var(--bg-section);position:relative;}
     .dev-galeria__item img{width:100%;height:100%;object-fit:cover;transition:transform 300ms;}
     .dev-galeria__item:hover img{transform:scale(1.04);}
@@ -211,8 +213,11 @@
   <main id="main">
 
     <section class="dev-hero" aria-labelledby="dev-title">
-      <div class="dev-hero__image">
-        <img src="../assets/desarrollos/fraile/gopr-9566.webp" alt="Vista del terreno donde se proyecta Residencial El Fraile en Jilotzingo, Estado de México" />
+      <div class="dev-hero__image" style="background:linear-gradient(135deg,var(--bg-cisa) 0%,var(--bg-cisa-2) 100%);position:relative;min-height:320px;display:grid;place-items:center;">
+        <div style="text-align:center;padding:64px 24px;">
+          <div class="mono" style="color:rgba(255,255,255,0.55);font-size:13px;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:20px;">Terreno en evaluación</div>
+          <div style="font-family:var(--font-mono);color:rgba(255,255,255,0.4);font-size:14px;letter-spacing:0.08em;">JILOTZINGO · ESTADO DE MÉXICO</div>
+        </div>
         <div class="dev-hero__image-tag">
           <span class="dev-card__chip dev-card__chip--warning">
             <span class="dev-card__dot"></span> En evaluación
@@ -330,20 +335,14 @@
     <section class="dev-galeria" aria-labelledby="galeria-title">
       <div class="container">
         <h2 id="galeria-title">Recorrido del terreno</h2>
-        <p class="section-header" style="color:var(--ink-700);font-size:18px;margin-top:12px;">Imágenes del predio tomadas en visita técnica. Son útiles para entender el relieve, los accesos y la vegetación existente. No son renders del proyecto, que aún no existe.</p>
-        <div class="dev-galeria__grid">
-          <div class="dev-galeria__item"><img src="../assets/desarrollos/fraile/gopr-9566.webp" alt="Vista del acceso al terreno" /><div class="dev-galeria__caption">Acceso</div></div>
-          <div class="dev-galeria__item"><img src="../assets/desarrollos/fraile/gopr-9567.webp" alt="Lindero norte del terreno" /><div class="dev-galeria__caption">Lindero norte</div></div>
-          <div class="dev-galeria__item"><img src="../assets/desarrollos/fraile/gopr-9568.webp" alt="Vegetación existente" /><div class="dev-galeria__caption">Vegetación</div></div>
-          <div class="dev-galeria__item"><img src="../assets/desarrollos/fraile/gopr-9569.webp" alt="Pendiente del terreno" /><div class="dev-galeria__caption">Pendiente</div></div>
-          <div class="dev-galeria__item"><img src="../assets/desarrollos/fraile/gopr-9570.webp" alt="Vista desde el interior" /><div class="dev-galeria__caption">Interior</div></div>
-          <div class="dev-galeria__item"><img src="../assets/desarrollos/fraile/gopr-9571.webp" alt="Lindero oriente" /><div class="dev-galeria__caption">Lindero oriente</div></div>
-          <div class="dev-galeria__item"><img src="../assets/desarrollos/fraile/gopr-9572.webp" alt="Acceso vehicular" /><div class="dev-galeria__caption">Acceso vehicular</div></div>
-          <div class="dev-galeria__item"><img src="../assets/desarrollos/fraile/gopr-9573.webp" alt="Vegetación y pendiente" /><div class="dev-galeria__caption">Vegetación y pendiente</div></div>
-          <div class="dev-galeria__item"><img src="../assets/desarrollos/fraile/gopr-9574.webp" alt="Vista del terreno" /><div class="dev-galeria__caption">Vista general</div></div>
-          <div class="dev-galeria__item"><img src="../assets/desarrollos/fraile/gopr-9575.webp" alt="Vegetación densa" /><div class="dev-galeria__caption">Vegetación densa</div></div>
-          <div class="dev-galeria__item"><img src="../assets/desarrollos/fraile/gopr-9576.webp" alt="Lindero poniente" /><div class="dev-galeria__caption">Lindero poniente</div></div>
-          <div class="dev-galeria__item"><img src="../assets/desarrollos/fraile/gopr-9577.webp" alt="Topografía del terreno" /><div class="dev-galeria__caption">Topografía</div></div>
+        <p class="section-header" style="color:var(--ink-700);font-size:18px;margin-top:12px;">Las imágenes del recorrido del terreno se publican cuando se levanta el estudio topográfico. Hoy la mejor forma de conocer el predio es agendar una visita técnica con el equipo de Grupo CISA.</p>
+        <div class="dev-galeria__placeholder">
+          <div class="dev-galeria__placeholder-inner">
+            <div class="mono" style="color:var(--ink-500);font-size:13px;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:12px;">[Pendiente]</div>
+            <h3 style="color:var(--ink-700);font-size:20px;margin-bottom:8px;">Recorrido fotográfico del terreno</h3>
+            <p style="color:var(--ink-500);font-size:15px;max-width:480px;margin:0 auto 24px;">Las fotos del acceso, los linderos, la vegetación y la pendiente se incorporan a esta página al cierre de la evaluación.</p>
+            <a href="https://wa.me/525517964940?text=Hola%2C%20quiero%20agendar%20una%20visita%20t%C3%A9cnica%20a%20Residencial%20El%20Fraile" class="btn btn--primary" target="_blank" rel="noopener noreferrer">Agendar visita por WhatsApp</a>
+          </div>
         </div>
       </div>
     </section>
