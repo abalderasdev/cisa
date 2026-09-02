@@ -651,115 +651,120 @@
     }
     #agente[data-variant="b"] .agent__input span { color: rgba(255,255,255,0.55); }
 
-    /* === VARIANTE C · Verde + café estilo Rennale · esquinas redondeadas, transparencias, look orgánico === */
-    /* tokens locales para la variante C — solo aplican dentro de cada sección */
+    /* === VARIANTE C · Contraste dinámico de verdes CISA =================
+       Solo paleta CISA (--brand-green-*), sin cream ni tonos ajenos.
+       Cada sección pesa distinto: brand medio → tint claro → dark.
+       Cards y badges también cambian por sección para que VIVA el contraste.
+       CERO border-radius flotante, CERO margin lateral, CERO box-shadow
+       ajeno al sistema. Se ve como un layout nuevo, no como la misma
+       página pintada de otro color.                                          */
     #modalidades[data-variant="c"], #metodo[data-variant="c"], #agente[data-variant="c"] {
-      --c-warm: #6B4226;          /* café tierra */
-      --c-warm-light: #8B5A36;    /* café claro */
-      --c-cream-warm: #F5EFE6;    /* crema cálida */
-      --c-leaf: #4F7942;          /* verde hoja */
-      --c-leaf-light: #7BA468;    /* verde hoja claro */
-      --c-mist: rgba(245, 239, 230, 0.65);
-      background: var(--c-cream-warm);
-      color: #2A1F18;
-      border-radius: 32px;
+      color: var(--ink-900);
     }
-    /* Solo en C aplicamos el radius de 32px a la sección + padding para que se vea flotante */
-    #modalidades[data-variant="c"],
-    #metodo[data-variant="c"],
-    #agente[data-variant="c"] {
-      margin: 32px 16px;
-      box-shadow: 0 20px 60px rgba(107, 66, 38, 0.12);
-      padding-block: 56px;
-    }
-    #modalidades[data-variant="c"] .container,
-    #metodo[data-variant="c"] .container,
-    #agente[data-variant="c"] .container { padding-inline: 16px; }
-    #modalidades[data-variant="c"] .section-header h2,
-    #metodo[data-variant="c"] .section-header h2,
-    #agente[data-variant="c"] .section-header h2 { color: var(--c-warm); }
-    #modalidades[data-variant="c"] .section-header p,
-    #metodo[data-variant="c"] .section-header p,
-    #agente[data-variant="c"] .section-header p { color: rgba(42, 31, 24, 0.72); }
 
-    /* Modalidades C: cards con radius grande, sombra suave, look orgánico */
+    /* === Modalidades C · brand green medio + cards brand green light primario === */
+    #modalidades[data-variant="c"] {
+      background: var(--brand-green);
+      color: #fff;
+    }
+    #modalidades[data-variant="c"] .section-header h2 { color: #fff; }
+    #modalidades[data-variant="c"] .section-header p { color: rgba(255,255,255,0.78); }
     #modalidades[data-variant="c"] .mod {
-      background: rgba(255, 255, 255, 0.55);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(107, 66, 38, 0.10);
-      border-radius: 24px;
-      box-shadow: 0 8px 24px rgba(107, 66, 38, 0.10);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1.5px solid rgba(255, 255, 255, 0.18);
+      color: #fff;
     }
     #modalidades[data-variant="c"] .mod:hover {
-      background: rgba(255, 255, 255, 0.75);
-      box-shadow: 0 16px 40px rgba(107, 66, 38, 0.18);
-      transform: translateY(-4px);
+      background: rgba(255, 255, 255, 0.14);
+      border-color: var(--brand-green-light);
+      transform: translateY(-3px);
     }
-    #modalidades[data-variant="c"] .mod h3 { color: var(--c-warm); }
-    #modalidades[data-variant="c"] .mod p { color: rgba(42, 31, 24, 0.72); }
-    #modalidades[data-variant="c"] .mod__icon { color: var(--c-leaf); }
-    #modalidades[data-variant="c"] .mod__label { color: var(--c-leaf); }
-    #modalidades[data-variant="c"] .mod__cta { color: var(--c-warm); }
-    /* Modalidad primaria C: verde hoja con texto café */
+    #modalidades[data-variant="c"] .mod h3 { color: #fff; }
+    #modalidades[data-variant="c"] .mod p { color: rgba(255,255,255,0.78); }
+    #modalidades[data-variant="c"] .mod__icon { color: var(--brand-green-light); }
+    #modalidades[data-variant="c"] .mod__label { color: var(--brand-green-light); }
+    #modalidades[data-variant="c"] .mod__cta { color: var(--brand-green-light); }
+    /* Card primaria: brand green light con texto brand green dark (invertida) */
     #modalidades[data-variant="c"] .mod--primary {
-      background: linear-gradient(135deg, var(--c-leaf) 0%, var(--c-leaf-light) 100%);
-      border-color: transparent;
-      color: white;
+      background: var(--brand-green-light);
+      border-color: var(--brand-green-light);
+      color: var(--brand-green-dark);
     }
-    #modalidades[data-variant="c"] .mod--primary h3,
-    #modalidades[data-variant="c"] .mod--primary p { color: white; }
+    #modalidades[data-variant="c"] .mod--primary h3 { color: var(--brand-green-dark); }
+    #modalidades[data-variant="c"] .mod--primary p { color: rgba(15, 20, 25, 0.78); }
     #modalidades[data-variant="c"] .mod--primary .mod__icon,
     #modalidades[data-variant="c"] .mod--primary .mod__label,
-    #modalidades[data-variant="c"] .mod--primary .mod__cta { color: white; }
+    #modalidades[data-variant="c"] .mod--primary .mod__cta { color: var(--brand-green-dark); }
+    #modalidades[data-variant="c"] .mod--primary:hover {
+      background: #fff;
+      border-color: #fff;
+    }
+    #modalidades[data-variant="c"] .mod--primary:hover h3,
+    #modalidades[data-variant="c"] .mod--primary:hover p { color: var(--brand-green-dark); }
+    #modalidades[data-variant="c"] .mod--primary:hover .mod__icon,
+    #modalidades[data-variant="c"] .mod--primary:hover .mod__label,
+    #modalidades[data-variant="c"] .mod--primary:hover .mod__cta { color: var(--brand-green); }
 
-    /* Método C: 8 steps con look orgánico */
+    /* === Método C · brand green tint muy claro + step nums brand green === */
+    #metodo[data-variant="c"] {
+      background: var(--brand-green-tint);
+      color: var(--ink-900);
+    }
+    #metodo[data-variant="c"] .section-header h2 { color: var(--brand-green-dark); }
+    #metodo[data-variant="c"] .section-header p { color: rgba(15, 20, 25, 0.72); }
     #metodo[data-variant="c"] .step {
-      background: rgba(255, 255, 255, 0.50);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      padding: 20px;
-      border: 1px solid rgba(107, 66, 38, 0.10);
+      background: #fff;
+      border: 1.5px solid var(--brand-green-tint);
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 1px 0 rgba(31, 77, 42, 0.06);
+      transition: transform 200ms, box-shadow 200ms, border-color 200ms;
+    }
+    #metodo[data-variant="c"] .step:hover {
+      transform: translateY(-2px);
+      border-color: var(--brand-green);
+      box-shadow: 0 12px 24px rgba(31, 77, 42, 0.08);
     }
     #metodo[data-variant="c"] .step__num {
-      background: var(--c-leaf);
-      border-color: var(--c-leaf);
-      color: white;
+      background: var(--brand-green);
+      border-color: var(--brand-green);
+      color: #fff;
     }
-    #metodo[data-variant="c"] .step h4 { color: var(--c-warm); }
-    #metodo[data-variant="c"] .step p { color: rgba(42, 31, 24, 0.70); }
-    #metodo[data-variant="c"] .step__time { color: var(--c-leaf); }
+    #metodo[data-variant="c"] .step h4 { color: var(--brand-green-dark); }
+    #metodo[data-variant="c"] .step p { color: var(--ink-700); }
+    #metodo[data-variant="c"] .step__time { color: var(--brand-green); }
 
-    /* Agente C: chat bubble café/tierra */
-    #agente[data-variant="c"] .agent__copy p { color: rgba(42, 31, 24, 0.75); }
-    #agente[data-variant="c"] .agent__bullets li { color: rgba(42, 31, 24, 0.78); }
-    #agente[data-variant="c"] .agent__bullets li::before { background: var(--c-leaf); }
+    /* === Agente C · brand green dark con acentos brand green light === */
+    #agente[data-variant="c"] {
+      background: var(--brand-green-dark);
+      color: rgba(255,255,255,0.92);
+    }
+    #agente[data-variant="c"] .section-header h2 { color: #fff; }
+    #agente[data-variant="c"] .section-header p { color: rgba(255,255,255,0.78); }
+    #agente[data-variant="c"] .agent__copy p { color: rgba(255,255,255,0.80); }
+    #agente[data-variant="c"] .agent__bullets li { color: rgba(255,255,255,0.85); }
+    #agente[data-variant="c"] .agent__bullets li::before { background: var(--brand-green-light); }
     #agente[data-variant="c"] .agent__visual {
-      background: rgba(255, 255, 255, 0.60);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(107, 66, 38, 0.10);
-      border-radius: 28px;
-      box-shadow: 0 12px 32px rgba(107, 66, 38, 0.14);
+      background: rgba(255,255,255,0.06);
+      border: 1.5px solid rgba(255,255,255,0.16);
     }
-    #agente[data-variant="c"] .agent__visual-head { border-color: rgba(107, 66, 38, 0.12); }
-    #agente[data-variant="c"] .agent__visual-name { color: var(--c-warm); }
-    #agente[data-variant="c"] .agent__visual-status { color: rgba(42, 31, 24, 0.60); }
-    #agente[data-variant="c"] .agent__avatar {
-      background: var(--c-leaf);
-    }
+    #agente[data-variant="c"] .agent__visual-head { border-color: rgba(255,255,255,0.12); }
+    #agente[data-variant="c"] .agent__visual-name { color: #fff; }
+    #agente[data-variant="c"] .agent__visual-status { color: rgba(255,255,255,0.70); }
+    #agente[data-variant="c"] .agent__avatar { background: var(--brand-green-light); color: var(--brand-green-dark); }
     #agente[data-variant="c"] .agent__msg--in {
-      background: rgba(255, 255, 255, 0.80);
-      color: var(--c-warm);
+      background: rgba(255,255,255,0.10);
+      color: rgba(255,255,255,0.92);
     }
     #agente[data-variant="c"] .agent__msg--out {
-      background: var(--c-warm);
-      color: white;
+      background: var(--brand-green-light);
+      color: var(--brand-green-dark);
     }
     #agente[data-variant="c"] .agent__input {
-      background: rgba(255, 255, 255, 0.80);
+      background: rgba(255,255,255,0.10);
     }
-    #agente[data-variant="c"] .agent__input span { color: rgba(42, 31, 24, 0.55); }
+    #agente[data-variant="c"] .agent__input span { color: rgba(255,255,255,0.55); }
+    #agente[data-variant="c"] .agent__input button { background: var(--brand-green-light); color: var(--brand-green-dark); }
 
     /* ================================================================
        BLOQUE 3 · La gran revelación + formulario

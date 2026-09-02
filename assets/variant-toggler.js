@@ -56,7 +56,7 @@
       '<div class="variant-toggle__btns">',
       '  <button type="button" data-variant-btn="a" class="variant-toggle__btn" title="Versión A · actual (cream)"><span>A</span><small>actual</small></button>',
       '  <button type="button" data-variant-btn="b" class="variant-toggle__btn" title="Versión B · verde oscuro CISA"><span>B</span><small>verde oscuro</small></button>',
-      '  <button type="button" data-variant-btn="c" class="variant-toggle__btn" title="Versión C · verde + café, esquinas redondeadas"><span>C</span><small>orgánica</small></button>',
+      '  <button type="button" data-variant-btn="c" class="variant-toggle__btn" title="Versión C · contraste dinámico de verdes CISA"><span>C</span><small>dinámico</small></button>',
       '</div>',
       '<div class="variant-toggle__hint">Click para previsualizar · persiste</div>'
     ].join('\n');
