@@ -25,7 +25,7 @@
   width: var(--cisa-fab-size);
   height: var(--cisa-fab-size);
   border-radius: 50%;
-  background: var(--brand-green-light, #8BC34A);
+  background: transparent;
   border: 3px solid var(--brand-green, #2E7D32);
   box-shadow: 0 8px 24px rgba(31, 77, 42, 0.28);
   cursor: pointer;
@@ -34,7 +34,7 @@
   padding: 0;
   margin: 0;
   display: block;
-  transition: box-shadow 0.25s ease, background 0.2s ease;
+  transition: box-shadow 0.25s ease, transform 0.2s ease;
   /* El transform lo controla el JS (mouse-tracking). Solo permitimos
      scale al hacer :hover sin pisar el parallax. */
 }
@@ -54,7 +54,7 @@
   inset: 0;
   border-radius: 50%;
   overflow: hidden;
-  background: var(--brand-green-light, #8BC34A);
+  background: transparent;
 }
 
 #agent-cisa-fab .agent-fab__video {
@@ -168,12 +168,14 @@
 }
 
 #agent-cisa-fab[data-state="opening"] {
-  background: var(--brand-green, #2E7D32);
+  background: transparent;
+  border-color: var(--brand-green-light, #8BC34A);
 }
 
 /* Estado: chat abierto (mini indicator) */
 #agent-cisa-fab[data-state="open"] {
-  background: var(--brand-green, #2E7D32);
+  background: transparent;
+  border-color: var(--brand-green-light, #8BC34A);
 }
 
 /* Responsive */
