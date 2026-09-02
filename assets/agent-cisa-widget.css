@@ -1,5 +1,5 @@
 /* ================================================================
-   SOFIA WIDGET · Grupo CISA
+   AGENT CISA WIDGET · Grupo CISA
    Widget override styles · v2.0
    21-ago-2026
 
@@ -24,7 +24,7 @@
 /* (1) Host the custom element off-screen so its native floating
        button is never painted. The widget stays functional —
        startConversation() is still callable. */
-#sofia-widget-host {
+#agent-cisa-widget-host {
   position: fixed;
   bottom: -9999px;
   right: -9999px;
@@ -39,14 +39,14 @@
      also work and cross the shadow boundary, but a 1px
      collapsed box is the simpler, well-supported path. */
 }
-#sofia-widget {
+#agent-cisa-widget {
   display: block;
 }
 
 /* Belt-and-suspenders: if the host somehow renders, hide the
    custom element itself. Shadow DOM is opaque to outside CSS
    so we can only hide the host. */
-elevenlabs-convai#sofia-widget {
+elevenlabs-convai#agent-cisa-widget {
   position: fixed;
   bottom: -9999px;
   right: -9999px;
@@ -58,7 +58,7 @@ elevenlabs-convai#sofia-widget {
 
 /* (2) Theme the conversation panel to match CISA's brand.
        These are the CSS variables the widget reads. */
-elevenlabs-convai#sofia-widget {
+elevenlabs-convai#agent-cisa-widget {
   --elevenlabs-convai-widget-base: #FFFFFF;
   --elevenlabs-convai-widget-base-hover: #F2F4F2;
   --elevenlabs-convai-widget-base-active: #E5E7EB;

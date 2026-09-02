@@ -1,5 +1,5 @@
 /* ================================================================
-   SOFIA WIDGET · Grupo CISA
+   AGENT CISA WIDGET · Grupo CISA
    v2.0 · ABDev · Alberto Balderas
    21-ago-2026
 
@@ -22,7 +22,7 @@
        su propio botón flotante (o cuando se llama via override)
 
    Lo único que hacemos aquí es:
-     1. Leer la config desde /api/sofia-config (env-driven)
+     1. Leer la config desde /api/agent-config (env-driven)
      2. Inyectar el custom element <elevenlabs-convai> con los
         atributos de branding de CISA
      3. Cargar el script de unpkg con `async`
@@ -37,7 +37,7 @@
   'use strict';
 
   // === Pages where the widget does not run ===
-  // Per agente-sofia/integration-spec.md section 4: the widget is
+  // Per agente-cisa/integration-spec.md section 4: the widget is
   // not loaded on the precalificar form, the gracias page, the
   // contacto form, or the privacy notice. Those pages have their
   // own conversion paths and a chat widget would compete with them.
@@ -55,11 +55,11 @@
     return;
   }
 
-  // === Defaults used if /api/sofia-config is unreachable ===
+  // === Defaults used if /api/agent-config is unreachable ===
   // The agent id placeholder is intentional: it forces the widget
   // to render in WhatsApp-only mode (its startConversation fails,
   // the CTA is disabled, the user sees only the WhatsApp link).
-  var SOFIA = {
+  var AGENT = {
     agentId:        'REPLACE_WITH_AGENT_ID',
     whatsappNumber: '525517964940',
     fallbackMessage: 'Hola, necesito información sobre Grupo CISA.'
@@ -81,16 +81,16 @@
    * the frontend code.
    */
   function loadConfig() {
-    return fetch('/api/sofia-config', { credentials: 'omit', cache: 'no-cache' })
+    return fetch('/api/agent-config', { credentials: 'omit', cache: 'no-cache' })
       .then(function (r) {
-        if (!r.ok) throw new Error('sofia-config HTTP ' + r.status);
+        if (!r.ok) throw new Error('agent-config HTTP ' + r.status);
         return r.json();
       })
       .then(function (data) {
-        if (data.agentId)         SOFIA.agentId = data.agentId;
-        if (data.whatsappNumber)  SOFIA.whatsappNumber = data.whatsappNumber;
-        if (data.fallbackMessage) SOFIA.fallbackMessage = data.fallbackMessage;
-        log('info', 'config loaded', { agentId: SOFIA.agentId, source: data.source });
+        if (data.agentId)         AGENT.agentId = data.agentId;
+        if (data.whatsappNumber)  AGENT.whatsappNumber = data.whatsappNumber;
+        if (data.fallbackMessage) AGENT.fallbackMessage = data.fallbackMessage;
+        log('info', 'config loaded', { agentId: AGENT.agentId, source: data.source });
       });
   }
 
@@ -109,7 +109,7 @@
    * gives the user a real zero-wait experience.
    */
   function mount() {
-    if (SOFIA.agentId === 'REPLACE_WITH_AGENT_ID') {
+    if (AGENT.agentId === 'REPLACE_WITH_AGENT_ID') {
       log('warn', 'no agent_id configured; widget will not be mounted');
       return;
     }
@@ -120,7 +120,7 @@
     //    it off-screen rather than display:none because the widget
     //    needs a visible mount point to compute layout.
     var host = document.createElement('div');
-    host.id = 'sofia-widget-host';
+    host.id = 'agent-cisa-widget-host';
     host.setAttribute('aria-hidden', 'true');
     document.body.appendChild(host);
 
@@ -132,10 +132,10 @@
     //    avatar asset; if it 404s the widget falls back to its
     //    default orb.
     var widget = document.createElement('elevenlabs-convai');
-    widget.id = 'sofia-widget';
-    widget.setAttribute('agent-id', SOFIA.agentId);
-    widget.setAttribute('avatar-image-url', absoluteUrl('assets/sofia-avatar.jpg'));
-    widget.setAttribute('action-text', 'Hablar con Sofía');
+    widget.id = 'agent-cisa-widget';
+    widget.setAttribute('agent-id', AGENT.agentId);
+    widget.setAttribute('avatar-image-url', absoluteUrl('assets/agent-cisa-avatar.jpg'));
+    widget.setAttribute('action-text', 'Hablar con CISA');
     widget.setAttribute('language', 'es');
     host.appendChild(widget);
 
@@ -168,7 +168,7 @@
 
   /**
    * Delegate click events on any element marked with
-   * `[data-sofia-open]` (used by the green trigger in the
+   * `[data-agent-open]` (used by the green trigger in the
    * `#agente` section CTA, and as a generic hook for any future
    * in-page button that wants to open the conversation).
    *
@@ -179,7 +179,7 @@
    */
   function wireTriggers(widget) {
     document.addEventListener('click', function (e) {
-      var opener = e.target.closest('[data-sofia-open]');
+      var opener = e.target.closest('[data-agent-open]');
       if (!opener) return;
       e.preventDefault();
       tryStartConversation(widget);
@@ -207,7 +207,7 @@
 
   function log(level, message, detail) {
     if (!window.console) return;
-    var prefix = '[sofia]';
+    var prefix = '[cisa-agent]';
     if (level === 'error' && window.console.error) {
       window.console.error(prefix, message, detail || '');
     } else if (level === 'warn' && window.console.warn) {

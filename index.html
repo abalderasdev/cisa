@@ -1026,7 +1026,7 @@
       text-align: center;
     }
 
-    /* Visual del agente — video de Sofía (reemplaza chat estático) */
+    /* Visual del agente — video del personaje CISA (reemplaza chat estático) */
     .agent__visual--video {
       max-width: 360px;
       padding: 16px;
@@ -1801,7 +1801,7 @@
               <li>Registra su contacto para seguimiento aunque la conversación se corte</li>
             </ul>
             <div class="agent__channels">
-              <button type="button" class="btn btn--primary btn--lg" data-sofia-open aria-label="Iniciar conversación con el agente">
+              <button type="button" class="btn btn--primary btn--lg" data-agent-open aria-label="Iniciar conversación con el agente">
                 Hablar con el agente
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
@@ -1819,21 +1819,21 @@
           <div class="agent__visual agent__visual--video">
             <div class="agent__video-frame">
               <video
-                id="sofia-agent-video"
+                id="agent-cisa-video"
                 class="agent__video"
-                src="assets/sofia-intro.mp4"
-                poster="assets/sofia-avatar.jpg"
+                src="assets/agent-cisa-hello.mp4"
+                poster="assets/agent-cisa-avatar.jpg"
                 autoplay
                 loop
                 muted
                 playsinline
-                aria-label="Sofía, asistente virtual de Grupo CISA, trabajando"></video>
+                aria-label="Personaje CISA, asistente virtual de Grupo CISA, trabajando"></video>
               <div class="agent__video-overlay">
                 <div class="agent__video-tag">
                   <span class="agent__status-dot" aria-hidden="true"></span>
                   <span>En vivo · responde en segundos</span>
                 </div>
-                <div class="agent__video-name">Sofía</div>
+                <div class="agent__video-name">CISA</div>
                 <div class="agent__video-role">Asistente virtual de Grupo CISA</div>
               </div>
             </div>
@@ -2078,14 +2078,14 @@
 <script src="http://localhost:8400/live.js?token=260496c0-7a81-47a3-9d47-897f1aede735"></script>
 <!-- impeccable-live-end -->
 
-<!-- Sofia widget · ElevenLabs placeholder · spec: agente-sofia/integration-spec.md
+<!-- Agent CISA widget · ElevenLabs placeholder · spec: agente-cisa/integration-spec.md
      NOTE: must come AFTER the impeccable live script tag, but
      use async so it is not blocked by the live.js load (which
      points at localhost:8400 and 30-60s timeouts when the
      impeccable helper is not running on the visitor's machine). -->
-<script src="assets/sofia-widget.js" async></script>
+<script src="assets/agent-cisa-widget.js" async></script>
 <script src="assets/variant-toggler.js" defer></script>
 
-<!-- Sofia widget · ElevenLabs placeholder · spec: agente-sofia/integration-spec.md -->
+<!-- Agent CISA widget · ElevenLabs placeholder · spec: agente-cisa/integration-spec.md -->
 </body>
 </html>
