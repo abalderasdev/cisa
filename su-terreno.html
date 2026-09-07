@@ -517,88 +517,126 @@
        BLOQUE 4 · 8 etapas del método (línea de tiempo)
        ================================================================ */
     /* ================================================================
-       ETAPAS · duración de cada etapa sobre un eje común de meses.
-       No es un calendario acumulado: compara cuánto dura cada etapa,
-       sin afirmar un plazo total del proyecto.
+       ETAPAS · panel de plan de obra
+       Lectura tipo consola tecnica sobre el verde profundo de marca:
+       eje de meses, lineas guia, y una barra por etapa. Compara
+       duraciones; no es un calendario acumulado, asi que no afirma un
+       plazo total del proyecto.
        ================================================================ */
-    .etapas { margin-top: 48px; }
-    .etapas__axis { display: none; }
-    @media (min-width: 1024px) {
-      .etapas__axis {
-        display: grid;
-        grid-template-columns: 44px 260px 1fr;
-        gap: 20px;
-        padding: 0 12px;
-        align-items: end;
-      }
+    .etapas {
+      margin-top: 48px;
+      position: relative;
+      padding: 28px 20px 24px;
+      border-radius: var(--radius-lg);
+      background:
+        radial-gradient(120% 140% at 0% 0%, rgba(46,125,50,.20), transparent 55%),
+        var(--bg-dark);
+      border: 1px solid rgba(139, 195, 74, 0.16);
+      overflow: hidden;
+    }
+    /* Trama tenue de fondo, como papel de plano */
+    .etapas::before {
+      content: "";
+      position: absolute; inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(to right, rgba(139,195,74,.05) 0 1px, transparent 1px 100%),
+        linear-gradient(to bottom, rgba(139,195,74,.05) 0 1px, transparent 1px 100%);
+      background-size: 48px 48px;
+    }
+    @media (min-width: 1024px) { .etapas { padding: 32px 32px 28px; } }
+
+    .etapas__head {
+      position: relative;
+      display: none;
+      grid-template-columns: 44px 260px 1fr;
+      gap: 20px;
+      align-items: end;
+      padding: 0 12px 10px;
+      border-bottom: 1px solid rgba(139, 195, 74, 0.18);
+    }
+    @media (min-width: 1024px) { .etapas__head { display: grid; } }
+    .etapas__col {
+      grid-column: 2;
+      font-family: var(--font-mono);
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.14em;
+      color: rgba(139, 195, 74, 0.72);
     }
     .etapas__axis-scale {
       grid-column: 3;
       position: relative;
-      height: 20px;
+      height: 18px;
       padding-right: 108px;
     }
     .etapas__unit {
-      position: absolute; left: 0; bottom: 2px;
+      position: absolute; left: 0; bottom: 0;
       font-family: var(--font-mono);
-      font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
-      color: var(--ink-400);
-      text-transform: uppercase;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(139, 195, 74, 0.72);
     }
     .etapas__ticks { position: relative; height: 100%; }
     .etapas__tick {
-      position: absolute; bottom: 2px; transform: translateX(-50%);
+      position: absolute; bottom: 0; transform: translateX(-50%);
       font-family: var(--font-mono);
       font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
-      color: var(--ink-400);
+      color: rgba(255,255,255,.42);
     }
     .etapas__tick:last-child { transform: translateX(-100%); }
 
-    .etapas__list { list-style: none; margin: 0; padding: 0; }
+    .etapas__list { position: relative; list-style: none; margin: 0; padding: 0; }
 
     .etapa {
+      position: relative;
       display: grid;
       grid-template-columns: 44px 1fr;
-      gap: 4px 16px;
+      gap: 2px 16px;
       align-items: start;
-      padding: 18px 12px 18px 0;
-      border-bottom: 1px solid var(--ink-100);
-      transition: background 220ms;
+      padding: 16px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      transition: background 260ms;
     }
-    .etapa:hover { background: var(--cream); }
+    .etapa:last-child { border-bottom: 0; }
+    .etapa:hover { background: rgba(139, 195, 74, 0.06); }
     @media (min-width: 1024px) {
       .etapa {
         grid-template-columns: 44px 260px 1fr;
         align-items: center;
         gap: 20px;
-        padding: 14px 12px;
+        padding: 13px 12px;
       }
     }
 
     .etapa__num {
       grid-row: span 2;
-      width: 44px; height: 44px;
+      width: 40px; height: 40px;
       display: grid; place-items: center;
-      border-radius: 50%;
-      background: var(--paper);
-      border: 2px solid var(--brand-green);
-      color: var(--brand-green-dark);
+      border-radius: var(--radius-sm, 8px);
+      background: rgba(139, 195, 74, 0.08);
+      border: 1px solid rgba(139, 195, 74, 0.38);
+      color: var(--brand-green-light);
       font-family: var(--font-mono);
-      font-size: 13px; font-weight: 700;
-      transition: background 220ms, color 220ms, transform 220ms;
+      font-size: 12px; font-weight: 700;
+      transition: background 260ms, border-color 260ms, color 260ms, box-shadow 260ms;
     }
     @media (min-width: 1024px) { .etapa__num { grid-row: auto; } }
     .etapa:hover .etapa__num {
-      background: var(--brand-green-dark);
-      border-color: var(--brand-green-dark);
-      color: white;
-      transform: scale(1.06);
+      background: var(--brand-green-light);
+      border-color: var(--brand-green-light);
+      color: var(--bg-dark);
+      box-shadow: 0 0 0 4px rgba(139, 195, 74, 0.14);
     }
 
-    .etapa__name h4 { font-size: 16px; margin: 0 0 3px; letter-spacing: -0.01em; }
-    .etapa__name p { font-size: 14px; color: var(--ink-500); line-height: 1.45; margin: 0; }
+    .etapa__name h4 {
+      font-size: 16px; margin: 0 0 3px;
+      letter-spacing: -0.01em; color: #fff;
+    }
+    .etapa__name p {
+      font-size: 14px; line-height: 1.45; margin: 0;
+      color: rgba(255,255,255,.52);
+    }
 
-    /* La barra: tramo sólido = mínimo, tramo tenue = hasta el máximo */
     .etapa__bar {
       grid-column: 2 / -1;
       display: grid;
@@ -610,50 +648,61 @@
     @media (min-width: 1024px) { .etapa__bar { grid-column: auto; margin-top: 0; } }
     .etapa__track {
       position: relative;
-      width: 100%; height: 12px;
-      /* Lineas guia cada 6 meses */
-      background-image: linear-gradient(to right, var(--ink-100) 0 1px, transparent 1px);
+      width: 100%; height: 14px;
+      background-image: linear-gradient(to right, rgba(255,255,255,.10) 0 1px, transparent 1px);
       background-size: 25% 100%;
       background-repeat: repeat-x;
     }
+    /* Tramo hasta el maximo del rango */
     .etapa__range {
       position: absolute; inset: 0 auto 0 0;
-      background: var(--brand-green-tint);
-      border: 1px solid rgba(46, 125, 50, 0.22);
+      background: rgba(139, 195, 74, 0.16);
+      border: 1px solid rgba(139, 195, 74, 0.32);
       border-radius: var(--radius-pill);
-      transition: background 220ms;
+      transition: background 260ms, border-color 260ms;
     }
+    /* Tramo de duracion minima */
     .etapa__min {
-      position: absolute; inset: 0 auto 0 0;
-      background: linear-gradient(90deg, var(--brand-green-dark), var(--brand-green));
+      position: absolute; inset: 2px auto 2px 0;
+      background: linear-gradient(90deg, var(--brand-green), var(--brand-green-light));
       border-radius: var(--radius-pill);
-      box-shadow: 0 1px 3px rgba(31, 77, 42, 0.28);
+      box-shadow: 0 0 12px rgba(139, 195, 74, 0.32);
+      transition: box-shadow 260ms;
     }
-    .etapa:hover .etapa__range { background: rgba(139, 195, 74, 0.28); }
+    .etapa:hover .etapa__range {
+      background: rgba(139, 195, 74, 0.24);
+      border-color: rgba(139, 195, 74, 0.55);
+    }
+    .etapa:hover .etapa__min { box-shadow: 0 0 18px rgba(139, 195, 74, 0.55); }
+
     .etapa__time {
       font-family: var(--font-mono);
       font-size: 10px; font-weight: 700;
-      color: var(--brand-green-dark);
+      color: var(--brand-green-light);
       text-transform: uppercase; letter-spacing: 0.08em;
       white-space: nowrap;
       text-align: right;
     }
+
     .etapas__foot {
-      margin-top: 20px;
-      display: flex; flex-wrap: wrap; gap: 8px 20px;
+      position: relative;
+      margin: 18px 0 0;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      display: flex; flex-wrap: wrap; gap: 8px 22px;
       font-family: var(--font-mono);
       font-size: 10px; font-weight: 600;
       text-transform: uppercase; letter-spacing: 0.08em;
-      color: var(--ink-400);
+      color: rgba(255,255,255,.42);
     }
     .etapas__key { display: inline-flex; align-items: center; gap: 7px; }
-    .etapas__swatch { width: 18px; height: 8px; border-radius: var(--radius-pill); }
-    .etapas__swatch--min { background: linear-gradient(90deg, var(--brand-green-dark), var(--brand-green)); }
-    .etapas__swatch--max { background: var(--brand-green-tint); }
+    .etapas__swatch { width: 20px; height: 8px; border-radius: var(--radius-pill); }
+    .etapas__swatch--min { background: linear-gradient(90deg, var(--brand-green), var(--brand-green-light)); }
+    .etapas__swatch--max { background: rgba(139, 195, 74, 0.20); border: 1px solid rgba(139, 195, 74, 0.36); }
     @media (prefers-reduced-motion: reduce) {
-      .etapa, .etapa__num, .etapa__range { transition: none; }
-      .etapa:hover .etapa__num { transform: none; }
+      .etapa, .etapa__num, .etapa__range, .etapa__min { transition: none; }
     }
+
 
     /* ================================================================
        BLOQUES ESPECÍFICOS DE /su-terreno
@@ -757,10 +806,15 @@
     }
     .opcion:hover, .opcion:focus-within { transform: translateY(-6px); }
     .opcion:hover::before, .opcion:focus-within::before { transform: scaleX(1); }
-    .opcion:hover {
-      border-color: var(--brand-green-light);
-      box-shadow: 0 18px 40px rgba(15, 20, 25, 0.10);
+
+    /* Las dos primeras se invierten enteras al verde de marca */
+    .opcion:hover, .opcion:focus-within {
+      background: var(--brand-green-dark);
+      border-color: var(--brand-green-dark);
+      box-shadow: 0 18px 40px rgba(31, 77, 42, 0.28);
     }
+    .opcion:hover h3, .opcion:focus-within h3 { color: white; }
+    .opcion:hover p, .opcion:focus-within p { color: rgba(255,255,255,.82); }
 
     /* Numeral de marca de agua */
     .opcion__num {
@@ -771,21 +825,20 @@
       transition: color 260ms, transform 380ms cubic-bezier(.2,.7,.3,1);
       pointer-events: none;
     }
-    .opcion:hover .opcion__num { color: var(--brand-green-tint); transform: translateY(-3px); }
-
-    .opcion__icon {
-      width: 40px; height: 40px; margin-bottom: 18px;
-      display: grid; place-items: center;
-      border-radius: var(--radius-sm, 8px);
-      background: var(--ink-50);
-      color: var(--ink-500);
-      transition: background 260ms, color 260ms;
+    .opcion:hover .opcion__num, .opcion:focus-within .opcion__num {
+      color: rgba(139, 195, 74, 0.30);
+      transform: translateY(-3px);
     }
-    .opcion__icon svg { width: 20px; height: 20px; }
-    .opcion:hover .opcion__icon { background: var(--brand-green-tint); color: var(--brand-green-dark); }
 
-    .opcion h3 { font-size: 24px; margin-bottom: 12px; letter-spacing: -0.02em; }
-    .opcion p { color: var(--ink-700); font-size: 16px; line-height: 1.6; }
+
+    .opcion h3 {
+      font-size: 24px; margin-bottom: 12px; letter-spacing: -0.02em;
+      transition: color 260ms;
+    }
+    .opcion p {
+      color: var(--ink-700); font-size: 16px; line-height: 1.6;
+      transition: color 260ms;
+    }
 
     /* Renglon de cierre: en qué termina cada camino */
     .opcion__out {
@@ -795,7 +848,9 @@
       font-size: 14px; line-height: 1.45;
       transition: border-color 260ms;
     }
-    .opcion:hover .opcion__out { border-color: var(--brand-green-tint); }
+    .opcion:hover .opcion__out, .opcion:focus-within .opcion__out { border-top-color: rgba(255,255,255,.22); }
+    .opcion:hover .opcion__out dt, .opcion:focus-within .opcion__out dt { color: rgba(255,255,255,.55); }
+    .opcion:hover .opcion__out dd, .opcion:focus-within .opcion__out dd { color: white; }
     .opcion__out dt {
       flex-shrink: 0;
       font-family: var(--font-mono);
@@ -810,17 +865,18 @@
       color: rgba(255,255,255,.92);
       border-color: var(--bg-dark);
     }
-    .opcion--primary:hover {
-      background: var(--bg-dark-2);
+    .opcion--primary:hover, .opcion--primary:focus-within {
+      background: var(--brand-green);
       border-color: var(--brand-green);
-      box-shadow: 0 22px 48px rgba(10, 15, 12, 0.28);
+      box-shadow: 0 22px 48px rgba(46, 125, 50, 0.34);
     }
+    .opcion--primary:hover p, .opcion--primary:focus-within p { color: rgba(255,255,255,.92); }
+    .opcion--primary:hover .opcion__label, .opcion--primary:focus-within .opcion__label { color: white; }
+    .opcion--primary:hover .opcion__num, .opcion--primary:focus-within .opcion__num { color: rgba(255,255,255,.16); }
     .opcion--primary h3 { color: white; }
     .opcion--primary p { color: rgba(255,255,255,.78); }
     .opcion--primary .opcion__num { color: rgba(255,255,255,.06); }
     .opcion--primary:hover .opcion__num { color: rgba(139, 195, 74, 0.16); }
-    .opcion--primary .opcion__icon { background: rgba(255,255,255,.08); color: var(--brand-green-light); }
-    .opcion--primary:hover .opcion__icon { background: rgba(139, 195, 74, 0.18); color: var(--brand-green-light); }
     .opcion--primary .opcion__out { border-top-color: rgba(255,255,255,.12); }
     .opcion--primary:hover .opcion__out { border-top-color: rgba(139, 195, 74, 0.35); }
     .opcion--primary .opcion__out dt { color: rgba(255,255,255,.45); }
@@ -833,7 +889,8 @@
       text-transform: uppercase; letter-spacing: 0.10em;
     }
     @media (prefers-reduced-motion: reduce) {
-      .opcion, .opcion::before, .opcion__num, .opcion__icon, .opcion__out { transition: none; }
+      .opcion, .opcion::before, .opcion__num, .opcion__out,
+      .opcion h3, .opcion p { transition: none; }
       .opcion:hover, .opcion:focus-within { transform: none; }
       .opcion:hover::before, .opcion:focus-within::before { transform: scaleX(1); }
     }
@@ -1414,7 +1471,7 @@
         </header>
         <article class="star">
           <div class="star__media">
-            <img src="/assets/desarrollos/fraile/gopr-9566.webp" alt="Obra de Residencial Fraile, en Jilotzingo, Estado de México" loading="lazy" decoding="async" />
+            <img src="/assets/desarrollos/fraile/gopr-9674.webp" alt="Fachada terminada de Residencial Fraile, en Jilotzingo, Estado de México" loading="lazy" decoding="async" />
             <span class="star__caption">Residencial Fraile · Jilotzingo, Estado de México</span>
           </div>
           <div class="star__body">
@@ -1442,9 +1499,6 @@
         <div class="opciones__grid">
           <article class="opcion opcion--vender">
             <span class="opcion__num" aria-hidden="true">01</span>
-            <span class="opcion__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 6.5C17 4.6 14.8 3.5 12 3.5S7 4.6 7 6.5s2.2 2.8 5 3.5 5 1.6 5 3.5-2.2 3-5 3-5-1.1-5-3"/></svg>
-            </span>
             <h3>Vender.</h3>
             <p>Recibe dinero una vez, y el valor que se genere después ya no es suyo. Es la opción rápida y casi siempre la más cara en el largo plazo.</p>
             <dl class="opcion__out">
@@ -1454,9 +1508,6 @@
           </article>
           <article class="opcion opcion--esperar">
             <span class="opcion__num" aria-hidden="true">02</span>
-            <span class="opcion__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
-            </span>
             <h3>Esperar.</h3>
             <p>Conserva el activo, paga predial cada año y apuesta a que la zona mejore sola. Puede funcionar. También puede tardar una generación.</p>
             <dl class="opcion__out">
@@ -1466,9 +1517,6 @@
           </article>
           <article class="opcion opcion--aportar opcion--primary">
             <span class="opcion__num" aria-hidden="true">03</span>
-            <span class="opcion__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M6 21V10l6-4 6 4v11"/><path d="M10 21v-5h4v5"/></svg>
-            </span>
             <span class="opcion__label">La tercera vía</span>
             <h3>Aportar.</h3>
             <p>No vende el terreno: lo integra a un desarrollo. Alguien más pone el capital, el proyecto y la ejecución, y usted recibe metros construidos y participación en el resultado.</p>
@@ -1544,14 +1592,15 @@
           <p>Publicamos cuánto dura cada etapa porque la opacidad es lo que más cuesta. Los rangos son indicativos y se afinan proyecto por proyecto.</p>
         </header>
         <div class="etapas">
-          <div class="etapas__axis" aria-hidden="true">
+          <div class="etapas__head" aria-hidden="true">
+            <span class="etapas__col">Etapa</span>
             <div class="etapas__axis-scale">
               <span class="etapas__unit">Meses</span>
               <div class="etapas__ticks">
-              <span class="etapas__tick" style="left:25.00%">6</span>
-              <span class="etapas__tick" style="left:50.00%">12</span>
-              <span class="etapas__tick" style="left:75.00%">18</span>
-              <span class="etapas__tick" style="left:100.00%">24</span>
+                  <span class="etapas__tick" style="left:25.00%">6</span>
+                  <span class="etapas__tick" style="left:50.00%">12</span>
+                  <span class="etapas__tick" style="left:75.00%">18</span>
+                  <span class="etapas__tick" style="left:100.00%">24</span>
               </div>
             </div>
           </div>
