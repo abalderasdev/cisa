@@ -5,5 +5,6 @@ Allow: /
 # Endpoints y material que no aporta nada en un indice de busqueda
 Disallow: /api/
 Disallow: /contenido/_plantilla.html
+Disallow: /desarrollos/panorama-algarin.html
 
 Sitemap: https://cisa1.vercel.app/sitemap.xml

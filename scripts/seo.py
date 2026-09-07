@@ -29,7 +29,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Directorios que nunca se publican
 SKIP_DIRS = {".git", ".impeccable", "preview", "node_modules", "scripts", "docs", "agente-cisa"}
 # Archivos que existen pero no son paginas indexables
+# Paginas que existen pero no deben indexarse ni entrar al sitemap.
 SKIP_FILES = {"_plantilla.html"}
+SKIP_PATHS = {"desarrollos/panorama-algarin.html"}  # desarrollo retirado del sitio
 
 # Prioridad en el sitemap por seccion
 PRIORITY = [
@@ -57,8 +59,10 @@ def html_pages():
         for name in sorted(filenames):
             if not name.endswith(".html") or name in SKIP_FILES:
                 continue
-            rel = os.path.relpath(os.path.join(dirpath, name), ROOT)
-            yield rel.replace(os.sep, "/")
+            rel = os.path.relpath(os.path.join(dirpath, name), ROOT).replace(os.sep, "/")
+            if rel in SKIP_PATHS:
+                continue
+            yield rel
 
 
 def url_for(rel_path):
@@ -145,6 +149,7 @@ def write_robots():
         "# Endpoints y material que no aporta nada en un indice de busqueda\n"
         "Disallow: /api/\n"
         "Disallow: /contenido/_plantilla.html\n"
+        "Disallow: /desarrollos/panorama-algarin.html\n"
         "\n"
         "Sitemap: {origin}/sitemap.xml\n"
     ).format(origin=SITE_ORIGIN)
