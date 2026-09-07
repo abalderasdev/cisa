@@ -139,25 +139,83 @@
     stopHover();
   });
 
-  // -------- Click: monta widget ElevenLabs y abre chat -------------------
-  var widgetBootstrapped = false;
+  // -------- Apertura y cierre del asistente ------------------------------
+  // El widget de ElevenLabs se dibuja fijo en la esquina inferior derecha,
+  // la misma que ocupa este FAB, y con z-index menor. Sin esto, el FAB le
+  // tapaba sus botones ("Iniciar llamada" y "Mensaje") y no habia forma de
+  // volver. Ahora: al abrir, el FAB se aparta; para regresar, un boton de
+  // cierre propio que desmonta el widget y devuelve el personaje.
+  var host = null;          // contenedor del widget
+  var botonCerrar = null;   // nuestro control de regreso
+  var abierto = false;
 
-  function bootstrapElevenLabs() {
-    if (widgetBootstrapped) return Promise.resolve();
-    widgetBootstrapped = true;
+  function ocultarFab() {
+    fab.classList.add('is-away');
+    fab.setAttribute('aria-expanded', 'true');
+    fab.setAttribute('tabindex', '-1');
+    if (waveTimer) { clearTimeout(waveTimer); waveTimer = null; }
+  }
+
+  function mostrarFab() {
+    fab.classList.remove('is-away');
+    fab.setAttribute('aria-expanded', 'false');
+    fab.removeAttribute('tabindex');
+  }
+
+  function ponerBotonCerrar() {
+    if (botonCerrar) return;
+    botonCerrar = document.createElement('button');
+    botonCerrar.type = 'button';
+    botonCerrar.id = 'agent-cisa-close';
+    botonCerrar.setAttribute('aria-label', 'Cerrar el asistente y volver');
+    botonCerrar.innerHTML = '<span aria-hidden="true">×</span> Cerrar asistente';
+    botonCerrar.addEventListener('click', cerrarAgente);
+    // La barra del sitio es sticky y su alto cambia entre movil y escritorio.
+    // Se mide una vez para que el boton quede siempre debajo de ella.
+    var barra = document.querySelector('.site-header');
+    if (barra) {
+      document.documentElement.style.setProperty(
+        '--cisa-header-h', Math.round(barra.getBoundingClientRect().height) + 'px');
+    }
+    document.body.appendChild(botonCerrar);
+    // Que el foco caiga en algo util al abrir con teclado.
+    try { botonCerrar.focus({ preventScroll: true }); } catch (e) { /* noop */ }
+  }
+
+  function quitarBotonCerrar() {
+    if (botonCerrar && botonCerrar.parentNode) botonCerrar.parentNode.removeChild(botonCerrar);
+    botonCerrar = null;
+  }
+
+  // Vuelve al estado de reposo pase lo que pase. playIdle() se niega a
+  // correr en 'opening'/'open', asi que aqui se destraba primero.
+  function volverAReposo() {
+    abierto = false;
+    state = 'idle';
+    mostrarFab();
+    playIdle();
+    scheduleNextWave();
+  }
+
+  function cerrarAgente() {
+    quitarBotonCerrar();
+    if (host && host.parentNode) host.parentNode.removeChild(host);
+    host = null;
+    // Se desmonta entero para que la proxima apertura arranque limpia.
+    volverAReposo();
+  }
+
+  function montarWidget() {
     return fetch('/api/sofia-config', { credentials: 'omit', cache: 'no-cache' })
       .then(function (r) { return r.ok ? r.json() : null; })
       .catch(function () { return null; })
       .then(function (cfg) {
         var agentId = (cfg && cfg.agentId) || 'REPLACE_WITH_AGENT_ID';
-        // Si no hay agent_id configurado, ir a fallback (WhatsApp)
         if (agentId === 'REPLACE_WITH_AGENT_ID') {
-          throw new Error('agent_id not configured');
+          throw new Error('agent_id sin configurar');
         }
-        // Crear host off-screen para evitar FAB nativo de ElevenLabs
-        var host = document.createElement('div');
+        host = document.createElement('div');
         host.id = 'agent-cisa-widget-host';
-        host.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:0;height:0;overflow:hidden;';
         document.body.appendChild(host);
 
         var widget = document.createElement('elevenlabs-convai');
@@ -168,7 +226,6 @@
         widget.setAttribute('language', 'es');
         host.appendChild(widget);
 
-        // Cargar el script de ElevenLabs
         return new Promise(function (resolve, reject) {
           if (window.customElements && customElements.get && customElements.get('elevenlabs-convai')) {
             resolve();
@@ -178,62 +235,65 @@
           s.src = 'https://unpkg.com/@elevenlabs/convai-widget-embed';
           s.async = true;
           s.onload = function () { resolve(); };
-          s.onerror = function () { reject(new Error('elevenlabs-script-load-failed')); };
+          s.onerror = function () { reject(new Error('no cargo el script de elevenlabs')); };
           document.head.appendChild(s);
         });
       });
   }
 
-  // Lógica de apertura compartida entre el FAB y los triggers data-agent-open
+  function irAWhatsApp() {
+    window.open(
+      'https://wa.me/525517964940?text=Hola%2C%20vengo%20del%20sitio%20de%20Grupo%20CISA%20y%20quiero%20informaci%C3%B3n.',
+      '_blank',
+      'noopener,noreferrer'
+    );
+  }
+
   function openAgent() {
+    // Con el asistente ya abierto, el FAB no vuelve a disparar nada.
+    if (abierto) return;
+
     state = 'opening';
     fab.setAttribute('data-state', 'opening');
     lastInteraction = Date.now();
     if (waveTimer) { clearTimeout(waveTimer); waveTimer = null; }
 
-    // 1) Si ya hay un widget ElevenLabs montado, abrirlo
-    var existing = document.querySelector('elevenlabs-convai');
-    if (existing && window.customElements && customElements.get && customElements.get('elevenlabs-convai')) {
-      try {
-        if (typeof existing.startConversation === 'function') existing.startConversation();
-        else if (typeof existing.open === 'function') existing.open();
-        else existing.click();
-        setTimeout(function () { state = 'open'; fab.setAttribute('data-state', 'open'); }, 600);
-        return;
-      } catch (e) { /* sigue */ }
-    }
-
-    // 2) Bootstrap on-demand y abrir
-    bootstrapElevenLabs()
+    montarWidget()
       .then(function () {
         var w = document.querySelector('elevenlabs-convai');
         if (w) {
           try {
             if (typeof w.startConversation === 'function') w.startConversation();
-            else w.click();
-          } catch (e) { /* noop */ }
+            else if (typeof w.open === 'function') w.open();
+          } catch (e) { /* el widget abre igual con su propio boton */ }
         }
-        setTimeout(function () { state = 'open'; fab.setAttribute('data-state', 'open'); }, 800);
+        abierto = true;
+        state = 'open';
+        fab.setAttribute('data-state', 'open');
+        ocultarFab();
+        ponerBotonCerrar();
       })
       .catch(function () {
-        // Fallback: WhatsApp
-        window.open(
-          'https://wa.me/525517964940?text=Hola%2C%20vengo%20del%20sitio%20de%20Grupo%20CISA%20y%20quiero%20informaci%C3%B3n.',
-          '_blank',
-          'noopener,noreferrer'
-        );
-        setTimeout(function () { playIdle(); scheduleNextWave(); }, 1200);
+        // Sin agente disponible, WhatsApp. Y el FAB vuelve a reposo:
+        // antes se quedaba clavado en 'opening' para siempre.
+        if (host && host.parentNode) host.parentNode.removeChild(host);
+        host = null;
+        irAWhatsApp();
+        setTimeout(volverAReposo, 1200);
       });
   }
 
   fab.addEventListener('click', openAgent);
 
-  // -------- Accesibilidad: Enter / Space abre el chat --------------------
+  // -------- Accesibilidad: Enter / Space abre; Escape cierra -------------
   fab.addEventListener('keydown', function (e) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       openAgent();
     }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && abierto) cerrarAgente();
   });
 
   // -------- Triggers data-agent-open (CTAs, footer, modalidades) ----------

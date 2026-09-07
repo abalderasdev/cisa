@@ -201,3 +201,83 @@
     /* Mostrar el primer frame en lugar de animar */
   }
 }
+
+/* ============================================================================
+   Convivencia con el widget de ElevenLabs
+   ============================================================================
+   El widget se dibuja fijo en la misma esquina que este FAB y con z-index
+   menor, asi que el FAB le tapaba "Iniciar llamada" y "Mensaje". Mientras el
+   asistente esta abierto, el personaje se aparta y aparece un boton propio
+   para volver.
+   ========================================================================== */
+
+#agent-cisa-fab.is-away {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.28s ease, visibility 0s linear 0.28s;
+}
+
+/* El host del widget ya no vive fuera de pantalla: el widget se posiciona
+   solo y necesita estar en el flujo para recibir clics. */
+#agent-cisa-widget-host {
+  position: static;
+}
+
+#agent-cisa-close {
+  /* Arriba a la derecha a proposito: el panel del widget crece hacia arriba
+     al abrir el chat, asi que cualquier anclaje abajo terminaba encimandose
+     con su saludo o con "Iniciar llamada". El desplazamiento vertical libra
+     la barra fija del sitio. */
+  position: fixed;
+  top: calc(var(--cisa-header-h, 72px) + 12px);
+  right: var(--cisa-fab-right);
+  z-index: 100001;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  min-height: 40px;
+  border: 1px solid var(--brand-green, #2E7D32);
+  border-radius: 999px;
+  background: var(--brand-green-dark, #1F4D2A);
+  color: #fff;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(10, 15, 12, 0.34);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+#agent-cisa-close span {
+  font-size: 15px;
+  line-height: 1;
+}
+
+#agent-cisa-close:hover {
+  background: var(--brand-green, #2E7D32);
+  transform: translateY(-1px);
+}
+
+#agent-cisa-close:focus-visible {
+  outline: 3px solid var(--brand-green-light, #8BC34A);
+  outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+  #agent-cisa-close {
+    top: calc(var(--cisa-header-h, 64px) + 10px);
+    right: var(--cisa-fab-right-mobile);
+    font-size: 10px;
+    padding: 9px 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #agent-cisa-fab.is-away { transition: none; }
+  #agent-cisa-close { transition: none; }
+  #agent-cisa-close:hover { transform: none; }
+}
