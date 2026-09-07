@@ -594,8 +594,19 @@
       position: relative;
       display: grid; place-items: center;
       color: var(--ink-300);
+      overflow: hidden;
     }
     .star__media svg { width: 64px; height: 64px; opacity: 0.4; }
+    .star__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .star__caption {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 20px 16px 12px;
+      background: linear-gradient(to top, rgba(10,15,12,.72), transparent);
+      color: white;
+      font-family: var(--font-mono);
+      font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
     .star__chip {
       position: absolute; top: 16px; left: 16px;
       padding: 6px 12px; border-radius: var(--radius-pill);
@@ -1059,7 +1070,7 @@
         <a href="nosotros.html#metodo">Método</a>
         <a href="desarrollos.html">Obra</a>
         <a href="contenido.html">Contenido</a>
-        <a href="nosotros.html#equipo">Equipo</a>
+        <a href="nosotros.html">Nosotros</a>
       </nav>
       <div class="site-header__actions">
         <a href="su-terreno.html#precalificar" class="btn btn--primary">Precalificar mi terreno</a>
@@ -1211,24 +1222,27 @@
     </section>
 
     <!-- ============================================================
-         BLOQUE 2 · LA ESTRELLA (placeholder de testimonio)
+         BLOQUE 2 · LA ESTRELLA (Residencial Fraile)
          ============================================================ -->
     <section class="section" aria-labelledby="star-title">
       <div class="container">
         <header class="section-header">
           <h2 id="star-title">Una historia que ya ocurrió.</h2>
-          <p>Un propietario que ya aportó su terreno y hoy tiene departamentos. Un testimonio de la empresa, en palabras del propietario, con su autorización.</p>
+          <p>Residencial Fraile, en Jilotzingo. Un predio que en lugar de venderse entró a un desarrollo.</p>
         </header>
         <article class="star">
-          <div class="star__media" aria-hidden="true">
-            <span class="star__chip">[BLOQUE PENDIENTE — TESTIMONIO REAL]</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
+          <div class="star__media">
+            <img src="/assets/desarrollos/fraile/gopr-9566.webp" alt="Obra de Residencial Fraile, en Jilotzingo, Estado de México" loading="lazy" decoding="async" />
+            <span class="star__caption">Residencial Fraile · Jilotzingo, Estado de México</span>
           </div>
           <div class="star__body">
             <blockquote class="star__quote">
-              <p>«[Nombre] tenía un terreno de [superficie] en [zona] detenido desde [año]. Le habían ofrecido [situación]. Hoy tiene [qué recibió].»</p>
+              <p>«Residencial Fraile empezó como lo que empieza casi todo aquí: un terreno parado y una familia decidiendo qué hacer con él.»</p>
             </blockquote>
-            <p class="star__alt">Mientras no exista un testimonio autorizado, este bloque lo ocupa el director de Grupo CISA contando por qué la empresa opera bajo este modelo y qué vio en el mercado que lo hizo necesario. Un testimonio de propietario convierte varias veces más. Es el insumo más valioso pendiente de todo el proyecto.</p>
+            <p class="star__alt">Ese es el punto del modelo. El predio no se vendió: entró al proyecto. Grupo CISA se hizo cargo de la factibilidad, el proyecto arquitectónico, los permisos, el esquema financiero, la obra y la comercialización. Quien aportó el terreno no cobró el precio de un lote, sino la parte del desarrollo que se acordó por escrito antes de mover una sola piedra.</p>
+            <p class="star__alt">Es el mismo camino que puede recorrer su terreno. La diferencia entre uno y otro caso está en la ubicación, el uso de suelo, la superficie aprovechable y la situación jurídica, que es justo lo que revisa la precalificación.</p>
+            <p class="star__alt"><strong>Pendiente:</strong> el testimonio firmado del propietario que aportó el predio. Es el insumo que más convierte de todo el sitio y el único que no podemos escribir nosotros.</p>
+            <a href="/desarrollos/residencial-fraile.html" class="btn btn--secondary--green">Ver Residencial Fraile</a>
           </div>
         </article>
       </div>
@@ -1583,14 +1597,14 @@
       <div class="footer__grid">
         <div class="footer__brand">
           <a href="index.html" aria-label="Grupo CISA · Inicio">
-            <img src="assets/logo-grupo-cisa.svg" alt="Grupo CISA" />
+            <img src="assets/logo-grupo-cisa-dark.svg" alt="Grupo CISA" />
           </a>
           <p>Desarrollo e inversión inmobiliaria. Años de experiencia en el mercado. Sede en Ciudad Satélite, Estado de México.</p>
         </div>
         <div>
           <h5>Empresa</h5>
           <ul>
-            <li><a href="nosotros.html#equipo">Equipo</a></li>
+            
             <li><a href="nosotros.html#metodo">El proceso</a></li>
             <li><a href="index.html#faq">Preguntas frecuentes</a></li>
           </ul>

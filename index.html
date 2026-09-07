@@ -816,13 +816,23 @@
     @media (min-width: 768px) { .work { grid-template-columns: repeat(2, 1fr); } }
     @media (min-width: 1024px) { .work { grid-template-columns: repeat(3, 1fr); } }
     .proj {
+      display: block;
       background: var(--paper);
       border: 1px solid var(--ink-100);
       border-radius: var(--radius-lg);
       overflow: hidden;
-      transition: box-shadow 200ms, transform 200ms;
+      transition: box-shadow 200ms, transform 200ms, border-color 200ms;
     }
-    .proj:hover { box-shadow: 0 12px 32px rgba(15, 20, 25, 0.08); transform: translateY(-3px); }
+    .proj:focus-visible { outline: 3px solid var(--brand-green-light); outline-offset: 3px; }
+    .proj__go {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 16px;
+      font-size: 14px; font-weight: 600;
+      color: var(--brand-green-dark);
+    }
+    .proj__go span { transition: transform 200ms; }
+    .proj:hover .proj__go span { transform: translateX(4px); }
+    .proj:hover { box-shadow: 0 12px 32px rgba(15, 20, 25, 0.08); transform: translateY(-3px); border-color: var(--brand-green-light); }
     .proj__media {
       aspect-ratio: 16/10;
       background: linear-gradient(135deg, var(--ink-50), var(--ink-100));
@@ -1294,7 +1304,7 @@
         <a href="nosotros.html#metodo">Método</a>
         <a href="desarrollos.html">Obra</a>
         <a href="contenido.html">Contenido</a>
-        <a href="nosotros.html#equipo">Equipo</a>
+        <a href="nosotros.html">Nosotros</a>
       </nav>
       <div class="site-header__actions">
         <a href="su-terreno.html#precalificar" class="btn btn--primary">Precalificar mi terreno</a>
@@ -1636,34 +1646,7 @@
           <p>Obra propia, en desarrollo y entregada, en el centro de México y el Caribe mexicano.</p>
         </header>
         <div class="work">
-          <article class="proj">
-            <div class="proj__media" aria-hidden="true">
-              <span class="proj__chip proj__chip--warning"><span class="proj__chip-dot"></span>En trámite</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
-            </div>
-            <div class="proj__body">
-              <div class="proj__meta">CDMX · CUH</div>
-              <h3>Panorama Algarín</h3>
-              <p class="proj__loc">Colonia Algarín · Cuauhtémoc · Ciudad de México</p>
-              <p class="proj__desc">Torre de 23 departamentos. Edificio de uso mixto en zona con alta demanda de vivienda.</p>
-              <div class="proj__stats">
-                <div>
-                  <div class="proj__stat-value">23</div>
-                  <div class="proj__stat-label">Unidades</div>
-                </div>
-                <div>
-                  <div class="proj__stat-value">15</div>
-                  <div class="proj__stat-label">Niveles</div>
-                </div>
-                <div>
-                  <div class="proj__stat-value">2027</div>
-                  <div class="proj__stat-label">Entrega</div>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <article class="proj">
+          <a class="proj" href="desarrollos/residencial-fraile.html" aria-label="Ver el desarrollo Residencial Fraile">
             <div class="proj__media" aria-hidden="true">
               <span class="proj__chip proj__chip--success"><span class="proj__chip-dot"></span>Terminada 2025</span>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
@@ -1687,10 +1670,11 @@
                   <div class="proj__stat-label">Entrega</div>
                 </div>
               </div>
-            </div>
-          </article>
+                <span class="proj__go">Ver el desarrollo <span aria-hidden="true">→</span></span>
+              </div>
+            </a>
 
-          <article class="proj">
+          <a class="proj" href="desarrollos/itzae.html" aria-label="Ver el desarrollo Itzaé">
             <div class="proj__media" aria-hidden="true">
               <span class="proj__chip proj__chip--info"><span class="proj__chip-dot"></span>Preventa</span>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
@@ -1714,50 +1698,40 @@
                   <div class="proj__stat-label">Entrega</div>
                 </div>
               </div>
+                <span class="proj__go">Ver el desarrollo <span aria-hidden="true">→</span></span>
+              </div>
+            </a>
+          <a class="proj" href="desarrollos/viaducto.html" aria-label="Ver el desarrollo Viaducto 14">
+            <div class="proj__media" aria-hidden="true">
+              <span class="proj__chip proj__chip--info"><span class="proj__chip-dot"></span>En estudio</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
             </div>
-          </article>
+            <div class="proj__body">
+              <div class="proj__meta">CDMX · VIADUCTO</div>
+              <h3>Viaducto 14</h3>
+              <p class="proj__loc">Avenida Viaducto · Ciudad de México</p>
+              <p class="proj__desc">Predio en estudio sobre Avenida Viaducto. Hipótesis de uso mixto: vivienda y comercio en planta baja.</p>
+              <div class="proj__stats">
+                <div>
+                  <div class="proj__stat-value">—</div>
+                  <div class="proj__stat-label">Unidades</div>
+                </div>
+                <div>
+                  <div class="proj__stat-value">—</div>
+                  <div class="proj__stat-label">Niveles</div>
+                </div>
+                <div>
+                  <div class="proj__stat-value">—</div>
+                  <div class="proj__stat-label">Entrega</div>
+                </div>
+              </div>
+              <span class="proj__go">Ver el desarrollo <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
         </div>
       </div>
     </section>
 
-    <!-- ============================================================
-         BLOQUE 7 · EQUIPO
-         ============================================================ -->
-    <section class="section" id="equipo" aria-labelledby="team-title">
-      <div class="container">
-        <header class="section-header">
-          <h2 id="team-title">Detrás de cada proyecto hay nombres, no un logotipo.</h2>
-          <p>Un desarrollo es una relación de años. Conviene saber con quién la está empezando.</p>
-        </header>
-        <div class="team">
-          <div class="person">
-            <div class="person__avatar" aria-hidden="true">[NM]</div>
-            <h4>[Nombre]</h4>
-            <div class="person__role">Director general</div>
-          </div>
-          <div class="person">
-            <div class="person__avatar" aria-hidden="true">[NM]</div>
-            <h4>[Nombre]</h4>
-            <div class="person__role">Originación</div>
-          </div>
-          <div class="person">
-            <div class="person__avatar" aria-hidden="true">[NM]</div>
-            <h4>[Nombre]</h4>
-            <div class="person__role">Arquitectura</div>
-          </div>
-          <div class="person">
-            <div class="person__avatar" aria-hidden="true">[NM]</div>
-            <h4>[Nombre]</h4>
-            <div class="person__role">Construcción</div>
-          </div>
-          <div class="person">
-            <div class="person__avatar" aria-hidden="true">[NM]</div>
-            <h4>[Nombre]</h4>
-            <div class="person__role">Comercialización</div>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <!-- ============================================================
          BLOQUE 8 · FAQ
@@ -1856,14 +1830,14 @@
       <div class="footer__grid">
         <div class="footer__brand">
           <a href="index.html" aria-label="Grupo CISA · Inicio">
-            <img src="assets/logo-grupo-cisa.svg" alt="Grupo CISA" />
+            <img src="assets/logo-grupo-cisa-dark.svg" alt="Grupo CISA" />
           </a>
           <p>Desarrollo e inversión inmobiliaria. Años de experiencia en el mercado. Sede en Ciudad Satélite, Estado de México.</p>
         </div>
         <div>
           <h5>Empresa</h5>
           <ul>
-            <li><a href="nosotros.html#equipo">Equipo</a></li>
+            
             <li><a href="nosotros.html#metodo">El proceso</a></li>
             <li><a data-agent-open role="button" tabindex="0">Asistente</a></li>
             <li><a href="index.html#faq">Preguntas frecuentes</a></li>
