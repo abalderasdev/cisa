@@ -20,3 +20,6 @@ preview-*.png
 .claude/
 .env
 .env.local
+
+# Utilidades de mantenimiento (no son parte del sitio)
+scripts/
