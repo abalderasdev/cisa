@@ -2,6 +2,12 @@
 <html lang="es-MX">
 <head>
   <meta charset="UTF-8" />
+  <link rel="canonical" href="https://cisa1.vercel.app/" />
+  <meta property="og:url" content="https://cisa1.vercel.app/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Grupo CISA" />
+  <meta property="og:locale" content="es_MX" />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Grupo CISA | Desarrollo e inversión inmobiliaria en México</title>
   <meta name="description" content="Grupo CISA convierte terrenos con potencial en desarrollos rentables. Diseño, gestión, construcción y comercialización, con la participación de quien aporta el predio." />
@@ -810,13 +816,23 @@
     @media (min-width: 768px) { .work { grid-template-columns: repeat(2, 1fr); } }
     @media (min-width: 1024px) { .work { grid-template-columns: repeat(3, 1fr); } }
     .proj {
+      display: block;
       background: var(--paper);
       border: 1px solid var(--ink-100);
       border-radius: var(--radius-lg);
       overflow: hidden;
-      transition: box-shadow 200ms, transform 200ms;
+      transition: box-shadow 200ms, transform 200ms, border-color 200ms;
     }
-    .proj:hover { box-shadow: 0 12px 32px rgba(15, 20, 25, 0.08); transform: translateY(-3px); }
+    .proj:focus-visible { outline: 3px solid var(--brand-green-light); outline-offset: 3px; }
+    .proj__go {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 16px;
+      font-size: 14px; font-weight: 600;
+      color: var(--brand-green-dark);
+    }
+    .proj__go span { transition: transform 200ms; }
+    .proj:hover .proj__go span { transform: translateX(4px); }
+    .proj:hover { box-shadow: 0 12px 32px rgba(15, 20, 25, 0.08); transform: translateY(-3px); border-color: var(--brand-green-light); }
     .proj__media {
       aspect-ratio: 16/10;
       background: linear-gradient(135deg, var(--ink-50), var(--ink-100));
@@ -1271,6 +1287,68 @@
       .variant-toggle__btns { gap: 4px; }
       .variant-toggle__btn { padding: 6px 4px; }
     }
+    /* ================================================================
+       ALIADOS / SOCIOS COMERCIALES
+       Cada slot admite un <img> del logo. Mientras no lleguen, muestra
+       el nombre en mono. Funciona sobre fondo claro y sobre section--dark.
+       ================================================================ */
+    .allies__grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 40px;
+    }
+    @media (min-width: 640px)  { .allies__grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1024px) { .allies__grid { grid-template-columns: repeat(5, 1fr); gap: 16px; } }
+    .allies__logo {
+      display: grid; place-items: center;
+      min-height: 92px; padding: 20px 16px;
+      border: 1px solid var(--ink-100);
+      border-radius: var(--radius-md);
+      background: var(--paper);
+      color: var(--ink-500);
+      font-family: var(--font-mono);
+      font-size: 12px; font-weight: 600;
+      text-align: center; line-height: 1.35;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      transition: border-color 220ms, color 220ms, transform 220ms, background 220ms;
+    }
+    .allies__logo img {
+      max-width: 100%; max-height: 48px;
+      width: auto; height: auto;
+      object-fit: contain;
+      filter: grayscale(1); opacity: .72;
+      transition: filter 220ms, opacity 220ms;
+    }
+    .allies__logo:hover {
+      transform: translateY(-3px);
+      border-color: var(--brand-green-light);
+      color: var(--brand-green-dark);
+      background: var(--cream);
+    }
+    .allies__logo:hover img { filter: none; opacity: 1; }
+    .allies__caption {
+      margin-top: 24px;
+      font-size: 15px; color: var(--ink-500);
+      max-width: 640px;
+    }
+    /* Variante sobre fondo oscuro */
+    .section--dark .allies__logo {
+      background: rgba(255,255,255,.04);
+      border-color: rgba(255,255,255,.12);
+      color: rgba(255,255,255,.62);
+    }
+    .section--dark .allies__logo:hover {
+      background: rgba(139, 195, 74, 0.10);
+      border-color: var(--brand-green);
+      color: white;
+    }
+    .section--dark .allies__caption { color: rgba(255,255,255,.62); }
+    @media (prefers-reduced-motion: reduce) {
+      .allies__logo, .allies__logo img { transition: none; }
+      .allies__logo:hover { transform: none; }
+    }
+
   </style>
 </head>
 <body>
@@ -1288,7 +1366,7 @@
         <a href="nosotros.html#metodo">Método</a>
         <a href="desarrollos.html">Obra</a>
         <a href="contenido.html">Contenido</a>
-        <a href="nosotros.html#equipo">Equipo</a>
+        <a href="nosotros.html">Nosotros</a>
       </nav>
       <div class="site-header__actions">
         <a href="su-terreno.html#precalificar" class="btn btn--primary">Precalificar mi terreno</a>
@@ -1306,11 +1384,9 @@
         <div class="hero__top">
           <span class="hero__crumb">
             <span class="hero__crumb-dot"></span>
-            30 AÑOS · CDMX · EDOMEX · QRO · QROO
+            AÑOS DE EXPERIENCIA · CDMX · EDOMEX · QRO · QROO
           </span>
-          <span class="hero__crumb">
-            ISO 9001:2015
-          </span>
+          
         </div>
 
         <div class="hero__main">
@@ -1329,23 +1405,18 @@
 
             <div class="hero__proof" role="list" aria-label="Prueba inmediata">
               <div class="hero__proof-item" role="listitem">
-                <span class="hero__proof-value num">30</span>
-                <span class="hero__proof-label">Años en el mercado</span>
+                <span class="hero__proof-value num">Años</span>
+                <span class="hero__proof-label">En el mercado</span>
               </div>
               <div class="hero__proof-divider" aria-hidden="true"></div>
               <div class="hero__proof-item" role="listitem">
-                <span class="hero__proof-value num">[N]</span>
-                <span class="hero__proof-label">Desarrollos entregados</span>
+                <span class="hero__proof-value num">+500,000</span>
+                <span class="hero__proof-label">m² construidos</span>
               </div>
               <div class="hero__proof-divider" aria-hidden="true"></div>
               <div class="hero__proof-item" role="listitem">
-                <span class="hero__proof-value num">[N]</span>
-                <span class="hero__proof-label">Ciudades con operación</span>
-              </div>
-              <div class="hero__proof-divider" aria-hidden="true"></div>
-              <div class="hero__proof-item" role="listitem">
-                <span class="hero__proof-value num">1</span>
-                <span class="hero__proof-label">Proceso certificado</span>
+                <span class="hero__proof-value num">4</span>
+                <span class="hero__proof-label">Estados con operación</span>
               </div>
             </div>
           </div>
@@ -1425,9 +1496,7 @@
             <span class="hero__strip-divider" aria-hidden="true"></span>
             <span class="hero__strip-item">QROO · TULUM</span>
             <span class="hero__strip-divider" aria-hidden="true"></span>
-            <span class="hero__strip-item">30 AÑOS</span>
-            <span class="hero__strip-divider" aria-hidden="true"></span>
-            <span class="hero__strip-item">ISO 9001:2015</span>
+            <span class="hero__strip-item">AÑOS DE EXPERIENCIA</span>
           </div>
         </div>
       </div>
@@ -1508,12 +1577,12 @@
               Si tiene un terreno urbano o periurbano, ha visto las mismas dos opciones una y otra vez: venderlo de golpe, casi siempre por debajo de lo que vale, o conservarlo pagando predial mientras algo llega.
             </p>
             <p>
-              Hay una <strong>tercera vía que pocos le explican</strong>: aportarlo a un desarrollo, conservar participación y cobrar en metros construidos. La revisión inicial es sin costo y no lo compromete a aportarlo.
+              Hay una <strong>tercera vía que pocos le explican</strong>: aportarlo a un desarrollo, conservar participación y cobrar en metros construidos. La revisión inicial es preliminar.
             </p>
           </div>
           <aside class="revelation__form" aria-label="Formulario de precalificación">
             <h3>Cuéntenos sobre su terreno</h3>
-            <p class="form__microcopy">3 minutos · sin costo · sin compromiso</p>
+            <p class="form__microcopy">Revisión preliminar</p>
             <form action="https://formspree.io/f/REPLACE_WITH_FORM_ID" method="POST" novalidate>
               <div class="form__field">
                 <label for="ubicacion">Ubicación del predio</label>
@@ -1544,7 +1613,7 @@
               <input type="text" name="_gotcha" style="display:none" />
               <input type="hidden" name="_next" value="#gracias" />
               <button type="submit" class="btn btn--primary btn--lg form__submit">Enviar y recibir escenarios</button>
-              <p class="form__legal">Al enviar, acepta nuestro <a href="#aviso">aviso de privacidad</a>. La evaluación inicial no sustituye un dictamen jurídico, financiero o técnico.</p>
+              <p class="form__legal">Al enviar, acepta nuestro <a href="aviso-de-privacidad.html">aviso de privacidad</a>. La evaluación inicial no sustituye un dictamen jurídico, financiero o técnico.</p>
             </form>
           </aside>
         </div>
@@ -1639,34 +1708,7 @@
           <p>Obra propia, en desarrollo y entregada, en el centro de México y el Caribe mexicano.</p>
         </header>
         <div class="work">
-          <article class="proj">
-            <div class="proj__media" aria-hidden="true">
-              <span class="proj__chip proj__chip--warning"><span class="proj__chip-dot"></span>En trámite</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
-            </div>
-            <div class="proj__body">
-              <div class="proj__meta">CDMX · CUH</div>
-              <h3>Panorama Algarín</h3>
-              <p class="proj__loc">Colonia Algarín · Cuauhtémoc · Ciudad de México</p>
-              <p class="proj__desc">Torre de 23 departamentos. Edificio de uso mixto en zona con alta demanda de vivienda.</p>
-              <div class="proj__stats">
-                <div>
-                  <div class="proj__stat-value">23</div>
-                  <div class="proj__stat-label">Unidades</div>
-                </div>
-                <div>
-                  <div class="proj__stat-value">15</div>
-                  <div class="proj__stat-label">Niveles</div>
-                </div>
-                <div>
-                  <div class="proj__stat-value">2027</div>
-                  <div class="proj__stat-label">Entrega</div>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <article class="proj">
+          <a class="proj" href="desarrollos/residencial-fraile.html" aria-label="Ver el desarrollo Residencial Fraile">
             <div class="proj__media" aria-hidden="true">
               <span class="proj__chip proj__chip--success"><span class="proj__chip-dot"></span>Terminada 2025</span>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
@@ -1690,10 +1732,11 @@
                   <div class="proj__stat-label">Entrega</div>
                 </div>
               </div>
-            </div>
-          </article>
+                <span class="proj__go">Ver el desarrollo <span aria-hidden="true">→</span></span>
+              </div>
+            </a>
 
-          <article class="proj">
+          <a class="proj" href="desarrollos/itzae.html" aria-label="Ver el desarrollo Itzaé">
             <div class="proj__media" aria-hidden="true">
               <span class="proj__chip proj__chip--info"><span class="proj__chip-dot"></span>Preventa</span>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
@@ -1717,50 +1760,40 @@
                   <div class="proj__stat-label">Entrega</div>
                 </div>
               </div>
+                <span class="proj__go">Ver el desarrollo <span aria-hidden="true">→</span></span>
+              </div>
+            </a>
+          <a class="proj" href="desarrollos/viaducto.html" aria-label="Ver el desarrollo Viaducto 14">
+            <div class="proj__media" aria-hidden="true">
+              <span class="proj__chip proj__chip--info"><span class="proj__chip-dot"></span>En estudio</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
             </div>
-          </article>
+            <div class="proj__body">
+              <div class="proj__meta">CDMX · VIADUCTO</div>
+              <h3>Viaducto 14</h3>
+              <p class="proj__loc">Avenida Viaducto · Ciudad de México</p>
+              <p class="proj__desc">Predio en estudio sobre Avenida Viaducto. Hipótesis de uso mixto: vivienda y comercio en planta baja.</p>
+              <div class="proj__stats">
+                <div>
+                  <div class="proj__stat-value">—</div>
+                  <div class="proj__stat-label">Unidades</div>
+                </div>
+                <div>
+                  <div class="proj__stat-value">—</div>
+                  <div class="proj__stat-label">Niveles</div>
+                </div>
+                <div>
+                  <div class="proj__stat-value">—</div>
+                  <div class="proj__stat-label">Entrega</div>
+                </div>
+              </div>
+              <span class="proj__go">Ver el desarrollo <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
         </div>
       </div>
     </section>
 
-    <!-- ============================================================
-         BLOQUE 7 · EQUIPO
-         ============================================================ -->
-    <section class="section" id="equipo" aria-labelledby="team-title">
-      <div class="container">
-        <header class="section-header">
-          <h2 id="team-title">Detrás de cada proyecto hay nombres, no un logotipo.</h2>
-          <p>Un desarrollo es una relación de años. Conviene saber con quién la está empezando.</p>
-        </header>
-        <div class="team">
-          <div class="person">
-            <div class="person__avatar" aria-hidden="true">[NM]</div>
-            <h4>[Nombre]</h4>
-            <div class="person__role">Director general</div>
-          </div>
-          <div class="person">
-            <div class="person__avatar" aria-hidden="true">[NM]</div>
-            <h4>[Nombre]</h4>
-            <div class="person__role">Originación</div>
-          </div>
-          <div class="person">
-            <div class="person__avatar" aria-hidden="true">[NM]</div>
-            <h4>[Nombre]</h4>
-            <div class="person__role">Arquitectura</div>
-          </div>
-          <div class="person">
-            <div class="person__avatar" aria-hidden="true">[NM]</div>
-            <h4>[Nombre]</h4>
-            <div class="person__role">Construcción</div>
-          </div>
-          <div class="person">
-            <div class="person__avatar" aria-hidden="true">[NM]</div>
-            <h4>[Nombre]</h4>
-            <div class="person__role">Comercialización</div>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <!-- ============================================================
          BLOQUE 8 · FAQ
@@ -1806,13 +1839,35 @@
     </section>
 
     <!-- ============================================================
+         BLOQUE 6 · SOCIOS COMERCIALES
+         Los slots aceptan <img src="assets/aliados/<nombre>.svg" alt="...">
+         en cuanto lleguen los logos. Mientras tanto va el nombre.
+         ============================================================ -->
+    <section class="section section--cream" id="aliados" aria-labelledby="allies-title">
+      <div class="container">
+        <header class="section-header">
+          <h2 id="allies-title">No trabajamos solos.</h2>
+          <p>Socios comerciales y aliados que participan según lo que cada proyecto necesita.</p>
+        </header>
+        <div class="allies__grid">
+          <div class="allies__logo">CARVID</div>
+          <div class="allies__logo">Péndulo Arquitectos</div>
+          <div class="allies__logo">Capitalta</div>
+          <div class="allies__logo">Kimbra</div>
+          <div class="allies__logo">Fundación Nuestra Historia</div>
+        </div>
+        <p class="allies__caption">Alianzas que nos permiten ejecutar con el mismo estándar en cualquier ciudad del país.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================
          BLOQUE 9 · CIERRE + CONTACTO
          ============================================================ -->
     <section class="section section--dark" aria-labelledby="closing-title">
       <div class="container">
         <header class="section-header section--center">
           <h2 id="closing-title">Cualquier duda, el agente o nosotros se la resolvemos al instante.</h2>
-          <p>Si prefiere hablar directo con una persona, también. Sin compromiso, sin costo inicial.</p>
+          <p>Si prefiere hablar directo con una persona, también.</p>
         </header>
         <div class="closing__grid">
           <div class="closing__col">
@@ -1824,7 +1879,7 @@
             <a href="https://wa.me/525517964940?text=Hola%2C%20vengo%20del%20sitio%20de%20Grupo%20CISA%20y%20quiero%20informaci%C3%B3n." class="btn btn--whatsapp btn--lg" target="_blank" rel="noopener noreferrer">Escríbanos por WhatsApp</a>
           </div>
           <div class="closing__col">
-            <h4>Si quiere atención inmediata</h4>
+            <h4>Si prefiere hablar por WhatsApp</h4>
             <button type="button" class="btn btn--primary-dark btn--lg" data-agent-open aria-label="Iniciar conversación con el agente">Hablar con el agente</button>
           </div>
         </div>
@@ -1859,14 +1914,14 @@
       <div class="footer__grid">
         <div class="footer__brand">
           <a href="index.html" aria-label="Grupo CISA · Inicio">
-            <img src="assets/logo-grupo-cisa.svg" alt="Grupo CISA" />
+            <img src="assets/logo-grupo-cisa-dark.svg" alt="Grupo CISA" />
           </a>
-          <p>Desarrollo e inversión inmobiliaria. 30 años en el mercado. Sede en Ciudad Satélite, Estado de México.</p>
+          <p>Desarrollo e inversión inmobiliaria. Años de experiencia en el mercado. Sede en Ciudad Satélite, Estado de México.</p>
         </div>
         <div>
           <h5>Empresa</h5>
           <ul>
-            <li><a href="nosotros.html#equipo">Equipo</a></li>
+            
             <li><a href="nosotros.html#metodo">El proceso</a></li>
             <li><a data-agent-open role="button" tabindex="0">Asistente</a></li>
             <li><a href="index.html#faq">Preguntas frecuentes</a></li>
@@ -1888,7 +1943,7 @@
             <li><a href="https://instagram.com/grupocisamx" target="_blank" rel="noopener noreferrer">Instagram</a></li>
             <li><a href="https://facebook.com/grupocisamx" target="_blank" rel="noopener noreferrer">Facebook</a></li>
             <li><a href="https://linkedin.com/company/grupocisa" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
-            <li><a href="#aviso">Aviso de privacidad</a></li>
+            <li><a href="aviso-de-privacidad.html">Aviso de privacidad</a></li>
           </ul>
         </div>
       </div>
@@ -1954,10 +2009,6 @@
   </script>
 
 
-<!-- impeccable-live-start -->
-
-<script src="http://localhost:8400/live.js?token=260496c0-7a81-47a3-9d47-897f1aede735"></script>
-<!-- impeccable-live-end -->
 
 <!-- Agent CISA · FAB flotante (esquina inferior derecha) · spec: agente-cisa/integration-spec.md
      El personaje CISA está presente en toda la página, con loop idle, saludo
@@ -1966,7 +2017,7 @@
 <button type="button" id="agent-cisa-fab" data-state="idle" aria-label="Hablar con CISA, asistente virtual de Grupo CISA" title="Hablar con CISA">
   <span class="agent-fab__clip">
     <video id="agent-cisa-fab-video" class="agent-fab__video" muted playsinline loop preload="auto" aria-hidden="true">
-      <source src="assets/agent-cisa-idle.mp4" type="video/mp4">
+      <source src="/assets/agent-cisa-hover.mp4" type="video/mp4">
     </video>
   </span>
   <span class="agent-fab__pulse" aria-hidden="true"></span>
@@ -1977,9 +2028,16 @@
   <span class="agent-fab__tip" aria-hidden="true">Hablar con CISA</span>
 </button>
 
-<link rel="stylesheet" href="assets/agent-cisa-fab.css">
-<script src="assets/agent-cisa-fab.js" defer></script>
+<link rel="stylesheet" href="/assets/agent-cisa-fab.css">
+<!-- Intro de marca · solo en la home y una vez por sesion. Ver assets/intro.js -->
+<link rel="stylesheet" href="/assets/intro.css">
+<script src="/assets/intro.js"></script>
 
-<script src="assets/variant-toggler.js" defer></script>
+<script src="/assets/agent-cisa-fab.js" defer></script>
+
+<!-- Formularios con memoria persistente + envio por WhatsApp · spec: PENDIENTES-WEB.md seccion 1.1
+     data-ui="off": aqui solo se necesita guardado + envio; el formulario del home
+     no lleva el indicador de borrador (sin cambios visuales en esta pagina). -->
+<script src="assets/form-memoria.js" defer data-ui="off"></script>
 </body>
 </html>

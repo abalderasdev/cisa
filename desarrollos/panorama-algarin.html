@@ -2,6 +2,15 @@
 <html lang="es-MX">
 <head>
   <meta charset="UTF-8" />
+  <!-- El desarrollo salio del sitio el 7 sep 2026. La pagina se conserva
+       para no romper enlaces existentes, pero no debe indexarse. -->
+  <meta name="robots" content="noindex, follow" />
+  <link rel="canonical" href="https://cisa1.vercel.app/desarrollos/panorama-algarin.html" />
+  <meta property="og:url" content="https://cisa1.vercel.app/desarrollos/panorama-algarin.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Grupo CISA" />
+  <meta property="og:locale" content="es_MX" />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Panorama Algarín · CDMX · CUH · MIXTO · Grupo CISA</title>
   <meta name="description" content="Torre de 23 departamentos. Edificio de uso mixto en zona con alta demanda de vivienda, a pasos de vialidades principales." />
@@ -12,7 +21,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../assets/sofia-widget.css" />
   <style>
     :root {
       --brand-green-dark:#1F4D2A;--brand-green:#2E7D32;--brand-green-mid:#4A8F4F;
@@ -374,8 +382,7 @@
         <a href="../desarrollos.html" aria-current="page">Obra</a>
         <a href="../contenido.html">Contenido</a>
         <a href="../nosotros.html#metodo">Método</a>
-        <a href="../index.html#agente">Agente</a>
-        <a href="../nosotros.html#equipo">Equipo</a>
+        <a href="../nosotros.html">Nosotros</a>
       </nav>
       <div class="site-header__actions">
         <a href="../su-terreno.html#precalificar" class="btn btn--primary">Precalificar mi terreno</a>
@@ -585,7 +592,7 @@
       <div class="site-footer__grid">
         <div>
           <img src="../assets/logo-grupo-cisa-dark.svg" alt="Grupo CISA" />
-          <p style="font-size:14px;line-height:1.6;">30 años desarrollando en CDMX, Estado de México, Querétaro y Quintana Roo.<br>ISO 9001:2015.</p>
+          <p style="font-size:14px;line-height:1.6;">Años desarrollando en CDMX, Estado de México, Querétaro y Quintana Roo.</p>
         </div>
         <div>
           <h5>Navegación</h5>
@@ -612,6 +619,26 @@
     </div>
   </footer>
 
-  <script src="../assets/sofia-widget.js" defer></script>
+
+<!-- Agent CISA · FAB flotante (esquina inferior derecha)
+     El personaje CISA acompana toda la navegacion: loop idle, saludo
+     automatico cada 8-12s, hover de interaccion, y click para abrir chat.
+     El widget de ElevenLabs se monta on-demand en el primer click. -->
+<button type="button" id="agent-cisa-fab" data-state="idle" aria-label="Hablar con CISA, asistente virtual de Grupo CISA" title="Hablar con CISA">
+  <span class="agent-fab__clip">
+    <video id="agent-cisa-fab-video" class="agent-fab__video" muted playsinline loop preload="auto" aria-hidden="true">
+      <source src="/assets/agent-cisa-hover.mp4" type="video/mp4">
+    </video>
+  </span>
+  <span class="agent-fab__pulse" aria-hidden="true"></span>
+  <span class="agent-fab__tag" aria-hidden="true">
+    <span class="agent-fab__dot"></span>
+    <span>En vivo</span>
+  </span>
+  <span class="agent-fab__tip" aria-hidden="true">Hablar con CISA</span>
+</button>
+
+<link rel="stylesheet" href="/assets/agent-cisa-fab.css">
+<script src="/assets/agent-cisa-fab.js" defer></script>
 </body>
 </html>

@@ -2,6 +2,12 @@
 <html lang="es-MX">
 <head>
   <meta charset="UTF-8" />
+  <link rel="canonical" href="https://cisa1.vercel.app/contenido/10-documentos-preventa-inmobiliaria.html" />
+  <meta property="og:url" content="https://cisa1.vercel.app/contenido/10-documentos-preventa-inmobiliaria.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Grupo CISA" />
+  <meta property="og:locale" content="es_MX" />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cinco documentos que debe pedir antes de firmar una preventa · Grupo CISA</title>
   <meta name="description" content="Cinco papeles que separan una preventa seria de una promesa verbal. Si le dicen que no los tienen, hay un motivo. Y si los tiene, revise cada uno antes de apartar." />
@@ -427,7 +433,7 @@
       font-size: 13px;
     }
     .fab-whatsapp {
-      position: fixed; right: 20px; bottom: 20px; z-index: 40;
+      position: fixed; left: 20px; bottom: 20px; z-index: 40;
       width: 60px; height: 60px; border-radius: 50%;
       background: var(--whatsapp); color: white;
       display: grid; place-items: center;
@@ -436,7 +442,7 @@
     }
     .fab-whatsapp:hover { transform: scale(1.06); box-shadow: 0 6px 20px rgba(15, 20, 25, 0.22); }
     .fab-whatsapp svg { width: 30px; height: 30px; }
-    @media (min-width: 1024px) { .fab-whatsapp { right: 32px; bottom: 32px; } }
+    @media (min-width: 1024px) { .fab-whatsapp { left: 32px; bottom: 32px; } }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -460,8 +466,7 @@
         <a href="../su-terreno.html">Modalidades</a>
         <a href="../nosotros.html#metodo">Método</a>
         <a href="../desarrollos.html">Obra</a>
-        <a href="../index.html#agente">Agente</a>
-        <a href="../nosotros.html#equipo">Equipo</a>
+        <a href="../nosotros.html">Nosotros</a>
       </nav>
       <div class="site-header__actions">
         <a href="../su-terreno.html#precalificar" class="btn btn--primary">Precalificar mi terreno</a>
@@ -596,16 +601,15 @@
       <div class="footer__grid">
         <div class="footer__brand">
           <a href="../index.html" aria-label="Grupo CISA · Inicio">
-            <img src="../assets/logo-grupo-cisa.svg" alt="Grupo CISA" />
+            <img src="../assets/logo-grupo-cisa-dark.svg" alt="Grupo CISA" />
           </a>
-          <p>Desarrollo e inversión inmobiliaria. 30 años en el mercado. Sede en Ciudad Satélite, Estado de México.</p>
+          <p>Desarrollo e inversión inmobiliaria. Años de experiencia en el mercado. Sede en Ciudad Satélite, Estado de México.</p>
         </div>
         <div>
           <h5>Empresa</h5>
           <ul>
-            <li><a href="../nosotros.html#equipo">Equipo</a></li>
+            
             <li><a href="../nosotros.html#metodo">El proceso</a></li>
-            <li><a href="../index.html#agente">Asistente</a></li>
             <li><a href="../index.html#faq">Preguntas frecuentes</a></li>
           </ul>
         </div>
@@ -625,7 +629,7 @@
             <li><a href="https://instagram.com/grupocisamx" target="_blank" rel="noopener noreferrer">Instagram</a></li>
             <li><a href="https://facebook.com/grupocisamx" target="_blank" rel="noopener noreferrer">Facebook</a></li>
             <li><a href="https://linkedin.com/company/grupocisa" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
-            <li><a href="#aviso">Aviso de privacidad</a></li>
+            <li><a href="../aviso-de-privacidad.html">Aviso de privacidad</a></li>
           </ul>
         </div>
       </div>
@@ -643,8 +647,26 @@
     </svg>
   </a>
 
-<!-- impeccable-live-start -->
-<script src="http://localhost:8400/live.js?token=260496c0-7a81-47a3-9d47-897f1aede735"></script>
-<!-- impeccable-live-end -->
+
+<!-- Agent CISA · FAB flotante (esquina inferior derecha)
+     El personaje CISA acompana toda la navegacion: loop idle, saludo
+     automatico cada 8-12s, hover de interaccion, y click para abrir chat.
+     El widget de ElevenLabs se monta on-demand en el primer click. -->
+<button type="button" id="agent-cisa-fab" data-state="idle" aria-label="Hablar con CISA, asistente virtual de Grupo CISA" title="Hablar con CISA">
+  <span class="agent-fab__clip">
+    <video id="agent-cisa-fab-video" class="agent-fab__video" muted playsinline loop preload="auto" aria-hidden="true">
+      <source src="/assets/agent-cisa-hover.mp4" type="video/mp4">
+    </video>
+  </span>
+  <span class="agent-fab__pulse" aria-hidden="true"></span>
+  <span class="agent-fab__tag" aria-hidden="true">
+    <span class="agent-fab__dot"></span>
+    <span>En vivo</span>
+  </span>
+  <span class="agent-fab__tip" aria-hidden="true">Hablar con CISA</span>
+</button>
+
+<link rel="stylesheet" href="/assets/agent-cisa-fab.css">
+<script src="/assets/agent-cisa-fab.js" defer></script>
 </body>
 </html>

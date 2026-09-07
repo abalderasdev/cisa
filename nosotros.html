@@ -2,11 +2,17 @@
 <html lang="es-MX">
 <head>
   <meta charset="UTF-8" />
+  <link rel="canonical" href="https://cisa1.vercel.app/nosotros.html" />
+  <meta property="og:url" content="https://cisa1.vercel.app/nosotros.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Grupo CISA" />
+  <meta property="og:locale" content="es_MX" />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nosotros | Grupo CISA · 30 años haciendo desarrollo inmobiliario en México</title>
-  <meta name="description" content="Grupo CISA: 30 años en desarrollo e inversión inmobiliaria. Equipo, método, aliados y obra construida en CDMX, EdoMex, QRO, QROO." />
+  <title>Nosotros | Grupo CISA · Desarrollo inmobiliario en México</title>
+  <meta name="description" content="Grupo CISA: años de experiencia en desarrollo e inversión inmobiliaria. Equipo, método, aliados y obra construida en CDMX, EdoMex, QRO, QROO." />
   <meta property="og:title" content="Nosotros · Grupo CISA" />
-  <meta property="og:description" content="Una empresa mexicana con 30 años en el mercado. Equipo multidisciplinario, proceso certificado y obra construida." />
+  <meta property="og:description" content="Una empresa mexicana con años en el mercado. Equipo multidisciplinario y obra construida." />
   <meta name="theme-color" content="#1F4D2A" />
   <meta name="color-scheme" content="light" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231F4D2A'/%3E%3Cpath d='M10 16 L22 16' stroke='%238BC34A' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M16 10 L16 22' stroke='%238BC34A' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" />
@@ -1005,7 +1011,7 @@
        BOTÓN FLOTANTE WHATSAPP
        ================================================================ */
     .fab-whatsapp {
-      position: fixed; right: 20px; bottom: 20px; z-index: 40;
+      position: fixed; left: 20px; bottom: 20px; z-index: 40;
       width: 60px; height: 60px; border-radius: 50%;
       background: var(--whatsapp); color: white;
       display: grid; place-items: center;
@@ -1014,7 +1020,7 @@
     }
     .fab-whatsapp:hover { transform: scale(1.06); box-shadow: 0 6px 20px rgba(15, 20, 25, 0.22); }
     .fab-whatsapp svg { width: 30px; height: 30px; }
-    @media (min-width: 1024px) { .fab-whatsapp { right: 32px; bottom: 32px; } }
+    @media (min-width: 1024px) { .fab-whatsapp { left: 32px; bottom: 32px; } }
 
     /* ================================================================
        BLOQUES ESPECÍFICOS DE /contacto
@@ -1055,6 +1061,68 @@
         scroll-behavior: auto !important;
       }
     }
+    /* ================================================================
+       ALIADOS / SOCIOS COMERCIALES
+       Cada slot admite un <img> del logo. Mientras no lleguen, muestra
+       el nombre en mono. Funciona sobre fondo claro y sobre section--dark.
+       ================================================================ */
+    .allies__grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 40px;
+    }
+    @media (min-width: 640px)  { .allies__grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1024px) { .allies__grid { grid-template-columns: repeat(5, 1fr); gap: 16px; } }
+    .allies__logo {
+      display: grid; place-items: center;
+      min-height: 92px; padding: 20px 16px;
+      border: 1px solid var(--ink-100);
+      border-radius: var(--radius-md);
+      background: var(--paper);
+      color: var(--ink-500);
+      font-family: var(--font-mono);
+      font-size: 12px; font-weight: 600;
+      text-align: center; line-height: 1.35;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      transition: border-color 220ms, color 220ms, transform 220ms, background 220ms;
+    }
+    .allies__logo img {
+      max-width: 100%; max-height: 48px;
+      width: auto; height: auto;
+      object-fit: contain;
+      filter: grayscale(1); opacity: .72;
+      transition: filter 220ms, opacity 220ms;
+    }
+    .allies__logo:hover {
+      transform: translateY(-3px);
+      border-color: var(--brand-green-light);
+      color: var(--brand-green-dark);
+      background: var(--cream);
+    }
+    .allies__logo:hover img { filter: none; opacity: 1; }
+    .allies__caption {
+      margin-top: 24px;
+      font-size: 15px; color: var(--ink-500);
+      max-width: 640px;
+    }
+    /* Variante sobre fondo oscuro */
+    .section--dark .allies__logo {
+      background: rgba(255,255,255,.04);
+      border-color: rgba(255,255,255,.12);
+      color: rgba(255,255,255,.62);
+    }
+    .section--dark .allies__logo:hover {
+      background: rgba(139, 195, 74, 0.10);
+      border-color: var(--brand-green);
+      color: white;
+    }
+    .section--dark .allies__caption { color: rgba(255,255,255,.62); }
+    @media (prefers-reduced-motion: reduce) {
+      .allies__logo, .allies__logo img { transition: none; }
+      .allies__logo:hover { transform: none; }
+    }
+
   </style>
 </head>
 <body>
@@ -1072,8 +1140,7 @@
         <a href="nosotros.html#metodo">Método</a>
         <a href="desarrollos.html">Obra</a>
         <a href="contenido.html">Contenido</a>
-        <a href="index.html#agente">Agente</a>
-        <a href="nosotros.html#equipo">Equipo</a>
+        <a href="nosotros.html">Nosotros</a>
       </nav>
       <div class="site-header__actions">
         <a href="su-terreno.html#precalificar" class="btn btn--primary">Precalificar mi terreno</a>
@@ -1091,7 +1158,7 @@
         <div class="hero__top">
           <span class="hero__crumb">
             <span class="hero__crumb-dot"></span>
-            GRUPO CISA · 30 AÑOS
+            GRUPO CISA
           </span>
           <span class="hero__crumb">
             DESDE 1994
@@ -1117,13 +1184,11 @@
       <div class="hero__strip" aria-label="Datos clave de la empresa">
         <div class="container">
           <div class="hero__strip-list">
-            <span class="hero__strip-item">30 AÑOS EN EL MERCADO</span>
+            <span class="hero__strip-item">AÑOS EN EL MERCADO</span>
             <span class="hero__strip-divider" aria-hidden="true"></span>
             <span class="hero__strip-item">4 LÍNEAS DE PRODUCTO</span>
             <span class="hero__strip-divider" aria-hidden="true"></span>
             <span class="hero__strip-item">8 ETAPAS DE PROCESO</span>
-            <span class="hero__strip-divider" aria-hidden="true"></span>
-            <span class="hero__strip-item">ISO 9001:2015</span>
           </div>
         </div>
       </div>
@@ -1241,45 +1306,6 @@
       </div>
     </section>
 
-    <!-- ============================================================
-         EQUIPO
-         ============================================================ -->
-    <section class="section" id="equipo" aria-labelledby="equipo-title">
-      <div class="container">
-        <header class="section-header">
-          <h2 id="equipo-title">Detrás de cada proyecto hay nombres, no un logotipo.</h2>
-          <p>Un desarrollo es una relación de años. Conviene saber con quién la está empezando.</p>
-        </header>
-        <div class="team">
-          <div class="person">
-            <div class="person__avatar" aria-hidden="true">[NM]</div>
-            <h4>[Nombre]</h4>
-            <div class="person__role">Director general</div>
-          </div>
-          <div class="person">
-            <div class="person__avatar" aria-hidden="true">[NM]</div>
-            <h4>[Nombre]</h4>
-            <div class="person__role">Originación</div>
-          </div>
-          <div class="person">
-            <div class="person__avatar" aria-hidden="true">[NM]</div>
-            <h4>[Nombre]</h4>
-            <div class="person__role">Arquitectura</div>
-          </div>
-          <div class="person">
-            <div class="person__avatar" aria-hidden="true">[NM]</div>
-            <h4>[Nombre]</h4>
-            <div class="person__role">Construcción</div>
-          </div>
-          <div class="person">
-            <div class="person__avatar" aria-hidden="true">[NM]</div>
-            <h4>[Nombre]</h4>
-            <div class="person__role">Comercialización</div>
-          </div>
-        </div>
-        <p style="margin-top: 32px; color: var(--ink-500); font-size: 14px; text-align: center;">[Bloque pendiente — CISA debe confirmar nombres, cargos y fotos]</p>
-      </div>
-    </section>
 
     <!-- ============================================================
          ALIADOS
@@ -1288,15 +1314,14 @@
       <div class="container">
         <header class="section-header" style="text-align: center; margin-inline: auto;">
           <h2 id="allies-title">Aliados que participan según la necesidad de cada proyecto.</h2>
-          <p>CARVID, Péndulo Arquitectos, Capitalta, Kimbra, Fundación Nuestra Historia. Más la certificación ISO 9001:2015 del proceso.</p>
+          <p>CARVID, Péndulo Arquitectos, Capitalta, Kimbra, Fundación Nuestra Historia.</p>
         </header>
         <div class="allies__grid">
           <div class="allies__logo">CARVID</div>
-          <div class="allies__logo">Péndulo</div>
+          <div class="allies__logo">Péndulo Arquitectos</div>
           <div class="allies__logo">Capitalta</div>
           <div class="allies__logo">Kimbra</div>
           <div class="allies__logo">Fundación Nuestra Historia</div>
-          <div class="allies__logo">ISO 9001:2015</div>
         </div>
         <p class="allies__caption">Alianzas que nos permiten ejecutar con el mismo estándar en cualquier ciudad del país.</p>
       </div>
@@ -1309,7 +1334,7 @@
       <div class="container">
         <header class="section-header section--center">
           <h2 id="cta-title">¿Quiere saber si su caso aplica con nosotros?</h2>
-          <p>Sin compromiso inicial. Le respondemos en 48 horas hábiles.</p>
+          <p>Le respondemos por el canal que prefiera.</p>
         </header>
         <div class="closing__grid" style="margin-top: 32px;">
           <div class="closing__col">
@@ -1321,7 +1346,7 @@
             <a href="inversion.html" class="btn btn--primary-dark btn--lg">Ver proyectos abiertos</a>
           </div>
           <div class="closing__col">
-            <h4>Si quiere atención inmediata</h4>
+            <h4>Si prefiere hablar por WhatsApp</h4>
             <a href="https://wa.me/525517964940?text=Hola%2C%20quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20Grupo%20CISA." class="btn btn--whatsapp btn--lg" target="_blank" rel="noopener noreferrer">Escribir por WhatsApp</a>
           </div>
         </div>
@@ -1336,16 +1361,15 @@
       <div class="footer__grid">
         <div class="footer__brand">
           <a href="index.html" aria-label="Grupo CISA · Inicio">
-            <img src="assets/logo-grupo-cisa.svg" alt="Grupo CISA" />
+            <img src="assets/logo-grupo-cisa-dark.svg" alt="Grupo CISA" />
           </a>
-          <p>Desarrollo e inversión inmobiliaria. 30 años en el mercado. Sede en Ciudad Satélite, Estado de México.</p>
+          <p>Desarrollo e inversión inmobiliaria. Años de experiencia en el mercado. Sede en Ciudad Satélite, Estado de México.</p>
         </div>
         <div>
           <h5>Empresa</h5>
           <ul>
-            <li><a href="nosotros.html#equipo">Equipo</a></li>
+            
             <li><a href="nosotros.html#metodo">El proceso</a></li>
-            <li><a href="index.html#agente">Asistente</a></li>
             <li><a href="index.html#faq">Preguntas frecuentes</a></li>
           </ul>
         </div>
@@ -1365,7 +1389,7 @@
             <li><a href="https://instagram.com/grupocisamx" target="_blank" rel="noopener noreferrer">Instagram</a></li>
             <li><a href="https://facebook.com/grupocisamx" target="_blank" rel="noopener noreferrer">Facebook</a></li>
             <li><a href="https://linkedin.com/company/grupocisa" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
-            <li><a href="#aviso">Aviso de privacidad</a></li>
+            <li><a href="aviso-de-privacidad.html">Aviso de privacidad</a></li>
           </ul>
         </div>
       </div>
@@ -1431,12 +1455,28 @@
   </script>
 
 
-<!-- impeccable-live-start -->
-
-<script src="http://localhost:8400/live.js?token=260496c0-7a81-47a3-9d47-897f1aede735"></script>
-<!-- impeccable-live-end -->
 
 <!-- Sofia widget · ElevenLabs placeholder · spec: agente-sofia/integration-spec.md -->
-<script src="assets/sofia-widget.js" defer></script>
+
+<!-- Agent CISA · FAB flotante (esquina inferior derecha)
+     El personaje CISA acompana toda la navegacion: loop idle, saludo
+     automatico cada 8-12s, hover de interaccion, y click para abrir chat.
+     El widget de ElevenLabs se monta on-demand en el primer click. -->
+<button type="button" id="agent-cisa-fab" data-state="idle" aria-label="Hablar con CISA, asistente virtual de Grupo CISA" title="Hablar con CISA">
+  <span class="agent-fab__clip">
+    <video id="agent-cisa-fab-video" class="agent-fab__video" muted playsinline loop preload="auto" aria-hidden="true">
+      <source src="/assets/agent-cisa-hover.mp4" type="video/mp4">
+    </video>
+  </span>
+  <span class="agent-fab__pulse" aria-hidden="true"></span>
+  <span class="agent-fab__tag" aria-hidden="true">
+    <span class="agent-fab__dot"></span>
+    <span>En vivo</span>
+  </span>
+  <span class="agent-fab__tip" aria-hidden="true">Hablar con CISA</span>
+</button>
+
+<link rel="stylesheet" href="/assets/agent-cisa-fab.css">
+<script src="/assets/agent-cisa-fab.js" defer></script>
 </body>
 </html>
