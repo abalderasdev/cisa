@@ -15,9 +15,9 @@
   if (!fab || !video) return;
 
   // -------- Paths --------------------------------------------------------
-  var IDLE_SRC  = 'assets/agent-cisa-idle.mp4';
-  var WAVE_SRC  = 'assets/agent-cisa-wave.mp4';
-  var HOVER_SRC = 'assets/agent-cisa-hover.mp4';
+  var IDLE_SRC  = '/assets/agent-cisa-idle.mp4';
+  var WAVE_SRC  = '/assets/agent-cisa-wave.mp4';
+  var HOVER_SRC = '/assets/agent-cisa-hover.mp4';
 
   // -------- State --------------------------------------------------------
   var state = 'idle';                // idle | wave | hover | opening | open
@@ -142,7 +142,7 @@
   function bootstrapElevenLabs() {
     if (widgetBootstrapped) return Promise.resolve();
     widgetBootstrapped = true;
-    return fetch('/api/agent-config', { credentials: 'omit', cache: 'no-cache' })
+    return fetch('/api/sofia-config', { credentials: 'omit', cache: 'no-cache' })
       .then(function (r) { return r.ok ? r.json() : null; })
       .catch(function () { return null; })
       .then(function (cfg) {
@@ -160,7 +160,7 @@
         var widget = document.createElement('elevenlabs-convai');
         widget.id = 'agent-cisa-widget';
         widget.setAttribute('agent-id', agentId);
-        widget.setAttribute('avatar-image-url', new URL('assets/agent-cisa-avatar.jpg', location.href).href);
+        widget.setAttribute('avatar-image-url', new URL('/assets/agent-cisa-avatar.jpg', location.origin).href);
         widget.setAttribute('action-text', 'Hablar con CISA');
         widget.setAttribute('language', 'es');
         host.appendChild(widget);

@@ -1,0 +1,22 @@
+# Archivos que NO deben publicarse en el sitio.
+# Antes de esto, https://cisa1.vercel.app/PENDIENTES-FINAL.md (y el resto de
+# documentos internos) respondian 200 a cualquier visitante.
+
+# Documentacion interna y de proceso
+*.md
+!contenido/**/*.md
+docs/
+agente-cisa/
+
+# Herramienta de edicion en vivo (solo desarrollo local)
+.impeccable/
+
+# Capturas y material de trabajo
+preview/
+preview-*.png
+*.pdf
+
+# Configuracion local
+.claude/
+.env
+.env.local

@@ -24,6 +24,11 @@
   'use strict';
 
   var WHATSAPP_NUMBER = '525517964940';
+  // La UI de borrador (indicador + boton "Borrar borrador") se puede apagar
+  // por pagina con data-ui="off" en el <script>. Se usa donde el formulario
+  // ya esta cerrado en diseno y solo se necesita el guardado + envio.
+  var SHOW_DRAFT_UI = !(document.currentScript &&
+    document.currentScript.getAttribute('data-ui') === 'off');
   var STORAGE_PREFIX = 'cisa_form_';
   var SAVE_DEBOUNCE_MS = 400;
 
@@ -304,8 +309,10 @@
       var submit = form.querySelector('button[type="submit"], input[type="submit"]');
       if (!submit) return;
 
-      ensureIndicator(form);
-      ensureClearButton(form);
+      if (SHOW_DRAFT_UI) {
+        ensureIndicator(form);
+        ensureClearButton(form);
+      }
       restoreForm(form);
 
       form.addEventListener('input', function (e) {
