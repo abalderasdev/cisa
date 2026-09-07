@@ -14,10 +14,13 @@
   var video = document.getElementById('agent-cisa-fab-video');
   if (!fab || !video) return;
 
-  // -------- Paths --------------------------------------------------------
-  var IDLE_SRC  = '/assets/agent-cisa-idle.mp4';
-  var WAVE_SRC  = '/assets/agent-cisa-wave.mp4';
-  var HOVER_SRC = '/assets/agent-cisa-hover.mp4';
+  // -------- Clips --------------------------------------------------------
+  // El reposo era el clip del personaje mirando el celular: nunca levantaba
+  // la vista. Ahora reposa de frente y el del celular queda como reaccion
+  // al cursor. Los nombres de archivo no cambian, solo el papel que juegan.
+  var IDLE_SRC  = '/assets/agent-cisa-hover.mp4';   // reposo: de frente
+  var WAVE_SRC  = '/assets/agent-cisa-wave.mp4';    // saludo automatico
+  var HOVER_SRC = '/assets/agent-cisa-idle.mp4';    // reaccion al cursor
 
   // -------- State --------------------------------------------------------
   var state = 'idle';                // idle | wave | hover | opening | open

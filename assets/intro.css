@@ -1,0 +1,94 @@
+/* ============================================================================
+   INTRO · cortina con video de marca antes de entrar al sitio
+   ============================================================================
+   - Solo en la home y solo una vez por sesion del navegador.
+   - Siempre hay boton para saltar, y la cortina se cierra sola al terminar
+     el clip o al llegar al tope de tiempo.
+   - Si el video no puede reproducirse, la cortina se quita de inmediato:
+     nunca deja al visitante encerrado.
+   ========================================================================== */
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 200000;
+  display: grid;
+  place-items: center;
+  background: var(--bg-dark, #0A0F0C);
+  opacity: 1;
+  transition: opacity 620ms ease;
+}
+
+/* El <html> lleva esta clase mientras la cortina esta arriba */
+.has-intro,
+.has-intro body { overflow: hidden; }
+
+.intro[hidden] { display: none; }
+.intro.is-leaving { opacity: 0; pointer-events: none; }
+
+.intro__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Viñeta suave para que el boton siempre tenga contraste */
+.intro__scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 45%, transparent 40%, rgba(10, 15, 12, .55) 100%);
+}
+
+.intro__skip {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  min-height: 44px;
+  border: 1px solid rgba(255, 255, 255, .28);
+  border-radius: 999px;
+  background: rgba(10, 15, 12, .42);
+  color: #fff;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .10em;
+  cursor: pointer;
+  transition: background 200ms, border-color 200ms, transform 200ms;
+}
+.intro__skip:hover {
+  background: rgba(10, 15, 12, .70);
+  border-color: var(--brand-green-light, #8BC34A);
+  transform: translateY(-1px);
+}
+.intro__skip:focus-visible {
+  outline: 3px solid var(--brand-green-light, #8BC34A);
+  outline-offset: 3px;
+}
+
+/* Barra de avance del clip */
+.intro__bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 0;
+  background: linear-gradient(90deg, var(--brand-green, #2E7D32), var(--brand-green-light, #8BC34A));
+  transition: width 120ms linear;
+}
+
+@media (min-width: 1024px) {
+  .intro__skip { right: 32px; bottom: 32px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro { transition: none; }
+  .intro__skip { transition: none; }
+  .intro__skip:hover { transform: none; }
+}
