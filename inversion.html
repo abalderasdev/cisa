@@ -1011,7 +1011,7 @@
        BOTÓN FLOTANTE WHATSAPP
        ================================================================ */
     .fab-whatsapp {
-      position: fixed; right: 20px; bottom: 20px; z-index: 40;
+      position: fixed; left: 20px; bottom: 20px; z-index: 40;
       width: 60px; height: 60px; border-radius: 50%;
       background: var(--whatsapp); color: white;
       display: grid; place-items: center;
@@ -1020,7 +1020,7 @@
     }
     .fab-whatsapp:hover { transform: scale(1.06); box-shadow: 0 6px 20px rgba(15, 20, 25, 0.22); }
     .fab-whatsapp svg { width: 30px; height: 30px; }
-    @media (min-width: 1024px) { .fab-whatsapp { right: 32px; bottom: 32px; } }
+    @media (min-width: 1024px) { .fab-whatsapp { left: 32px; bottom: 32px; } }
 
     /* ================================================================
        BLOQUES ESPECÍFICOS DE /contacto
@@ -1496,5 +1496,26 @@
 
 <!-- Formularios con memoria persistente + envio por WhatsApp · spec: PENDIENTES-WEB.md seccion 1.1 -->
 <link rel="stylesheet" href="assets/form-memoria.css" />
-<script src="assets/form-memoria.js" defer></script></body>
+<script src="assets/form-memoria.js" defer></script>
+<!-- Agent CISA · FAB flotante (esquina inferior derecha)
+     El personaje CISA acompana toda la navegacion: loop idle, saludo
+     automatico cada 8-12s, hover de interaccion, y click para abrir chat.
+     El widget de ElevenLabs se monta on-demand en el primer click. -->
+<button type="button" id="agent-cisa-fab" data-state="idle" aria-label="Hablar con CISA, asistente virtual de Grupo CISA" title="Hablar con CISA">
+  <span class="agent-fab__clip">
+    <video id="agent-cisa-fab-video" class="agent-fab__video" muted playsinline loop preload="auto" aria-hidden="true">
+      <source src="/assets/agent-cisa-idle.mp4" type="video/mp4">
+    </video>
+  </span>
+  <span class="agent-fab__pulse" aria-hidden="true"></span>
+  <span class="agent-fab__tag" aria-hidden="true">
+    <span class="agent-fab__dot"></span>
+    <span>En vivo</span>
+  </span>
+  <span class="agent-fab__tip" aria-hidden="true">Hablar con CISA</span>
+</button>
+
+<link rel="stylesheet" href="/assets/agent-cisa-fab.css">
+<script src="/assets/agent-cisa-fab.js" defer></script>
+</body>
 </html>

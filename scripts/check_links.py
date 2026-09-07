@@ -59,7 +59,11 @@ def main():
                     problemas[rel].append("ancla inexistente en esta pagina: #" + frag)
                 continue
 
-            destino = os.path.normpath(os.path.join(base, target)).replace(os.sep, "/")
+            if target.startswith("/"):
+                # Ruta absoluta: cuelga de la raiz del sitio, no de la pagina.
+                destino = os.path.normpath(target.lstrip("/")).replace(os.sep, "/")
+            else:
+                destino = os.path.normpath(os.path.join(base, target)).replace(os.sep, "/")
             if not os.path.exists(os.path.join(ROOT, destino)):
                 problemas[rel].append("archivo inexistente: " + href)
                 continue
