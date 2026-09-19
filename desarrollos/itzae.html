@@ -129,6 +129,15 @@
     .dev-tipologia__stats dd{margin:0;color:#fff;font-weight:600;}
     .dev-tipologia__price{padding-top:18px;border-top:1px solid rgba(255,255,255,0.15);font:700 15px/1.3 var(--font-sans);color:var(--brand-green-light);}
 
+    /* Clara 2.5: galeria */
+    .dev-galeria{padding:64px 0;background:var(--paper);}
+    .dev-galeria__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:32px;}
+    .dev-galeria__figure{margin:0;position:relative;border-radius:var(--radius-lg);overflow:hidden;background:var(--bg-section);aspect-ratio:3/4;}
+    .dev-galeria__figure img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 400ms;}
+    .dev-galeria__figure:hover img{transform:scale(1.04);}
+    .dev-galeria__figcaption{position:absolute;left:0;right:0;bottom:0;padding:14px 16px;background:linear-gradient(to top,rgba(10,15,12,0.78),transparent);color:#fff;font:600 13px/1.35 var(--font-sans);letter-spacing:0.01em;}
+    @media (min-width:900px){.dev-galeria__grid{grid-template-columns:repeat(3,1fr);}}
+
     /* Clara 3: amenidades */
     .dev-amenidades{padding:64px 0;background:var(--bg-section);}
 
@@ -330,6 +339,40 @@
             </dl>
             <div class="dev-tipologia__price">Por definir en preventa</div>
           </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLARA · Galeria -->
+    <section class="dev-galeria" aria-labelledby="galeria-title">
+      <div class="container">
+        <h2 id="galeria-title">El proyecto en imágenes</h2>
+        <p class="section-header" style="color:var(--ink-700);font-size:18px;margin-top:12px;">Renders del partido arquitectónico, interiores tipo y amenidades del complejo.</p>
+        <div class="dev-galeria__grid">
+          <figure class="dev-galeria__figure">
+            <img loading="lazy" decoding="async" src="../assets/desarrollos/itzae/wa-2026-08-28-at-6h12pm-1-v2.webp" alt="Fachada exterior de Itzae: balcones de tres niveles con barandales de madera y fachada blanca, vista hacia el patio interior." />
+            <figcaption class="dev-galeria__figcaption">Fachada hacia el patio interior</figcaption>
+          </figure>
+          <figure class="dev-galeria__figure">
+            <img loading="lazy" decoding="async" src="../assets/desarrollos/itzae/wa-2026-08-28-at-6h12pm-2-v2.webp" alt="Fachada exterior de Itzae vista en contrapicada contra el cielo: balcones, celosías del edificio vecino y barandales de madera." />
+            <figcaption class="dev-galeria__figcaption">Vista en contrapicada desde la calle</figcaption>
+          </figure>
+          <figure class="dev-galeria__figure">
+            <img loading="lazy" decoding="async" src="../assets/desarrollos/itzae/wa-2026-08-28-at-6h12pm-2-.webp" alt="Recámara principal tipo: cama king, cabecero de madera con manta decorativa, ventilador de techo y mesitas de noche con jarra de barro." />
+            <figcaption class="dev-galeria__figcaption">Recámara principal tipo</figcaption>
+          </figure>
+          <figure class="dev-galeria__figure">
+            <img loading="lazy" decoding="async" src="../assets/desarrollos/itzae/wa-2026-08-28-at-6h12pm.webp" alt="Detalle del cabecero con manta de macramé y cojines con textura sobre cama king." />
+            <figcaption class="dev-galeria__figcaption">Detalle del cabecero</figcaption>
+          </figure>
+          <figure class="dev-galeria__figure">
+            <img loading="lazy" decoding="async" src="../assets/desarrollos/itzae/wa-2026-08-28-at-6h12pm-1-.webp" alt="Detalle del cabecero y mesita de noche con escultura decorativa de madera y dos luminarias colgantes." />
+            <figcaption class="dev-galeria__figcaption">Mesita de noche y luminarias</figcaption>
+          </figure>
+          <figure class="dev-galeria__figure">
+            <img loading="lazy" decoding="async" src="../assets/desarrollos/itzae/wa-2026-08-28-at-6h12pm-3-.webp" alt="Detalle del cabecero con manta de macramé, luminaria colgante de fibras y jarra de barro artesanal sobre la mesita de noche." />
+            <figcaption class="dev-galeria__figcaption">Acabados artesanales</figcaption>
+          </figure>
         </div>
       </div>
     </section>
