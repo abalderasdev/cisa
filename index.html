@@ -277,124 +277,21 @@
     }
     .terrain {
       position: relative; width: 100%;
-      aspect-ratio: 1;
-      background: var(--paper);
-      border: 1.5px solid var(--ink-200);
-      border-radius: var(--radius-lg);
+      background: transparent;
       overflow: hidden;
+      border-radius: var(--radius-md);
     }
     .terrain__bg {
-      position: absolute; inset: 0; pointer-events: none;
-      background-image:
-        linear-gradient(to right, var(--ink-100) 1px, transparent 1px),
-        linear-gradient(to bottom, var(--ink-100) 1px, transparent 1px);
-      background-size: 40px 40px;
-      opacity: 0.35;
+      display: none; /* legacy — imagen integrada trae el HUD */
     }
     .terrain__svg {
       position: absolute; inset: 0; width: 100%; height: 100%;
     }
-    .terrain__video {
-      position: absolute; inset: 0; width: 100%; height: 100%;
-      object-fit: cover;
+    .terrain__img {
       display: block;
-    }
-
-    /* === Métricas de mercado en banda inferior (no overlay sobre el video) === */
-    .terrain__metrics {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
-      margin-top: 16px;
-      pointer-events: auto;
-    }
-    .metric {
-      position: static;
-      background: var(--paper);
-      border: 1px solid var(--ink-200);
-      border-left: 3px solid var(--brand-green);
-      border-radius: 4px;
-      padding: 10px 12px;
-      min-width: 0;
-      box-shadow: 0 1px 3px rgba(15, 20, 25, 0.06);
-      opacity: 1;
-      transform: none;
-      animation: none;
-    }
-    .metric__label {
-      font: 600 9px/1 var(--font-mono);
-      color: var(--ink-500);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 4px;
-    }
-    .metric__value {
-      font: 800 18px/1.05 var(--font-mono);
-      color: var(--brand-green-dark);
-      letter-spacing: -0.01em;
-    }
-    .metric__unit {
-      font: 500 9px/1.2 var(--font-mono);
-      color: var(--ink-500);
-      margin-top: 3px;
-    }
-    /* Las posiciones absolutas por métrica ya no aplican (todo en grid) */
-    .metric--abs, .metric--cost, .metric--dens, .metric--time, .metric--margin {
-      top: auto; left: auto; right: auto; bottom: auto;
-      transform: none;
-      animation: none;
-      opacity: 1;
-    }
-    @media (max-width: 700px) {
-      .terrain__metrics { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 600px) {
-      .metric { padding: 8px 10px; }
-      .metric__value { font-size: 15px; }
-      .metric__label, .metric__unit { font-size: 8px; }
-    }
-    /* Etiquetas flotantes tipo plano arquitectónico */
-    .terrain__tags {
-      position: absolute; inset: 0; pointer-events: none;
-    }
-    .terrain__tag {
-      position: absolute;
-      font-family: var(--font-mono);
-      font-size: 10px; font-weight: 600;
-      background: var(--ink-900); color: white;
-      padding: 4px 8px; border-radius: 4px;
-      letter-spacing: 0.04em;
-      white-space: nowrap;
-    }
-    .terrain__tag::before {
-      content: ""; position: absolute;
-      width: 24px; height: 1px;
-      background: var(--ink-900);
-    }
-    .terrain__tag--tl { top: 12%; left: 8%; }
-    .terrain__tag--tl::before { left: 100%; top: 50%; }
-    .terrain__tag--tr { top: 18%; right: 8%; }
-    .terrain__tag--tr::before { right: 100%; top: 50%; }
-    .terrain__tag--br { bottom: 12%; right: 8%; }
-    .terrain__tag--br::before { right: 100%; top: 50%; }
-    .terrain__corner {
-      position: absolute; width: 12px; height: 12px;
-      border: 1.5px solid var(--ink-900);
-    }
-    .terrain__corner--tl { top: 8px; left: 8px; border-right: 0; border-bottom: 0; }
-    .terrain__corner--tr { top: 8px; right: 8px; border-left: 0; border-bottom: 0; }
-    .terrain__corner--bl { bottom: 8px; left: 8px; border-right: 0; border-top: 0; }
-    .terrain__corner--br { bottom: 8px; right: 8px; border-left: 0; border-top: 0; }
-
-    .terrain__scale {
-      position: absolute; bottom: 16px; left: 16px;
-      display: flex; align-items: center; gap: 8px;
-      font-family: var(--font-mono);
-      font-size: 10px; color: var(--ink-500);
-      text-transform: uppercase; letter-spacing: 0.10em;
-    }
-    .terrain__scale-bar {
-      width: 60px; height: 1.5px; background: var(--ink-700);
+      width: 100%;
+      height: auto;
+      border-radius: var(--radius-md);
     }
 
     .hero__ctas {
@@ -571,7 +468,7 @@
     #modalidades[data-variant="c"]::before {
       content: "";
       position: absolute; inset: 0;
-      background-image: url('assets/hero-terrain.mp4');
+      background-image: url('assets/hero-analysis.webp');
       background-size: cover; background-position: center;
       opacity: 0.18;
       z-index: -2;
@@ -1421,66 +1318,20 @@
             </div>
           </div>
 
-          <!-- Polígono protagonista (video animado) -->
+          <!-- Polígono protagonista (imagen con partido arquitectónico) -->
           <div class="hero__terrain" aria-hidden="true">
             <div class="terrain">
-              <div class="terrain__bg"></div>
-              <video
-                class="terrain__video"
-                src="assets/hero-terrain.mp4"
-                autoplay
-                loop
-                muted
-                playsinline
-                preload="auto"
-                aria-label="Animación del proceso de desarrollo: del terreno al plano, con datos de mercado"></video>
-
-              <!-- Etiquetas tipo plano (datos fijos del proyecto) -->
-              <div class="terrain__tags">
-                <span class="terrain__tag terrain__tag--tl">VÉRTICE 02 · 19.43°N</span>
-                <span class="terrain__tag terrain__tag--tr">USO DE SUELO H4</span>
-                <span class="terrain__tag terrain__tag--br">SUP. 480 m²</span>
-              </div>
-
-              <div class="terrain__corner terrain__corner--tl"></div>
-              <div class="terrain__corner terrain__corner--tr"></div>
-              <div class="terrain__corner terrain__corner--bl"></div>
-              <div class="terrain__corner terrain__corner--br"></div>
-
-              <div class="terrain__scale" aria-hidden="true">
-                <span>0</span>
-                <div class="terrain__scale-bar"></div>
-                <span>10 m</span>
-              </div>
-            </div>
-
-            <!-- Datos de mercado en banda inferior, fuera del video para no encimarse -->
-            <div class="terrain__metrics" aria-label="Datos de mercado analizados para el desarrollo">
-              <div class="metric metric--abs">
-                <div class="metric__label">ABSORCIÓN</div>
-                <div class="metric__value">1.8%</div>
-                <div class="metric__unit">/mes</div>
-              </div>
-              <div class="metric metric--cost">
-                <div class="metric__label">COSTO M² CONST.</div>
-                <div class="metric__value">$18,500</div>
-                <div class="metric__unit">MXN</div>
-              </div>
-              <div class="metric metric--dens">
-                <div class="metric__label">DENSIDAD</div>
-                <div class="metric__value">80</div>
-                <div class="metric__unit">viv/ha</div>
-              </div>
-              <div class="metric metric--time">
-                <div class="metric__label">TIEMPO OBRA</div>
-                <div class="metric__value">18</div>
-                <div class="metric__unit">meses</div>
-              </div>
-              <div class="metric metric--margin">
-                <div class="metric__label">MARGEN</div>
-                <div class="metric__value">22%</div>
-                <div class="metric__unit">s/ingreso</div>
-              </div>
+              <picture>
+                <source srcset="assets/hero-analysis.webp" type="image/webp">
+                <img
+                  class="terrain__img"
+                  src="assets/hero-analysis.png"
+                  alt="Partido arquitectónico con datos del proyecto: vértice, uso de suelo, superficie, absorción, costo, densidad, tiempo de obra y margen"
+                  width="933"
+                  height="1024"
+                  loading="eager"
+                  decoding="async">
+              </picture>
             </div>
           </div>
         </div>
