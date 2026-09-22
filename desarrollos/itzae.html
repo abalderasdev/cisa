@@ -115,20 +115,193 @@
     /* Clara 2: ficha */
     .dev-ficha{padding:64px 0;background:var(--paper);}
 
-    /* Verde 1: tipologias */
-    .dev-tipologias{padding:72px 0;background:var(--bg-cisa);color:rgba(255,255,255,0.92);position:relative;}
-    .dev-tipologias::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 0%,rgba(139,195,74,0.12),transparent 50%);pointer-events:none;}
+    /* Verde 1: tipologias — widget interactivo con tabs y panel */
+    .dev-tipologias{padding:72px 0;background:var(--bg-cisa);color:rgba(255,255,255,0.92);position:relative;overflow:hidden;}
+    /* Cuadrícula técnica blueprint de fondo */
+    .dev-tipologias::before{
+      content:'';position:absolute;inset:0;pointer-events:none;
+      background-image:
+        linear-gradient(to right, rgba(139,195,74,0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(139,195,74,0.05) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(circle at center, black 30%, transparent 90%);
+    }
+    /* Glow sutil verde claro en esquina */
+    .dev-tipologias::after{
+      content:'';position:absolute;inset:0;pointer-events:none;
+      background:radial-gradient(circle at 90% 10%,rgba(139,195,74,0.10),transparent 45%);
+    }
     .dev-tipologias h2,.dev-tipologias .section-header p{color:#fff;}
     .dev-tipologias .section-header p{color:rgba(255,255,255,0.7);}
-    .dev-tipologias__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-top:32px;position:relative;}
-    .dev-tipologia{border:1.5px solid rgba(255,255,255,0.15);border-radius:var(--radius-lg);padding:28px;background:rgba(255,255,255,0.04);transition:all 200ms;}
-    .dev-tipologia:hover{border-color:var(--brand-green-light);background:rgba(255,255,255,0.08);transform:translateY(-2px);}
-    .dev-tipologia__badge{display:inline-block;font:600 11px/1 var(--font-mono);color:var(--brand-green-light);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;padding:4px 10px;background:rgba(139,195,74,0.12);border-radius:999px;}
-    .dev-tipologia h4{font-size:20px;margin-bottom:16px;color:#fff;}
-    .dev-tipologia__stats{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-bottom:20px;font-size:14px;}
-    .dev-tipologia__stats dt{color:rgba(255,255,255,0.55);font-size:12px;text-transform:uppercase;letter-spacing:0.05em;}
-    .dev-tipologia__stats dd{margin:0;color:#fff;font-weight:600;}
-    .dev-tipologia__price{padding-top:18px;border-top:1px solid rgba(255,255,255,0.15);font:700 15px/1.3 var(--font-sans);color:var(--brand-green-light);}
+
+    /* Marco contenedor del widget */
+    .tipowidget{
+      position:relative;margin-top:40px;
+      background:rgba(0,0,0,0.20);
+      border:1px solid rgba(139,195,74,0.25);
+      border-radius:var(--radius-lg);
+      padding:36px;
+      backdrop-filter:none;
+    }
+    /* Esquinas scanner tipo HUD */
+    .tipowidget__corner{position:absolute;width:14px;height:14px;border:1.5px solid var(--brand-green-light);}
+    .tipowidget__corner--tl{top:8px;left:8px;border-right:0;border-bottom:0;}
+    .tipowidget__corner--tr{top:8px;right:8px;border-left:0;border-bottom:0;}
+    .tipowidget__corner--bl{bottom:8px;left:8px;border-right:0;border-top:0;}
+    .tipowidget__corner--br{bottom:8px;right:8px;border-left:0;border-top:0;}
+
+    /* Header del widget: tag de tipología activa */
+    .tipowidget__head{
+      display:flex;justify-content:space-between;align-items:center;
+      margin-bottom:24px;font:600 11px/1 var(--font-mono);
+      color:var(--brand-green-light);
+      text-transform:uppercase;letter-spacing:0.10em;
+    }
+    .tipowidget__counter{display:inline-flex;gap:6px;align-items:center;}
+    .tipowidget__counter b{color:#fff;font-weight:700;font-size:13px;}
+
+    /* Tabs de navegación */
+    .tipowidget__tabs{
+      display:flex;flex-wrap:wrap;gap:6px;
+      padding-bottom:24px;margin-bottom:28px;
+      border-bottom:1px solid rgba(139,195,74,0.20);
+    }
+    .tipowidget__tab{
+      font:600 12px/1 var(--font-mono);
+      color:rgba(255,255,255,0.55);
+      text-transform:uppercase;letter-spacing:0.08em;
+      padding:10px 16px;border-radius:var(--radius-pill);
+      background:transparent;
+      border:1px solid rgba(255,255,255,0.10);
+      cursor:pointer;
+      transition:all 200ms cubic-bezier(.22,.61,.36,1);
+    }
+    .tipowidget__tab:hover{
+      color:#fff;
+      border-color:rgba(139,195,74,0.40);
+      background:rgba(139,195,74,0.06);
+    }
+    .tipowidget__tab[aria-selected="true"]{
+      color:var(--bg-cisa);
+      background:var(--brand-green-light);
+      border-color:var(--brand-green-light);
+      box-shadow:0 2px 12px rgba(139,195,74,0.25);
+    }
+
+    /* Panel de detalle */
+    .tipowidget__panel{
+      display:none;
+      grid-template-columns:1fr 1.4fr;
+      gap:32px;align-items:start;
+      animation:tipofade 320ms cubic-bezier(.22,.61,.36,1);
+    }
+    .tipowidget__panel[data-active]{display:grid;}
+    @keyframes tipofade{
+      from{opacity:0;transform:translateY(8px);}
+      to{opacity:1;transform:translateY(0);}
+    }
+
+    /* Slot visual: cuadrado con esquinas HUD, badge grande */
+    .tipowidget__visual{
+      position:relative;
+      aspect-ratio:1;
+      background:rgba(0,0,0,0.30);
+      border:1px solid rgba(139,195,74,0.20);
+      border-radius:var(--radius-md);
+      padding:24px;
+      display:flex;flex-direction:column;justify-content:space-between;
+      overflow:hidden;
+    }
+    .tipowidget__visual::before{
+      content:'';position:absolute;inset:0;pointer-events:none;
+      background-image:
+        linear-gradient(to right, rgba(139,195,74,0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(139,195,74,0.04) 1px, transparent 1px);
+      background-size:24px 24px;
+    }
+    .tipowidget__visual-num{
+      font:700 11px/1 var(--font-mono);
+      color:rgba(139,195,74,0.55);
+      text-transform:uppercase;letter-spacing:0.10em;
+      position:relative;z-index:1;
+    }
+    .tipowidget__visual-name{
+      font:800 clamp(36px,5vw,52px)/0.95 var(--font-sans);
+      color:#fff;letter-spacing:-0.02em;
+      position:relative;z-index:1;
+    }
+    .tipowidget__visual-recap{
+      font:600 14px/1.3 var(--font-sans);
+      color:var(--brand-green-light);
+      position:relative;z-index:1;
+    }
+    .tipowidget__visual-corner{position:absolute;width:8px;height:8px;border:1.5px solid var(--brand-green-light);}
+    .tipowidget__visual-corner--tl{top:6px;left:6px;border-right:0;border-bottom:0;}
+    .tipowidget__visual-corner--tr{top:6px;right:6px;border-left:0;border-bottom:0;}
+    .tipowidget__visual-corner--bl{bottom:6px;left:6px;border-right:0;border-top:0;}
+    .tipowidget__visual-corner--br{bottom:6px;right:6px;border-left:0;border-top:0;}
+
+    /* Datos: lista vertical con label mono + valor */
+    .tipowidget__data{display:flex;flex-direction:column;gap:0;}
+    .tipowidget__row{
+      display:grid;grid-template-columns:1fr auto;align-items:baseline;
+      gap:16px;padding:16px 0;
+      border-bottom:1px solid rgba(255,255,255,0.08);
+    }
+    .tipowidget__row:last-child{border-bottom:0;}
+    .tipowidget__label{
+      font:600 11px/1 var(--font-mono);
+      color:rgba(255,255,255,0.55);
+      text-transform:uppercase;letter-spacing:0.08em;
+    }
+    .tipowidget__value{
+      font:700 22px/1.1 var(--font-mono);
+      color:#fff;letter-spacing:-0.01em;
+      text-align:right;
+    }
+    .tipowidget__value small{
+      font:500 12px/1 var(--font-mono);
+      color:rgba(255,255,255,0.55);
+      margin-left:6px;letter-spacing:0;
+    }
+
+    /* Footer del panel: precio + navegación */
+    .tipowidget__foot{
+      grid-column:1/-1;
+      display:flex;justify-content:space-between;align-items:center;
+      gap:16px;flex-wrap:wrap;
+      padding-top:24px;margin-top:8px;
+      border-top:1px solid rgba(139,195,74,0.20);
+    }
+    .tipowidget__price{
+      font:700 16px/1.3 var(--font-sans);
+      color:var(--brand-green-light);
+    }
+    .tipowidget__nav{display:inline-flex;gap:8px;}
+    .tipowidget__btn{
+      font:600 11px/1 var(--font-mono);
+      text-transform:uppercase;letter-spacing:0.08em;
+      padding:10px 16px;border-radius:var(--radius-pill);
+      background:transparent;
+      border:1px solid rgba(255,255,255,0.20);
+      color:rgba(255,255,255,0.85);
+      cursor:pointer;
+      transition:all 200ms;
+    }
+    .tipowidget__btn:hover:not([disabled]){
+      border-color:var(--brand-green-light);
+      color:var(--brand-green-light);
+      background:rgba(139,195,74,0.08);
+    }
+    .tipowidget__btn[disabled]{opacity:0.35;cursor:not-allowed;}
+
+    @media (max-width:768px){
+      .tipowidget{padding:24px 20px;}
+      .tipowidget__panel[data-active]{grid-template-columns:1fr;gap:20px;}
+      .tipowidget__visual{aspect-ratio:1.4;}
+      .tipowidget__tabs{gap:4px;}
+      .tipowidget__tab{padding:8px 12px;font-size:11px;}
+    }
 
     /* Clara 2.5: galeria */
     .dev-galeria{padding:64px 0;background:var(--paper);}
@@ -279,66 +452,169 @@
       </div>
     </section>
 
-    <!-- VERDE · Tipologías -->
+    <!-- VERDE · Tipologías — widget interactivo -->
     <section class="dev-tipologias" aria-labelledby="tipo-title">
       <div class="container">
         <h2 id="tipo-title">Tipologías</h2>
         <p class="section-header">Cinco distribuciones que cubren desde el estudio para una persona hasta la unidad de cuatro recámaras para grupos. Los precios se confirman por unidad en la cita de preventa.</p>
-        <div class="dev-tipologias__grid">
-          <article class="dev-tipologia">
-            <span class="dev-tipologia__badge">TIKAL</span>
-            <h4>2 recámaras · 2 baños</h4>
-            <dl class="dev-tipologia__stats">
-              <dt>Superficie</dt><dd>118 a 140 m²</dd>
-              <dt>Unidades</dt><dd>2</dd>
-              <dt>Estancia</dt><dd>Sala · comedor · terraza</dd>
-              <dt>Estacionamiento</dt><dd>1 lugar</dd>
-            </dl>
-            <div class="dev-tipologia__price">Por definir en preventa</div>
+
+        <div class="tipowidget" data-tipowidget>
+          <span class="tipowidget__corner tipowidget__corner--tl" aria-hidden="true"></span>
+          <span class="tipowidget__corner tipowidget__corner--tr" aria-hidden="true"></span>
+          <span class="tipowidget__corner tipowidget__corner--bl" aria-hidden="true"></span>
+          <span class="tipowidget__corner tipowidget__corner--br" aria-hidden="true"></span>
+
+          <div class="tipowidget__head">
+            <span class="tipowidget__counter">TIPOLOGÍA <b data-counter>01</b> / 05</span>
+            <span aria-hidden="true">SELECCIONAR · CLICK EN EL NOMBRE</span>
+          </div>
+
+          <div class="tipowidget__tabs" role="tablist" aria-label="Tipologías de Itzaé">
+            <button class="tipowidget__tab" role="tab" aria-selected="true" data-tab="0">TIKAL</button>
+            <button class="tipowidget__tab" role="tab" aria-selected="false" data-tab="1">CALAKMUL</button>
+            <button class="tipowidget__tab" role="tab" aria-selected="false" data-tab="2">TULUM</button>
+            <button class="tipowidget__tab" role="tab" aria-selected="false" data-tab="3">UXMAL</button>
+            <button class="tipowidget__tab" role="tab" aria-selected="false" data-tab="4">CHICHÉN ITZÁ</button>
+          </div>
+
+          <!-- Panel TIKAL -->
+          <article class="tipowidget__panel" data-active data-panel="0" role="tabpanel" aria-label="Tipología TIKAL">
+            <div class="tipowidget__visual">
+              <span class="tipowidget__visual-corner tipowidget__visual-corner--tl" aria-hidden="true"></span>
+              <span class="tipowidget__visual-corner tipowidget__visual-corner--tr" aria-hidden="true"></span>
+              <span class="tipowidget__visual-corner tipowidget__visual-corner--bl" aria-hidden="true"></span>
+              <span class="tipowidget__visual-corner tipowidget__visual-corner--br" aria-hidden="true"></span>
+              <span class="tipowidget__visual-num">TIPOLOGÍA · 01 / 05</span>
+              <span class="tipowidget__visual-name">TIKAL</span>
+              <span class="tipowidget__visual-recap">2 recámaras · 2 baños</span>
+            </div>
+            <div>
+              <dl class="tipowidget__data">
+                <div class="tipowidget__row"><dt class="tipowidget__label">Superficie</dt><dd class="tipowidget__value">118–140 <small>m²</small></dd></div>
+                <div class="tipowidget__row"><dt class="tipowidget__label">Unidades</dt><dd class="tipowidget__value">2</dd></div>
+                <div class="tipowidget__row"><dt class="tipowidget__label">Estancia</dt><dd class="tipowidget__value" style="font-size:16px;">Sala · comedor · terraza</dd></div>
+                <div class="tipowidget__row"><dt class="tipowidget__label">Estacionamiento</dt><dd class="tipowidget__value">1 <small>lugar</small></dd></div>
+              </dl>
+            </div>
+            <div class="tipowidget__foot">
+              <span class="tipowidget__price">Por definir en preventa</span>
+              <div class="tipowidget__nav">
+                <button class="tipowidget__btn" data-prev disabled aria-label="Tipología anterior">← Anterior</button>
+                <button class="tipowidget__btn" data-next aria-label="Siguiente tipología">Siguiente →</button>
+              </div>
+            </div>
           </article>
-          <article class="dev-tipologia">
-            <span class="dev-tipologia__badge">CALAKMUL</span>
-            <h4>2 recámaras · 1 baño</h4>
-            <dl class="dev-tipologia__stats">
-              <dt>Superficie</dt><dd>62 a 65 m²</dd>
-              <dt>Unidades</dt><dd>2</dd>
-              <dt>Estancia</dt><dd>Sala · cocina · balcón</dd>
-              <dt>Estacionamiento</dt><dd>1 lugar</dd>
-            </dl>
-            <div class="dev-tipologia__price">Por definir en preventa</div>
+
+          <!-- Panel CALAKMUL -->
+          <article class="tipowidget__panel" data-panel="1" role="tabpanel" aria-label="Tipología CALAKMUL" hidden>
+            <div class="tipowidget__visual">
+              <span class="tipowidget__visual-corner tipowidget__visual-corner--tl" aria-hidden="true"></span>
+              <span class="tipowidget__visual-corner tipowidget__visual-corner--tr" aria-hidden="true"></span>
+              <span class="tipowidget__visual-corner tipowidget__visual-corner--bl" aria-hidden="true"></span>
+              <span class="tipowidget__visual-corner tipowidget__visual-corner--br" aria-hidden="true"></span>
+              <span class="tipowidget__visual-num">TIPOLOGÍA · 02 / 05</span>
+              <span class="tipowidget__visual-name">CALAKMUL</span>
+              <span class="tipowidget__visual-recap">2 recámaras · 1 baño</span>
+            </div>
+            <div>
+              <dl class="tipowidget__data">
+                <div class="tipowidget__row"><dt class="tipowidget__label">Superficie</dt><dd class="tipowidget__value">62–65 <small>m²</small></dd></div>
+                <div class="tipowidget__row"><dt class="tipowidget__label">Unidades</dt><dd class="tipowidget__value">2</dd></div>
+                <div class="tipowidget__row"><dt class="tipowidget__label">Estancia</dt><dd class="tipowidget__value" style="font-size:16px;">Sala · cocina · balcón</dd></div>
+                <div class="tipowidget__row"><dt class="tipowidget__label">Estacionamiento</dt><dd class="tipowidget__value">1 <small>lugar</small></dd></div>
+              </dl>
+            </div>
+            <div class="tipowidget__foot">
+              <span class="tipowidget__price">Por definir en preventa</span>
+              <div class="tipowidget__nav">
+                <button class="tipowidget__btn" data-prev aria-label="Tipología anterior">← Anterior</button>
+                <button class="tipowidget__btn" data-next aria-label="Siguiente tipología">Siguiente →</button>
+              </div>
+            </div>
           </article>
-          <article class="dev-tipologia">
-            <span class="dev-tipologia__badge">TULUM</span>
-            <h4>Estudio · 1 baño</h4>
-            <dl class="dev-tipologia__stats">
-              <dt>Superficie</dt><dd>45 m²</dd>
-              <dt>Unidades</dt><dd>6</dd>
-              <dt>Estancia</dt><dd>Concepto abierto</dd>
-              <dt>Estacionamiento</dt><dd>1 lugar</dd>
-            </dl>
-            <div class="dev-tipologia__price">Por definir en preventa</div>
+
+          <!-- Panel TULUM -->
+          <article class="tipowidget__panel" data-panel="2" role="tabpanel" aria-label="Tipología TULUM" hidden>
+            <div class="tipowidget__visual">
+              <span class="tipowidget__visual-corner tipowidget__visual-corner--tl" aria-hidden="true"></span>
+              <span class="tipowidget__visual-corner tipowidget__visual-corner--tr" aria-hidden="true"></span>
+              <span class="tipowidget__visual-corner tipowidget__visual-corner--bl" aria-hidden="true"></span>
+              <span class="tipowidget__visual-corner tipowidget__visual-corner--br" aria-hidden="true"></span>
+              <span class="tipowidget__visual-num">TIPOLOGÍA · 03 / 05</span>
+              <span class="tipowidget__visual-name">TULUM</span>
+              <span class="tipowidget__visual-recap">Estudio · 1 baño</span>
+            </div>
+            <div>
+              <dl class="tipowidget__data">
+                <div class="tipowidget__row"><dt class="tipowidget__label">Superficie</dt><dd class="tipowidget__value">45 <small>m²</small></dd></div>
+                <div class="tipowidget__row"><dt class="tipowidget__label">Unidades</dt><dd class="tipowidget__value">6</dd></div>
+                <div class="tipowidget__row"><dt class="tipowidget__label">Estancia</dt><dd class="tipowidget__value" style="font-size:16px;">Concepto abierto</dd></div>
+                <div class="tipowidget__row"><dt class="tipowidget__label">Estacionamiento</dt><dd class="tipowidget__value">1 <small>lugar</small></dd></div>
+              </dl>
+            </div>
+            <div class="tipowidget__foot">
+              <span class="tipowidget__price">Por definir en preventa</span>
+              <div class="tipowidget__nav">
+                <button class="tipowidget__btn" data-prev aria-label="Tipología anterior">← Anterior</button>
+                <button class="tipowidget__btn" data-next aria-label="Siguiente tipología">Siguiente →</button>
+              </div>
+            </div>
           </article>
-          <article class="dev-tipologia">
-            <span class="dev-tipologia__badge">UXMAL</span>
-            <h4>1 recámara · 1 baño</h4>
-            <dl class="dev-tipologia__stats">
-              <dt>Superficie</dt><dd>51 m²</dd>
-              <dt>Unidades</dt><dd>2</dd>
-              <dt>Estancia</dt><dd>Sala · cocina · balcón</dd>
-              <dt>Estacionamiento</dt><dd>1 lugar</dd>
-            </dl>
-            <div class="dev-tipologia__price">Por definir en preventa</div>
+
+          <!-- Panel UXMAL -->
+          <article class="tipowidget__panel" data-panel="3" role="tabpanel" aria-label="Tipología UXMAL" hidden>
+            <div class="tipowidget__visual">
+              <span class="tipowidget__visual-corner tipowidget__visual-corner--tl" aria-hidden="true"></span>
+              <span class="tipowidget__visual-corner tipowidget__visual-corner--tr" aria-hidden="true"></span>
+              <span class="tipowidget__visual-corner tipowidget__visual-corner--bl" aria-hidden="true"></span>
+              <span class="tipowidget__visual-corner tipowidget__visual-corner--br" aria-hidden="true"></span>
+              <span class="tipowidget__visual-num">TIPOLOGÍA · 04 / 05</span>
+              <span class="tipowidget__visual-name">UXMAL</span>
+              <span class="tipowidget__visual-recap">1 recámara · 1 baño</span>
+            </div>
+            <div>
+              <dl class="tipowidget__data">
+                <div class="tipowidget__row"><dt class="tipowidget__label">Superficie</dt><dd class="tipowidget__value">51 <small>m²</small></dd></div>
+                <div class="tipowidget__row"><dt class="tipowidget__label">Unidades</dt><dd class="tipowidget__value">2</dd></div>
+                <div class="tipowidget__row"><dt class="tipowidget__label">Estancia</dt><dd class="tipowidget__value" style="font-size:16px;">Sala · cocina · balcón</dd></div>
+                <div class="tipowidget__row"><dt class="tipowidget__label">Estacionamiento</dt><dd class="tipowidget__value">1 <small>lugar</small></dd></div>
+              </dl>
+            </div>
+            <div class="tipowidget__foot">
+              <span class="tipowidget__price">Por definir en preventa</span>
+              <div class="tipowidget__nav">
+                <button class="tipowidget__btn" data-prev aria-label="Tipología anterior">← Anterior</button>
+                <button class="tipowidget__btn" data-next aria-label="Siguiente tipología">Siguiente →</button>
+              </div>
+            </div>
           </article>
-          <article class="dev-tipologia">
-            <span class="dev-tipologia__badge">CHICHÉN ITZÁ</span>
-            <h4>3 recámaras · 2 baños</h4>
-            <dl class="dev-tipologia__stats">
-              <dt>Superficie</dt><dd>140 m²</dd>
-              <dt>Unidades</dt><dd>4</dd>
-              <dt>Estancia</dt><dd>Sala · comedor · terraza</dd>
-              <dt>Estacionamiento</dt><dd>2 lugares</dd>
-            </dl>
-            <div class="dev-tipologia__price">Por definir en preventa</div>
+
+          <!-- Panel CHICHÉN ITZÁ -->
+          <article class="tipowidget__panel" data-panel="4" role="tabpanel" aria-label="Tipología CHICHÉN ITZÁ" hidden>
+            <div class="tipowidget__visual">
+              <span class="tipowidget__visual-corner tipowidget__visual-corner--tl" aria-hidden="true"></span>
+              <span class="tipowidget__visual-corner tipowidget__visual-corner--tr" aria-hidden="true"></span>
+              <span class="tipowidget__visual-corner tipowidget__visual-corner--bl" aria-hidden="true"></span>
+              <span class="tipowidget__visual-corner tipowidget__visual-corner--br" aria-hidden="true"></span>
+              <span class="tipowidget__visual-num">TIPOLOGÍA · 05 / 05</span>
+              <span class="tipowidget__visual-name">CHICHÉN ITZÁ</span>
+              <span class="tipowidget__visual-recap">3 recámaras · 2 baños</span>
+            </div>
+            <div>
+              <dl class="tipowidget__data">
+                <div class="tipowidget__row"><dt class="tipowidget__label">Superficie</dt><dd class="tipowidget__value">140 <small>m²</small></dd></div>
+                <div class="tipowidget__row"><dt class="tipowidget__label">Unidades</dt><dd class="tipowidget__value">4</dd></div>
+                <div class="tipowidget__row"><dt class="tipowidget__label">Estancia</dt><dd class="tipowidget__value" style="font-size:16px;">Sala · comedor · terraza</dd></div>
+                <div class="tipowidget__row"><dt class="tipowidget__label">Estacionamiento</dt><dd class="tipowidget__value">2 <small>lugares</small></dd></div>
+              </dl>
+            </div>
+            <div class="tipowidget__foot">
+              <span class="tipowidget__price">Por definir en preventa</span>
+              <div class="tipowidget__nav">
+                <button class="tipowidget__btn" data-prev aria-label="Tipología anterior">← Anterior</button>
+                <button class="tipowidget__btn" data-next disabled aria-label="Siguiente tipología">Siguiente →</button>
+              </div>
+            </div>
           </article>
         </div>
       </div>
@@ -542,5 +818,63 @@
 
 <link rel="stylesheet" href="/assets/agent-cisa-fab.css">
 <script src="/assets/agent-cisa-fab.js" defer></script>
+
+<!-- Widget de tipologías: tabs + panel con navegación -->
+<script>
+(function(){
+  var widget = document.querySelector('[data-tipowidget]');
+  if (!widget) return;
+  var tabs = widget.querySelectorAll('[data-tab]');
+  var panels = widget.querySelectorAll('[data-panel]');
+  var counter = widget.querySelector('[data-counter]');
+  var prevBtns = widget.querySelectorAll('[data-prev]');
+  var nextBtns = widget.querySelectorAll('[data-next]');
+  var current = 0;
+
+  function pad(n){ return n < 10 ? '0' + n : '' + n; }
+  function show(idx){
+    current = idx;
+    counter.textContent = pad(idx + 1);
+    tabs.forEach(function(t,i){
+      var on = i === idx;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.tabIndex = on ? 0 : -1;
+    });
+    panels.forEach(function(p,i){
+      var on = i === idx;
+      if (on){ p.setAttribute('data-active',''); p.removeAttribute('hidden'); }
+      else { p.removeAttribute('data-active'); p.setAttribute('hidden',''); }
+    });
+    // Disable prev/next en los extremos
+    widget.querySelectorAll('[data-prev]').forEach(function(b){
+      if (idx === 0) b.setAttribute('disabled',''); else b.removeAttribute('disabled');
+    });
+    widget.querySelectorAll('[data-next]').forEach(function(b){
+      if (idx === panels.length - 1) b.setAttribute('disabled',''); else b.removeAttribute('disabled');
+    });
+  }
+
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){ show(parseInt(t.getAttribute('data-tab'),10)); });
+    t.addEventListener('keydown', function(e){
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown'){
+        e.preventDefault(); show(Math.min(panels.length - 1, current + 1)); tabs[current].focus();
+      }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp'){
+        e.preventDefault(); show(Math.max(0, current - 1)); tabs[current].focus();
+      }
+    });
+  });
+  prevBtns.forEach(function(b){
+    b.addEventListener('click', function(){ if (current > 0) show(current - 1); });
+  });
+  nextBtns.forEach(function(b){
+    b.addEventListener('click', function(){ if (current < panels.length - 1) show(current + 1); });
+  });
+
+  // Inicializar
+  show(0);
+})();
+</script>
 </body>
 </html>
