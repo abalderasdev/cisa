@@ -353,6 +353,8 @@
       border: 1px solid var(--ink-100);
       border-radius: var(--radius-md);
       transition: background 200ms, border-color 200ms, transform 200ms, box-shadow 200ms;
+      display: flex;
+      flex-direction: column;
     }
     .mod:hover {
       background: var(--cream);
@@ -364,27 +366,69 @@
       background: var(--bg-dark);
       color: rgba(255, 255, 255, 0.92);
       border-color: var(--bg-dark);
+      overflow: hidden;
     }
+    /* Cuadrícula técnica sutil en la primaria — mismo lenguaje que widget Itzaé */
+    .mod--primary::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(to right, rgba(139,195,74,0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(139,195,74,0.05) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(circle at top right, black 20%, transparent 80%);
+    }
+    /* Esquinas scanner tipo HUD en la primaria */
+    .mod--primary .mod__corner { position: absolute; width: 14px; height: 14px; border: 1.5px solid var(--brand-green-light); pointer-events: none; }
+    .mod--primary .mod__corner--tl { top: 12px; left: 12px; border-right: 0; border-bottom: 0; }
+    .mod--primary .mod__corner--tr { top: 12px; right: 12px; border-left: 0; border-bottom: 0; }
+    .mod--primary .mod__corner--bl { bottom: 12px; left: 12px; border-right: 0; border-top: 0; }
+    .mod--primary .mod__corner--br { bottom: 12px; right: 12px; border-left: 0; border-top: 0; }
+
     .mod--primary:hover {
       background: var(--bg-dark-2);
       border-color: var(--bg-dark-2);
       box-shadow: 0 12px 32px rgba(10, 15, 12, 0.20);
     }
-    .mod--primary h3 { color: white; font-size: 36px; }
-    .mod--primary p { color: rgba(255,255,255,.75); font-size: 17px; max-width: 540px; }
-    .mod--primary .mod__icon {
-      color: var(--brand-green-light);
-      width: 56px; height: 56px;
-    }
-    .mod--primary .mod__label { color: var(--brand-green-light); }
-    .mod--primary .mod__cta { color: white; }
-    .mod--primary .mod__cta-arrow { color: var(--brand-green-light); }
     .mod--primary .mod__inner {
       height: 100%;
       display: flex; flex-direction: column;
-      gap: 24px;
+      gap: 20px;
+      position: relative; z-index: 1;
     }
-    .mod--primary .mod__cta { margin-top: auto; padding-top: 16px; }
+    .mod--primary h3 { color: white; font-size: clamp(28px, 3vw, 36px); letter-spacing: -0.025em; line-height: 1.05; }
+    .mod--primary p { color: rgba(255,255,255,.78); font-size: 16px; line-height: 1.55; max-width: 520px; }
+    .mod--primary .mod__icon {
+      color: var(--brand-green-light);
+      width: 52px; height: 52px;
+    }
+    .mod--primary .mod__label { color: var(--brand-green-light); }
+    .mod--primary .mod__cta { color: white; font-size: 15px; }
+    .mod--primary .mod__cta-arrow { color: var(--brand-green-light); }
+    .mod--primary .mod__cta { margin-top: auto; padding-top: 12px; }
+
+    /* Split "qué aporta cada parte" dentro de la primaria */
+    .mod__split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 28px;
+      padding: 20px 0 4px;
+      border-top: 1px solid rgba(255,255,255,0.12);
+    }
+    .mod__split-item h4 {
+      font: 600 10px/1 var(--font-mono);
+      color: var(--brand-green-light);
+      text-transform: uppercase; letter-spacing: 0.10em;
+      margin-bottom: 8px;
+    }
+    .mod__split-item p {
+      color: rgba(255,255,255,0.92);
+      font-size: 14px; line-height: 1.5;
+      max-width: none;
+      margin-bottom: 0;
+    }
+    @media (max-width:600px){
+      .mod__split{ grid-template-columns: 1fr; gap: 14px; }
+    }
 
     .mod__head {
       display: flex; align-items: center; gap: 12px;
@@ -1362,6 +1406,10 @@
         </header>
         <div class="method">
           <article class="mod mod--primary">
+            <span class="mod__corner mod__corner--tl" aria-hidden="true"></span>
+            <span class="mod__corner mod__corner--tr" aria-hidden="true"></span>
+            <span class="mod__corner mod__corner--bl" aria-hidden="true"></span>
+            <span class="mod__corner mod__corner--br" aria-hidden="true"></span>
             <div class="mod__inner">
               <div class="mod__head">
                 <svg class="mod__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -1370,7 +1418,19 @@
                 <span class="mod__label">Ruta principal</span>
               </div>
               <h3>Aportación de terreno</h3>
-              <p>Si tiene un terreno urbano o periurbano, lo desarrollamos bajo una figura jurídica con reglas escritas. Usted conserva participación en el proyecto.</p>
+              <p>Si tiene un terreno urbano o periurbano, lo desarrollamos bajo una figura jurídica con reglas escritas. Usted conserva participación en el proyecto, no solo recibe efectivo.</p>
+
+              <div class="mod__split" aria-label="Qué aporta cada parte">
+                <div class="mod__split-item">
+                  <h4>Lo que usted aporta</h4>
+                  <p>El terreno y la disposición a participar del resultado bajo una figura clara.</p>
+                </div>
+                <div class="mod__split-item">
+                  <h4>Lo que CISA pone</h4>
+                  <p>Capital, proyecto, permisos, construcción y comercialización. Todo bajo contrato.</p>
+                </div>
+              </div>
+
               <a href="su-terreno.html#precalificar" class="mod__cta">Empezar por mi terreno <span class="mod__cta-arrow">→</span></a>
             </div>
           </article>
