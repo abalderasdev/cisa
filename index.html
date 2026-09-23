@@ -755,7 +755,7 @@
       margin-top: 56px;
     }
     @media (min-width: 768px) { .work { grid-template-columns: repeat(2, 1fr); } }
-    @media (min-width: 1024px) { .work { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1024px) { .work { grid-template-columns: repeat(4, 1fr); } }
     .proj {
       display: block;
       background: var(--paper);
@@ -780,8 +780,36 @@
       position: relative;
       display: grid; place-items: center;
       color: var(--ink-300);
+      overflow: hidden;
     }
     .proj__media svg { width: 56px; height: 56px; opacity: 0.5; }
+    .proj__media img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    /* Placeholder honesto para proyectos sin render */
+    .proj__media--honest {
+      background: var(--bg-cisa);
+      color: var(--brand-green-light);
+    }
+    .proj__media--honest .proj__honest-label {
+      font: 600 11px/1.3 var(--font-mono);
+      text-transform: uppercase; letter-spacing: 0.10em;
+      text-align: center;
+      padding: 8px 14px;
+      border: 1.5px solid var(--brand-green-light);
+      border-radius: var(--radius-pill);
+      position: relative; z-index: 1;
+    }
+    .proj__media--honest::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(to right, rgba(139,195,74,0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(139,195,74,0.05) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
     .proj__chip {
       position: absolute; top: 12px; left: 12px;
       display: inline-flex; align-items: center; gap: 6px;
@@ -1620,7 +1648,7 @@
           <a class="proj" href="desarrollos/residencial-fraile.html" aria-label="Ver el desarrollo Residencial Fraile">
             <div class="proj__media" aria-hidden="true">
               <span class="proj__chip proj__chip--success"><span class="proj__chip-dot"></span>Terminada 2025</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
+              <img src="assets/desarrollos/fraile/gopr-9670.webp" alt="" loading="lazy" decoding="async" width="800" height="500">
             </div>
             <div class="proj__body">
               <div class="proj__meta">EDOMEX · JILOTZINGO</div>
@@ -1648,7 +1676,7 @@
           <a class="proj" href="desarrollos/itzae.html" aria-label="Ver el desarrollo Itzaé">
             <div class="proj__media" aria-hidden="true">
               <span class="proj__chip proj__chip--info"><span class="proj__chip-dot"></span>Preventa</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
+              <img src="assets/desarrollos/itzae/hero-render.webp" alt="" loading="lazy" decoding="async" width="1568" height="672">
             </div>
             <div class="proj__body">
               <div class="proj__meta">QROO · TULUM</div>
@@ -1675,13 +1703,41 @@
           <a class="proj" href="desarrollos/panorama.html" aria-label="Ver el desarrollo Panorama">
             <div class="proj__media" aria-hidden="true">
               <span class="proj__chip proj__chip--info"><span class="proj__chip-dot"></span>En proceso</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
+              <img src="assets/desarrollos/panorama/hero-fachada.webp" alt="" loading="lazy" decoding="async" width="1920" height="1188">
             </div>
             <div class="proj__body">
               <div class="proj__meta">CDMX · ALGARÍN</div>
               <h3>Panorama</h3>
               <p class="proj__loc">Enrique F Granados 60 · Colonia Algarín, Cuauhtémoc</p>
               <p class="proj__desc">Proyecto en proceso en colonia Algarín, Cuauhtémoc. Grupo CISA está trabajando en factibilidad, permisos y proyecto arquitectónico.</p>
+              <div class="proj__stats">
+                <div>
+                  <div class="proj__stat-value">—</div>
+                  <div class="proj__stat-label">Unidades</div>
+                </div>
+                <div>
+                  <div class="proj__stat-value">—</div>
+                  <div class="proj__stat-label">Niveles</div>
+                </div>
+                <div>
+                  <div class="proj__stat-value">—</div>
+                  <div class="proj__stat-label">Entrega</div>
+                </div>
+              </div>
+              <span class="proj__go">Ver el desarrollo <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
+
+          <a class="proj" href="desarrollos/summit.html" aria-label="Ver el desarrollo Summit">
+            <div class="proj__media proj__media--honest" aria-hidden="true">
+              <span class="proj__chip proj__chip--info"><span class="proj__chip-dot"></span>En estudio</span>
+              <span class="proj__honest-label">Predio en estudio<br>Colonia Obrera · Cuauhtémoc</span>
+            </div>
+            <div class="proj__body">
+              <div class="proj__meta">CDMX · OBRERA</div>
+              <h3>Summit</h3>
+              <p class="proj__loc">Colonia Obrera · Cuauhtémoc, Ciudad de México</p>
+              <p class="proj__desc">Predio en estudio para desarrollo de uso mixto. Grupo CISA está evaluando factibilidad, permisos y programa arquitectónico.</p>
               <div class="proj__stats">
                 <div>
                   <div class="proj__stat-value">—</div>
