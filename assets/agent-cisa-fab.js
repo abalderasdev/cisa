@@ -30,15 +30,15 @@
   var WAVE_MAX_MS = 12000;           // 12s máximo
   var PAUSE_WAVE_AFTER_INTERACTION = 6000;
 
-  // -------- Boot: load idle and start loop -------------------------------
-  try {
-    video.src = IDLE_SRC;
-    video.loop = true;
-    video.muted = true;
-    video.playsInline = true;
-    var p = video.play();
-    if (p && p.catch) p.catch(function () {});
-  } catch (e) { /* noop */ }
+  // -------- Boot: NO autoplay. Idle = imagen estatica. El video solo
+  //          se activa cuando llegue wave/hover/click. Asi NO hay un video
+  //          del agente reproduciendose en loop al entrar a la home. -----
+  video.muted = true;
+  video.playsInline = true;
+  video.loop = true;
+  // No llamamos video.play() aqui. La imagen estatica (agent-fab__still)
+  // es lo que se ve por default. El video se carga y reproduce unicamente
+  // dentro de playWave/playHover/playOpen segun el estado.
 
   // -------- Mouse-tracking sutil (parallax de 8px) -----------------------
   var maxOffset = 8;
@@ -77,15 +77,32 @@
     }
     video.loop = !!loop;
     try { video.currentTime = 0; } catch (e) {}
-    var pp = video.play();
-    if (pp && pp.catch) pp.catch(function () {});
+    // Asegurar que el video esta visible (CSS pone display:block cuando el
+    // estado no es idle). Reproducir cuando los datos esten listos.
+    var tryPlay = function () {
+      var pp = video.play();
+      if (pp && pp.catch) pp.catch(function () {});
+    };
+    if (video.readyState >= 2) {
+      tryPlay();
+    } else {
+      video.addEventListener('loadeddata', tryPlay, { once: true });
+      try { video.load(); } catch (e) {}
+    }
   }
 
   function playIdle() {
     if (state === 'opening' || state === 'open') return;
     state = 'idle';
     fab.setAttribute('data-state', 'idle');
-    switchTo(IDLE_SRC, true);
+    // Idle = imagen estatica (CSS la muestra, oculta el video).
+    // NO reproducimos video en loop. Solo cargamos el src por si el proximo
+    // wave/hover lo necesita ya disponible.
+    try {
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
+    } catch (e) {}
   }
   function playWave() {
     if (state === 'opening' || state === 'open') return;

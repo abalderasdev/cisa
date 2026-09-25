@@ -65,6 +65,43 @@
   display: block;
 }
 
+/* Imagen estática del agente — visible por default (idle).
+   El video solo aparece en wave/hover. Asi NO hay video reproduciendose
+   en loop cuando entras a la home. */
+#agent-cisa-fab .agent-fab__still {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  display: block;
+  transition: opacity 200ms ease;
+}
+
+#agent-cisa-fab .agent-fab__video {
+  display: none;
+}
+
+/* Cuando el FAB entra a wave u hover, se ve el video y se oculta la imagen */
+#agent-cisa-fab[data-state="wave"] .agent-fab__still,
+#agent-cisa-fab[data-state="hover"] .agent-fab__still {
+  opacity: 0;
+}
+
+#agent-cisa-fab[data-state="wave"] .agent-fab__video,
+#agent-cisa-fab[data-state="hover"] .agent-fab__video {
+  display: block;
+}
+
+/* Apertura del chat: el video se queda visible */
+#agent-cisa-fab[data-state="opening"] .agent-fab__video,
+#agent-cisa-fab[data-state="open"] .agent-fab__video {
+  display: block;
+}
+#agent-cisa-fab[data-state="opening"] .agent-fab__still,
+#agent-cisa-fab[data-state="open"] .agent-fab__still {
+  opacity: 0;
+}
+
 /* Anillo pulsante "En vivo" */
 #agent-cisa-fab .agent-fab__pulse {
   position: absolute;
