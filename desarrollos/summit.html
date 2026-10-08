@@ -128,6 +128,7 @@
     .dev-ubicacion h2{color:#fff;}
     .dev-ubicacion__grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:32px;position:relative;}
     @media (max-width:768px){.dev-ubicacion__grid{grid-template-columns:1fr;}}
+    .dev-ubicacion__grid--single{grid-template-columns:1fr;max-width:760px;}
     .dev-ubicacion__list{list-style:none;padding:0;margin:0;}
     .dev-ubicacion__list li{padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.15);display:flex;gap:10px;font-size:15px;color:rgba(255,255,255,0.85);}
     .dev-ubicacion__list li::before{content:'→';color:var(--brand-green-light);font-weight:700;}
@@ -231,15 +232,14 @@
       <div class="container dev-hero__body">
         <a href="../desarrollos.html" class="dev-hero__back">← Obra</a>
         <div class="dev-hero__top">
-          <span class="dev-card__chip" style="background:var(--brand-green-tint);color:var(--brand-green-dark);">Summit · Colonia Obrera</span>
+          <span class="dev-card__chip" style="background:var(--brand-green-tint);color:var(--brand-green-dark);">Colonia Obrera · Cuauhtémoc, CDMX</span>
           <span class="dev-card__chip" style="background:var(--ink-100);color:var(--ink-700);">CDMX-005</span>
         </div>
         <h1 id="dev-title" class="dev-hero__title">Summit</h1>
         <p class="dev-hero__sub">Un predio en colonia Obrera, Cuauhtémoc, Ciudad de México. Grupo CISA está estudiando el desarrollo.</p>
         <div class="dev-hero__meta">
-          <span>CDMX · OBR · MIX</span>
+          <span>CDMX · Obrera · Mixto</span>
           <span>En proceso</span>
-          <span>Actualizado 2026-Q3</span>
         </div>
         <div class="dev-state-banner dev-state-banner--info">
           <strong>Estado actual:</strong> En proceso. Grupo CISA está trabajando en la factibilidad, permisos y proyecto arquitectónico del desarrollo. La información pública se actualiza cuando hay algo verificable que mostrar.
@@ -261,11 +261,8 @@
         <h2 id="ficha-title">Ficha técnica</h2>
         <dl class="dev-ficha__grid">
           <div class="dev-ficha__cell"><dt>Producto</dt><dd>En evaluación</dd></div>
-          <div class="dev-ficha__cell"><dt>Tipologías</dt><dd>[Por confirmar]</dd></div>
           <div class="dev-ficha__cell"><dt>Ubicación</dt><dd>Colonia Obrera · Cuauhtémoc, Ciudad de México</dd></div>
           <div class="dev-ficha__cell"><dt>Modelo</dt><dd>Uso mixto (vivienda + comercio PB)</dd></div>
-          <div class="dev-ficha__cell"><dt>Amenidades</dt><dd>[Por confirmar]</dd></div>
-          <div class="dev-ficha__cell dev-ficha__cell--pending"><dt>Entrega estimada</dt><dd>Aún no hay fecha. Se publica cuando el proyecto arquitectónico esté aprobado por la autoridad.</dd></div>
         </dl>
       </div>
     </section>
@@ -277,17 +274,14 @@
         <p class="section-header">No hay tipologías publicadas todavía. La hipótesis inicial es vivienda con comercio en planta baja, pero la mezcla final se define al cierre de la factibilidad y con el visto bueno del uso de suelo.</p>
         <div class="dev-tipologias__grid">
           <article class="dev-tipologia">
-            <span class="dev-tipologia__badge">[POR DEFINIR]</span>
             <h4>Mezcla de unidades</h4>
             <p class="dev-tipologia__pending">Departamentos de 1, 2 y 3 recámaras son la hipótesis inicial. Se confirma al cierre del proyecto arquitectónico.</p>
           </article>
           <article class="dev-tipologia">
-            <span class="dev-tipologia__badge">[POR DEFINIR]</span>
-            <h4>Metrajes por confirmar</h4>
+            <h4>Metrajes</h4>
             <p class="dev-tipologia__pending">Los rangos de superficie se calculan con la cabida aprobada por la autoridad y el programa del arquitecto.</p>
           </article>
           <article class="dev-tipologia">
-            <span class="dev-tipologia__badge">[POR DEFINIR]</span>
             <h4>Locales comerciales</h4>
             <p class="dev-tipologia__pending">La cantidad de locales en planta baja se define con la cabida y la estrategia comercial del equipo de CISA.</p>
           </article>
@@ -314,7 +308,7 @@
     <section class="dev-ubicacion" aria-labelledby="ubic-title">
       <div class="container">
         <h2 id="ubic-title">Ubicación y contexto</h2>
-        <div class="dev-ubicacion__grid">
+        <div class="dev-ubicacion__grid dev-ubicacion__grid--single">
           <div>
             <p class="dev-ubicacion__intro">Sobre la colonia Obrera, Cuauhtémoc. Lo que conviene saber del contexto antes de invertir:</p>
             <ul class="dev-ubicacion__list">
@@ -325,10 +319,6 @@
               <li>Acceso rápido al Aeropuerto Internacional de la CDMX</li>
               <li>Dirección exacta por confirmar al cierre del estudio</li>
             </ul>
-          </div>
-          <div class="dev-ubicacion__map">
-            [DATO FALTANTE: mapa embebido]<br>
-            Coordenadas y/o iframe de Google Maps
           </div>
         </div>
       </div>
