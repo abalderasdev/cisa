@@ -68,8 +68,9 @@ test('prepare: valida payload, separa globales y sanitiza', () => {
   assert.deepEqual(p.local, { 'a.b': '<i>hola</i>' });
   assert.deepEqual(p.global, { 'global.footer.x': 'Pie' });
   assert.throws(() => prepare({ pagina: '/', cambios: [] }), /Sin cambios/);
-  assert.throws(() => prepare({ pagina: '/', cambios: [{ id: 'A"B', html: 'x' }] }), /id inválido/);
-  assert.throws(() => prepare({ pagina: '/', cambios: [{ id: 'a', html: '<b></b>' }] }), /vacío/);
+  // Validación por campo: un id/texto malo se rechaza solo, sin tumbar el envío.
+  assert.deepEqual(prepare({ pagina: '/', cambios: [{ id: 'A"B', html: 'x' }] }).rejected.map((r) => r.motivo), ['Identificador inválido']);
+  assert.match(prepare({ pagina: '/', cambios: [{ id: 'a', html: '<b></b>' }] }).rejected[0].motivo, /vacío/);
   assert.throws(() => normalizePage('/../.env'), /inválida/);
   assert.equal(normalizePage('/'), 'index.html');
 });

@@ -14,6 +14,9 @@ const ROOT = path.resolve(__dirname, '..');
 const CHECK = process.argv.includes('--check');
 const SKIP_DIRS = new Set(['node_modules', '.git', '.impeccable', 'agente-cisa', 'docs', 'preview', 'scripts', 'tests', 'blog']);
 const BLOCK = new Set(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'li', 'figcaption', 'blockquote', 'dt', 'dd', 'summary', 'button', 'a', 'label', 'th', 'td']);
+// Contenedores genéricos: solo se marcan si tienen texto directo (no solo hijos con texto),
+// así se marca el nodo más interno (p. ej. cada <span> de una cifra y no el <div> que los agrupa).
+const GENERIC = new Set(['span', 'div']);
 const INLINE = new Set(['b', 'strong', 'i', 'em', 'br', 'span', 'a']);
 const NOPE = new Set(['script', 'style', 'svg', 'noscript', 'template', 'head', 'select', 'textarea', 'iframe']);
 
@@ -35,6 +38,26 @@ function leafish(n) {
   }
   return true;
 }
+// Adornos en los bordes (svg, aria-hidden="true", elementos vacíos como <span class="dot"></span>):
+// el servidor y el editor los conservan intactos, así que no impiden marcar el nodo.
+// Misma regla que api/_lib/html.js (isDecor) y assets/editor.js.
+function isDecor(n) {
+  if (!n.tagName) return false;
+  if (n.tagName === 'svg' || attr(n, 'aria-hidden') === 'true') return true;
+  if (n.tagName === 'br' || n.tagName === 'img') return false;
+  return text(n) === '' && !(n.childNodes || []).some((c) => c.tagName);
+}
+const blank = (n) => n.nodeName === '#comment' || (n.nodeName === '#text' && !n.value.trim());
+function middle(n) {
+  const k = n.childNodes || []; let a = 0; let b = k.length;
+  for (let i = 0; i < k.length; i++) { if (isDecor(k[i])) a = i + 1; else if (!blank(k[i])) break; }
+  for (let i = k.length - 1; i >= a; i--) { if (isDecor(k[i])) b = i; else if (!blank(k[i])) break; }
+  return k.slice(a, b);
+}
+// Texto que cambia un script (contador de tipologías): no se marca.
+const hookAttr = (n) => (n.attrs || []).some((a) => a.name === 'data-counter');
+const placeholder = (s) => /__[A-Z0-9_]+__/.test(s); // plantillas (contenido/_plantilla.html)
+const onlySymbols = (s) => /^[\s→←↑↓↗↘·•›‹»«+×✕✓-]*$/.test(s);
 function soleChildA(n) {
   const els = (n.childNodes || []).filter((c) => c.tagName || (c.nodeName === '#text' && c.value.trim()));
   return els.length === 1 && els[0].tagName === 'a';
@@ -65,7 +88,7 @@ function markFile(file) {
   function visit(n, ctx) {
     for (const c of n.childNodes || []) {
       if (!c.tagName) continue;
-      if (NOPE.has(c.tagName)) continue;
+      if (NOPE.has(c.tagName) || hookAttr(c)) continue;
       let cx = ctx;
       const cls = attr(c, 'class') || '';
       if (c.tagName === 'header' && /\bsite-header\b/.test(cls)) cx = { ...ctx, global: 'header' };
@@ -77,17 +100,20 @@ function markFile(file) {
       }
       if (attr(c, 'data-edit')) continue; // ya marcado: no tocar ni descender
       const isA = c.tagName === 'a';
-      const candidate = BLOCK.has(c.tagName) && !c.attrs.some((a) => a.name === 'contenteditable') &&
-        (!isA || cx.global || /\bbtn\b/.test(cls) || n.tagName === 'li' || cx.aOk) &&
-        leafish(c) && text(c).trim().length > 0 && c.sourceCodeLocation && c.sourceCodeLocation.endTag &&
+      const mid = middle(c);
+      const generic = GENERIC.has(c.tagName);
+      const candidate = (BLOCK.has(c.tagName) || generic) && !c.attrs.some((a) => a.name === 'contenteditable') &&
+        (!isA || cx.global || /\bbtn\b/.test(cls) || n.tagName === 'li' || cx.aOk || cls) &&
+        (!generic || (mid.some((k) => k.nodeName === '#text' && k.value.trim()) && !onlySymbols(mid.map(text).join('')))) &&
+        leafish({ childNodes: mid }) && mid.map(text).join('').trim().length > 0 && !(generic && placeholder(mid.map(text).join(''))) && c.sourceCodeLocation && c.sourceCodeLocation.endTag &&
         !(soleChildA(c) && c.tagName !== 'a');
       if (candidate) {
         let id;
         if (cx.global) id = uniq(`global.${cx.global}.${slug(text(c))}`);
         else {
           const key = `${cx.section}.${c.tagName}`;
-          counters[key] = (counters[key] || 0) + 1;
-          id = uniq(`${page}.${cx.section}.${c.tagName}-${counters[key]}`);
+          do { counters[key] = (counters[key] || 0) + 1; id = `${page}.${cx.section}.${c.tagName}-${counters[key]}`; } while (used.has(id));
+          used.add(id);
         }
         const st = c.sourceCodeLocation.startTag;
         inserts.push({ offset: st.startOffset + 1 + c.tagName.length, str: ` data-edit="${id}"` });

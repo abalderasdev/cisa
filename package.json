@@ -18,5 +18,8 @@
   },
   "dependencies": {
     "parse5": "^7.3.0"
+  },
+  "devDependencies": {
+    "jsdom": "^24.1.3"
   }
 }
