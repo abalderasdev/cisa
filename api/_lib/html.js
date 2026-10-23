@@ -3,6 +3,7 @@
 // Usa parse5 (parser HTML conforme al estándar) con offsets de código fuente
 // para tocar SOLO el contenido del nodo marcado y dejar intacto el resto del archivo.
 'use strict';
+const path = require('path');
 const { parse, parseFragment } = require('parse5');
 
 const MAX_LEN = 4000; // caracteres de HTML sanitizado por campo
@@ -95,6 +96,37 @@ function parseDoc(html) {
   return parse(html, { sourceCodeLocationInfo: true });
 }
 
+const textOf = (n) => n.nodeName === '#text' ? n.value : (n.childNodes || []).map(textOf).join('');
+
+// Adorno en el borde de un nodo editable: <svg>, aria-hidden="true" o un elemento vacío
+// (p. ej. <span class="dot"></span>). Se conserva tal cual y NO forma parte del texto editable.
+// La misma regla existe en el editor (editor.js) y en el script de marcado.
+function isDecor(n) {
+  if (!n.tagName) return false;
+  if (n.tagName === 'svg' || attr(n, 'aria-hidden') === 'true') return true;
+  if (n.tagName === 'br' || n.tagName === 'img') return false;
+  return textOf(n) === '' && !(n.childNodes || []).some((c) => c.tagName);
+}
+const blank = (n) => n.nodeName === '#comment' || (n.nodeName === '#text' && !n.value.trim());
+
+// Hijos [desde, hasta) que forman el texto editable (sin los adornos de los bordes).
+function editableChildren(el) {
+  const kids = el.childNodes || [];
+  let a = 0; let b = kids.length;
+  for (let i = 0; i < kids.length; i++) { if (isDecor(kids[i])) a = i + 1; else if (!blank(kids[i])) break; }
+  for (let i = kids.length - 1; i >= a; i--) { if (isDecor(kids[i])) b = i; else if (!blank(kids[i])) break; }
+  return { kids, a, b };
+}
+
+// Offsets [start, end) del texto editable del nodo dentro del archivo fuente.
+function editableRange(el) {
+  const loc = el.sourceCodeLocation;
+  const { kids, a, b } = editableChildren(el);
+  const start = a > 0 ? kids[a - 1].sourceCodeLocation.endOffset : loc.startTag.endOffset;
+  const end = b < kids.length ? kids[b].sourceCodeLocation.startOffset : loc.endTag.startOffset;
+  return { start, end };
+}
+
 // Devuelve { id: count } de todos los data-edit del documento.
 function listIds(html) {
   const counts = {};
@@ -105,29 +137,56 @@ function listIds(html) {
   return counts;
 }
 
-// Reemplaza el contenido interno de TODOS los nodos con data-edit === id
-// (normalmente uno; los globales pueden repetirse, p. ej. menú de escritorio).
-// Retorna { html, replaced }.
-function replaceNode(html, id, newInner) {
-  const doc = parseDoc(html);
+function targetsOf(doc, id) {
   const targets = [];
   walkElements(doc, (el) => { if (attr(el, 'data-edit') === id) targets.push(el); });
+  return targets;
+}
+
+// Texto editable y href actuales del PRIMER nodo con ese id, o null si no existe.
+function current(html, id) {
+  const el = targetsOf(parseDoc(html), id)[0];
+  if (!el || !el.sourceCodeLocation || !el.sourceCodeLocation.endTag) return el ? { html: null, href: null } : null;
+  const r = editableRange(el);
+  return { html: html.slice(r.start, r.end), href: el.tagName === 'a' ? attr(el, 'href') : null, tag: el.tagName };
+}
+
+// Normaliza para comparar lo que vio el navegador (innerHTML) con la fuente de main:
+// mismo sanitizado del servidor (entidades, atributos, <div>/<p> -> <br>) y espacios colapsados.
+function norm(s) {
+  let v;
+  try { v = sanitize(s); } catch { v = String(s == null ? '' : s); }
+  return v.replace(/\s+/g, ' ').trim();
+}
+function same(a, b) { return a != null && b != null && norm(a) === norm(b); }
+
+// Reemplaza el texto editable (y opcionalmente el href) de TODOS los nodos con data-edit === id
+// (normalmente uno; los globales pueden repetirse, p. ej. menú de escritorio).
+// edit: string (html) o { html, href }. Retorna { html, replaced }.
+function replaceNode(html, id, edit) {
+  const e = typeof edit === 'string' ? { html: edit } : edit;
+  const targets = targetsOf(parseDoc(html), id);
   if (!targets.length) return { html, replaced: 0 };
+  const ops = []; // {s, e, str}
   for (const el of targets) {
     const loc = el.sourceCodeLocation;
     if (!loc || !loc.startTag || !loc.endTag) throw new HttpError(422, `Nodo ${id} sin etiqueta de cierre`);
     let nested = false;
     walkElements(el, (d) => { if (attr(d, 'data-edit')) nested = true; });
     if (nested) throw new HttpError(422, `Nodo ${id} contiene otros nodos editables`);
+    if (e.html != null) { const r = editableRange(el); ops.push({ s: r.start, e: r.end, str: e.html }); }
+    if (e.href != null) {
+      if (el.tagName !== 'a') throw new HttpError(422, `El nodo ${id} no es un enlace`);
+      const h = ` href="${escAttr(e.href)}"`;
+      const al = loc.startTag.attrs && loc.startTag.attrs.href;
+      if (al) ops.push({ s: al.startOffset - 1, e: al.endOffset, str: h }); // incluye el espacio previo
+      else { const p = loc.startTag.startOffset + 2; ops.push({ s: p, e: p, str: h }); } // "<a" + href
+    }
   }
   // Reemplazar de atrás hacia adelante para no invalidar offsets.
-  targets.sort((a, b) => b.sourceCodeLocation.startTag.endOffset - a.sourceCodeLocation.startTag.endOffset);
+  ops.sort((a, b) => b.s - a.s);
   let out = html;
-  for (const el of targets) {
-    const s = el.sourceCodeLocation.startTag.endOffset;
-    const e = el.sourceCodeLocation.endTag.startOffset;
-    out = out.slice(0, s) + newInner + out.slice(e);
-  }
+  for (const o of ops) out = out.slice(0, o.s) + o.str + out.slice(o.e);
   return { html: out, replaced: targets.length };
 }
 
@@ -144,19 +203,20 @@ function validate(before, after, edits) {
   walkElements(doc, (el) => {
     const id = attr(el, 'data-edit');
     if (!id || !(id in edits)) return;
-    const loc = el.sourceCodeLocation;
-    const inner = after.slice(loc.startTag.endOffset, loc.endTag.startOffset);
-    if (inner !== edits[id]) throw new HttpError(422, `El nodo ${id} no quedó como se esperaba`);
+    const e = typeof edits[id] === 'string' ? { html: edits[id] } : edits[id];
+    const r = editableRange(el);
+    if (e.html != null && after.slice(r.start, r.end) !== e.html) throw new HttpError(422, `El nodo ${id} no quedó como se esperaba`);
+    if (e.href != null && attr(el, 'href') !== e.href) throw new HttpError(422, `El enlace de ${id} no quedó como se esperaba`);
   });
   return true;
 }
 
-// Aplica un conjunto de cambios { id: htmlSanitizado } a un documento.
+// Aplica un conjunto de cambios { id: htmlSanitizado | {html, href} } a un documento.
 function applyEdits(html, edits) {
   let out = html;
   const applied = [];
-  for (const [id, inner] of Object.entries(edits)) {
-    const r = replaceNode(out, id, inner);
+  for (const [id, edit] of Object.entries(edits)) {
+    const r = replaceNode(out, id, edit);
     if (r.replaced) { out = r.html; applied.push(id); }
   }
   if (applied.length) {
@@ -167,4 +227,18 @@ function applyEdits(html, edits) {
   return { html: out, applied };
 }
 
-module.exports = { sanitize, safeHref, replaceNode, listIds, validate, applyEdits, HttpError, MAX_LEN };
+// Un href relativo escrito en la página `from` (p. ej. "contacto.html" en index.html)
+// apuntado desde la página `to` (p. ej. "../contacto.html" en desarrollos/itzae.html).
+// Absolutos, raíz (/x), anclas (#x) y consultas (?x) no cambian. null si sale del sitio.
+function rebaseHref(href, from, to) {
+  const h = String(href);
+  if (/^([a-z][a-z0-9+.-]*:|\/|#|\?)/i.test(h)) return h;
+  const m = h.match(/^([^?#]*)(.*)$/);
+  const abs = path.posix.normalize(path.posix.join(path.posix.dirname(from), m[1]));
+  if (abs.startsWith('..')) return null;
+  let rel = path.posix.relative(path.posix.dirname(to), abs) || path.posix.basename(abs);
+  if (m[1].endsWith('/') && !rel.endsWith('/')) rel += '/';
+  return rel + m[2];
+}
+
+module.exports = { sanitize, safeHref, replaceNode, listIds, validate, applyEdits, current, same, norm, isDecor, editableRange, rebaseHref, HttpError, MAX_LEN };

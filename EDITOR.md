@@ -11,8 +11,17 @@ Permite que personas autorizadas editen títulos, párrafos, listas y botones **
 3. **Login con usuario y contraseña.** En `https://<sitio>/?editar=1` aparece un formulario pequeño. Los usuarios y sus hashes **scrypt** vienen de la variable `EDITOR_USERS`; ninguna contraseña en texto plano se guarda ni viaja fuera del formulario HTTPS. Un login correcto crea una cookie `HttpOnly` firmada con HMAC que dura 8 h. Para quitarle el acceso a alguien, basta con borrarlo de `EDITOR_USERS`: su sesión deja de valer de inmediato.
    - Protección: verificación con `crypto.timingSafeEqual`, el mismo tiempo de cálculo aunque el usuario no exista y un mensaje genérico ("Usuario o contraseña incorrectos"). También se revisa el `Origin` y hay un límite de 20 intentos por IP cada 15 min.
    - Tras 5 fallos seguidos, ese usuario queda **bloqueado 15 min**, y cada fallo tarda más en responder (250 ms → 4 s).
-4. **`assets/editor.js`** activa `contenteditable` solo en `[data-edit]`, pega siempre como texto plano, guarda un borrador en el navegador y ofrece **Enviar a revisión / Descartar / Salir**.
-5. **`api/editar.js`** valida la sesión y el `Origin`, aplica un rate limit (10 envíos por hora por usuario y 20 por IP) y limita el tamaño (64 KB por petición, 60 cambios y 4000 caracteres por texto). Después sanitiza, lee el HTML de `main` desde GitHub y reemplaza **solo el contenido del nodo** usando los offsets del parser `parse5`, sin regex y sin tocar ningún otro byte. Valida que el documento siga teniendo los mismos nodos editables y crea la rama `edicion/<fecha>-<usuario>-xxxx`, un commit y un PR. **Nunca escribe en `main`.**
+4. **`assets/editor.js`** activa `contenteditable` solo en `[data-edit]`, pega siempre como texto plano, guarda un borrador en el navegador y ofrece **Enviar a revisión / Descartar / Salir**. Los adornos en los bordes de un texto (iconos `svg`, flechas `aria-hidden`, puntos vacíos) no son editables y se conservan tal cual. En un enlace (`<a data-edit href>`) aparece en la barra el campo **Enlace** para cambiar su destino.
+5. **`api/editar.js`** valida la sesión y el `Origin`, aplica un límite de **10 PRs por hora por usuario** (los envíos rechazados no cuentan) y 60 peticiones por hora por IP, y limita el tamaño (192 KB por petición, 60 cambios y 4000 caracteres por texto). Después sanitiza, lee el HTML de `main` desde GitHub y reemplaza **solo el contenido del nodo** usando los offsets del parser `parse5`, sin regex y sin tocar ningún otro byte. Valida que el documento siga teniendo los mismos nodos editables y crea la rama `edicion/<fecha>-<usuario>-xxxx`, un commit y un PR. **Nunca escribe en `main`.**
+
+## Que no se pierda ningún cambio
+
+- **Base vieja.** Cada cambio viaja con el texto `original` que se veía al editar. El servidor lo compara (con la misma normalización de entidades y espacios) con el texto actual en `main`. Si no coincide, **rechaza solo ese texto** con «Este texto cambió desde que abriste la página, recarga» y nunca lo sobrescribe. Pasa sobre todo cuando un PR se mergeó pero el sitio todavía no se ha vuelto a publicar.
+- **Validación por campo.** Los textos válidos se aplican y abren el PR. Los rechazados (vacíos, enlace no permitido, id que ya no existe, base vieja) vuelven con su motivo, se marcan **en rojo** en la página (el motivo aparece al pasar el cursor y en la barra) y se quedan en el borrador. Si no se aplicó nada, la respuesta es un error 409 y no se abre PR.
+- **Ids `global.*`.** También se verifican: un id global que no existe se rechaza en lugar de ignorarse. Un cambio de destino en un enlace global se ajusta a la profundidad de cada página (`contacto.html` / `../contacto.html`).
+- **Borrador.** Se guarda en el navegador por página (`/` e `/index.html` comparten borrador). Si al entrar respondes **Cancelar** a «¿Recuperarlos?», el borrador **se conserva** para después. Solo se borra con **Descartar** o cuando el servidor confirma que ese texto se aplicó. Si la sesión vence (401), el editor pide entrar otra vez **sin recargar** la página y sin perder nada.
+- **Envío en curso.** Mientras se envía, el botón queda deshabilitado. Lo que edites en ese momento queda pendiente para el siguiente envío.
+- **Mensajes.** La barra dice cuántos textos se aplicaron, la liga al PR y cuáles se rechazaron y por qué.
 
 ## Por qué usuario y contraseña (decisión de Alberto)
 
@@ -66,4 +75,5 @@ Márcalas como **Sensitive** y ponlas en Production y Preview.
 
 - `npm test` corre las pruebas del sanitizer, del reemplazo de nodos, de la sesión y del marcado de las 28 páginas.
 - `npm run mark-editable` marca los textos nuevos después de agregar contenido.
-- Los ids son estables una vez escritos en el HTML. Si un texto se borra o se mueve en `main`, el envío responde 409 con los ids que ya no existen.
+- Los ids son estables una vez escritos en el HTML. Si un texto se borra o se mueve en `main`, ese id vuelve como rechazado («ya no existe») y los demás cambios se aplican.
+- `mark_editable.js` también marca `span`/`div` con texto directo (cifras, etiquetas, fichas, respuestas del FAQ) y elementos con adornos en los bordes (`summary` con icono, CTAs con flecha). Solo agrega atributos `data-edit`: el texto y el diseño no cambian. No marca opciones de `<select>`, texto que cambia un script (`data-counter`) ni marcadores de plantilla (`__X__`).
