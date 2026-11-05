@@ -1,25 +1,26 @@
-# En Coolify/VPS ABDev, la Destination debe ser la red Docker del servicio
-# Supabase. El hostname típico de PostgreSQL es "supabase-db".
-#
-# La red externa se configura con COMPOSE_NETWORK en el VPS ABDev; por ejemplo:
-# COMPOSE_NETWORK=supabase-network-<identificador-real>
-#
-# PostgreSQL no se publica ni se incluye como servicio: el CMS se conecta
-# exclusivamente a la red interna compartida. No se expone el puerto 5432.
+# Destination Coolify = red Docker de Supabase (COMPOSE_NETWORK).
+# Hostname DB típico: supabase-db. NO publicar 5432.
+# Schema `cisa` YA existe en el VPS ABDev: no recrearlo ni crear un Postgres nuevo.
+# Volumen cisa-cms-media → /app/media (uploads de la colección Media).
 services:
   cisa-cms:
     build:
       context: ./cms
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     env_file:
       - cms/.env
     environment:
       PAYLOAD_PUBLIC_SERVER_URL: https://cms.cisa.abdev.io
       PAYLOAD_SCHEMA: cisa
+    volumes:
+      - cisa-cms-media:/app/media
     networks:
       - cisa-internal
     restart: unless-stopped
+
+volumes:
+  cisa-cms-media:
 
 networks:
   cisa-internal:
