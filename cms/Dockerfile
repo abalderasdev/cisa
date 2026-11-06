@@ -34,6 +34,8 @@ RUN apk add --no-cache wget \
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Next standalone no incluye este woff que Payload lee por fs en /api (OG).
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@payloadcms/next/dist/routes/rest/og ./node_modules/@payloadcms/next/dist/routes/rest/og
 USER nextjs
 EXPOSE 3000
 # Uploads de Media: /app/media (montar volumen persistente aquí)
