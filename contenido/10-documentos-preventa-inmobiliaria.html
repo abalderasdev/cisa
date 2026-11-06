@@ -653,18 +653,11 @@
   </a>
 
 
-<!-- Agent CISA · FAB flotante (esquina inferior derecha)
-     El personaje CISA acompana toda la navegacion: loop idle, saludo
-     automatico cada 8-12s, hover de interaccion, y click para abrir chat.
-     El widget de ElevenLabs se monta on-demand en el primer click. -->
+<!-- Agent CISA · FAB flotante (esquina inferior derecha) · retrato estático; chat/voz vía /api/agente-cisa -->
 <button type="button" id="agent-cisa-fab" data-state="idle" aria-label="Hablar con CISA, asistente virtual de Grupo CISA" title="Hablar con CISA">
   <span class="agent-fab__clip">
-    <img class="agent-fab__still" src="/assets/agent-cisa-avatar.webp" alt="CISA" aria-hidden="true">
-    <video id="agent-cisa-fab-video" class="agent-fab__video" muted playsinline preload="none" aria-hidden="true">
-      <source src="/assets/agent-cisa-hover.mp4" type="video/mp4">
-    </video>
+    <img class="agent-fab__still" src="/assets/agent-cisa/cisa-idle.png" alt="CISA, asistente virtual de Grupo CISA" width="88" height="88">
   </span>
-  <span class="agent-fab__pulse" aria-hidden="true"></span>
   <span class="agent-fab__tag" aria-hidden="true">
     <span class="agent-fab__dot"></span>
     <span data-edit="contenido-10-documentos-preventa-inmobiliaria.main.span-1">En vivo</span>

@@ -498,7 +498,7 @@
 
 
         <div class="article__body">
-<p data-edit="aviso-de-privacidad.article.p-1-2"><em>Última actualización: 8 de octubre de 2026.</em></p>
+<p data-edit="aviso-de-privacidad.article.p-1-2"><em>Última actualización: 5 de noviembre de 2026.</em></p>
 
 <p data-edit="aviso-de-privacidad.article.p-3">Este aviso describe el tratamiento que Grupo CISA da a los datos personales
 recabados a través de este sitio web, en cumplimiento de la Ley Federal de
@@ -551,6 +551,26 @@ conserva el control: hasta que no envíe ese mensaje, Grupo CISA no recibe nada.
 <p data-edit="aviso-de-privacidad.article.p-12">Cuando usted envía el mensaje, la conversación queda alojada en la
 infraestructura de WhatsApp, operada por Meta Platforms, Inc., y se rige además
 por las políticas de privacidad de ese servicio.</p>
+
+<h3 data-edit="aviso-de-privacidad.article.h3-agente-1">Asistente virtual CISA</h3>
+<p data-edit="aviso-de-privacidad.article.p-agente-1">El sitio ofrece un asistente virtual llamado CISA que responde por texto
+y por voz. Lo que usted escribe o dice al asistente pasa por el servidor del sitio
+y se envía, solo en lo necesario para prestar el servicio, a dos proveedores de
+inteligencia artificial: <strong>MiniMax</strong>, que procesa los mensajes de texto
+y genera la lectura en voz alta de las respuestas, y <strong>xAI</strong> (Grok),
+que procesa la conversación por voz cuando usted usa el micrófono. El audio de su
+voz solo se graba mientras usted mantiene activo el micrófono. Esos proveedores
+tratan la información conforme a sus propias políticas de privacidad.</p>
+<p data-edit="aviso-de-privacidad.article.p-agente-2">El servidor del sitio no guarda el contenido de sus conversaciones con
+el asistente. El historial de la conversación se conserva <strong>únicamente en el
+almacenamiento local de su navegador</strong> hasta por 30 días, para que pueda
+retomarla; puede borrarlo en cualquier momento con el botón &laquo;Nueva
+conversación&raquo; del propio asistente, o limpiando los datos del sitio desde la
+configuración de su navegador.</p>
+<p data-edit="aviso-de-privacidad.article.p-agente-3">Usar el asistente es opcional. Si prefiere no hacerlo, puede
+contactarnos por los formularios y por WhatsApp como se describe en este aviso.
+Le pedimos no compartir con el asistente datos que no sean necesarios para su
+consulta.</p>
 
 <h2 data-edit="aviso-de-privacidad.article.h2-5">5. Borradores guardados en su navegador</h2>
 <p>Para que no pierda lo que escribió si cierra la página por accidente, el sitio
@@ -667,18 +687,11 @@ Correo: <a href="mailto:contacto@grupocisa.mx">contacto@grupocisa.mx</a></p>
   </a>
 
 
-<!-- Agent CISA · FAB flotante (esquina inferior derecha)
-     El personaje CISA acompana toda la navegacion: loop idle, saludo
-     automatico cada 8-12s, hover de interaccion, y click para abrir chat.
-     El widget de ElevenLabs se monta on-demand en el primer click. -->
+<!-- Agent CISA · FAB flotante (esquina inferior derecha) · retrato estático; chat/voz vía /api/agente-cisa -->
 <button type="button" id="agent-cisa-fab" data-state="idle" aria-label="Hablar con CISA, asistente virtual de Grupo CISA" title="Hablar con CISA">
   <span class="agent-fab__clip">
-    <img class="agent-fab__still" src="/assets/agent-cisa-avatar.webp" alt="CISA" aria-hidden="true">
-    <video id="agent-cisa-fab-video" class="agent-fab__video" muted playsinline preload="none" aria-hidden="true">
-      <source src="/assets/agent-cisa-hover.mp4" type="video/mp4">
-    </video>
+    <img class="agent-fab__still" src="/assets/agent-cisa/cisa-idle.png" alt="CISA, asistente virtual de Grupo CISA" width="88" height="88">
   </span>
-  <span class="agent-fab__pulse" aria-hidden="true"></span>
   <span class="agent-fab__tag" aria-hidden="true">
     <span class="agent-fab__dot"></span>
     <span data-edit="aviso-de-privacidad.main.span-1">En vivo</span>
