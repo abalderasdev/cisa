@@ -1,4 +1,7 @@
-# Integration spec · Sofía en sitio estático CISA · v1.1
+# Integration spec · CISA en sitio estático CISA · v1.1
+
+> **Histórico.** Esta especificación describía la integración con ElevenLabs y ya no aplica. La implementación vigente es `api/agente-cisa.js` (chat y TTS con MiniMax, voz en vivo con Grok mediante token efímero creado en el servidor) y `assets/agent-cisa-fab.js`. Ver `README.md`.
+
 
 > Especificación técnica para integrar el widget de ElevenLabs en las 6 HTMLs del sitio.
 > Audiencia: dev de ABDev (Alberto) o futuro dev que mantenga el sitio.
@@ -8,10 +11,10 @@
 
 ## 1. Script tag de ElevenLabs
 
-El widget se carga como `<script async>` al final del `<body>` de cada página donde Sofía debe aparecer.
+El widget se carga como `<script async>` al final del `<body>` de cada página donde CISA debe aparecer.
 
 ```html
-<!-- Sofía · ElevenLabs Agent -->
+<!-- CISA · ElevenLabs Agent -->
 <script
   id="elevenlabs-convai"
   src="https://elevenlabs.io/convai/embed.js?agent_id={AGENT_ID}&server_url={SERVER_URL}"
@@ -45,7 +48,7 @@ Una vez cargado, el widget acepta configuración vía JavaScript:
     buttonLabel: '',
     avatarUrl: '/assets/sofia-avatar.jpg',
     introVideoUrl: '/assets/sofia-intro.mp4',
-    title: 'Sofía · Grupo CISA',
+    title: 'CISA · Grupo CISA',
     subtitle: 'Asistente virtual · responde en minutos',
     autoOpen: false,
     language: 'es-MX',
@@ -61,10 +64,10 @@ Una vez cargado, el widget acepta configuración vía JavaScript:
 
 ## 3. CSS para evitar choque con WhatsApp FAB
 
-El sitio ya tiene un WhatsApp FAB en `bottom-right` (color `#25D366`, 56px). El widget de Sofía va a `bottom-left` y se separa del borde con suficiente margen para que ambos sean accesibles sin superponerse.
+El sitio ya tiene un WhatsApp FAB en `bottom-right` (color `#25D366`, 56px). El widget de CISA va a `bottom-left` y se separa del borde con suficiente margen para que ambos sean accesibles sin superponerse.
 
 ```css
-/* Botón flotante de Sofía · a la izquierda del WhatsApp FAB */
+/* Botón flotante de CISA · a la izquierda del WhatsApp FAB */
 [data-elevenlabs-widget],
 .elevenlabs-widget,
 #elevenlabs-convai-trigger {
@@ -108,7 +111,7 @@ El sitio ya tiene un WhatsApp FAB en `bottom-right` (color `#25D366`, 56px). El 
 
 ## 4. Triggers por página (mostrar / ocultar el widget)
 
-Sofía **NO debe aparecer** en todas las páginas. La regla está definida en `README.md` sección 3. La implementación es simple: cada HTML incluye el `<script>` solo donde corresponde.
+CISA **NO debe aparecer** en todas las páginas. La regla está definida en `README.md` sección 3. La implementación es simple: cada HTML incluye el `<script>` solo donde corresponde.
 
 **Opción recomendada: condicional por página.**
 
@@ -142,7 +145,7 @@ Sofía **NO debe aparecer** en todas las páginas. La regla está definida en `R
 
 ## 5. Eventos emitidos por el widget (analytics)
 
-Sofía debe emitir eventos que se integren con el sistema de analytics del sitio (Google Tag Manager / `window.dataLayer`).
+CISA debe emitir eventos que se integren con el sistema de analytics del sitio (Google Tag Manager / `window.dataLayer`).
 
 **Eventos a implementar:**
 
@@ -154,7 +157,7 @@ Sofía debe emitir eventos que se integren con el sistema de analytics del sitio
 | `sofia_conversation_started` | El LLM responde el primer mensaje | `{ page_path, flow_detected: 'terreno' \| 'capital' \| 'general' \| null }` |
 | `sofia_lead_qualified` | El flujo A o B llega a la captura de datos | `{ flow: 'terreno' \| 'capital', data_keys: ['zona', 'superficie', ...] }` |
 | `sofia_handoff_requested` | Se activa el handoff a humano | `{ trigger: 'user_request' \| 'frustration' \| 'out_of_scope' \| 'flow_completed' \| 'limit_reached', conversation_id }` |
-| `sofia_article_recommended` | Sofía recomienda un artículo del blog | `{ article_slug }` |
+| `sofia_article_recommended` | CISA recomienda un artículo del blog | `{ article_slug }` |
 | `sofia_error` | El widget falla (ElevenLabs caído, timeout, error de red) | `{ error_code, error_message }` |
 
 ## 6. Fallback si ElevenLabs está caído
@@ -162,7 +165,7 @@ Sofía debe emitir eventos que se integren con el sistema de analytics del sitio
 Si el script de ElevenLabs no carga en 5 segundos, o si el widget reporta un error de conexión, se muestra un **fallback al WhatsApp directo** con mensaje pre-formateado.
 
 ```html
-<!-- Después del script de Sofía -->
+<!-- Después del script de CISA -->
 <script>
   (function () {
     var loaded = false;
@@ -209,9 +212,9 @@ Mensajes contextuales según la URL:
 - `/inversion` → "Hola, me interesa participar como socio de capital en un proyecto de CISA."
 - Cualquier otra → "Hola, necesito información sobre Grupo CISA."
 
-## 7. Assets de Sofía
+## 7. Assets de CISA
 
-Sofía tiene **avatar** y **video introductorio** listos en el repo, esperando solo que se cree el agente en ElevenLabs para activarse.
+CISA tiene **avatar** y **video introductorio** listos en el repo, esperando solo que se cree el agente en ElevenLabs para activarse.
 
 ### 7.1 Avatar (foto de perfil)
 
@@ -238,8 +241,8 @@ Sofía tiene **avatar** y **video introductorio** listos en el repo, esperando s
 
 ### 7.3 Comportamiento esperado
 
-- Al cargar la página donde Sofía debe aparecer: el video no se reproduce todavía (lazy load).
-- Al click del usuario en el widget de Sofía:
+- Al cargar la página donde CISA debe aparecer: el video no se reproduce todavía (lazy load).
+- Al click del usuario en el widget de CISA:
   1. Se abre el modal
   2. Se reproduce `sofia-intro.mp4` una vez en el área del avatar
   3. Inicia la conversación de voz con ElevenLabs
@@ -258,7 +261,7 @@ Sofía tiene **avatar** y **video introductorio** listos en el repo, esperando s
   autoplay
   muted
   playsinline
-  aria-label="Sofía se presenta"
+  aria-label="CISA se presenta"
 ></video>
 ```
 
@@ -277,7 +280,7 @@ CSS necesario:
 
 ### 7.5 Decisiones pendientes
 
-- [ ] Si el video debe tener audio (voz de Sofía saludando "Hola, soy Sofía, ¿en qué te ayudo?"). ElevenLabs puede generarlo cuando se cree el agente.
+- [ ] Si el video debe tener audio (voz de CISA saludando "Hola, soy CISA, ¿en qué te ayudo?"). ElevenLabs puede generarlo cuando se cree el agente.
 - [ ] Si el video se reproduce en TODAS las páginas o solo en `/su-terreno.html` (donde el CTA principal es precalificar).
 - [ ] Si debe haber un video alternativo más corto (3 seg) para mostrar cuando la conversación ya está activa.
 - [ ] Optimización a WebM (VP9) además de MP4 para navegadores que lo prefieran (ahorra ~30% de peso).
@@ -344,12 +347,12 @@ export default async function handler(req, res) {
 - **Timeout de carga del widget:** 5 segundos (ver sección 6). Si no carga, fallback a WhatsApp.
 - **Timeout de respuesta del LLM:** 30 segundos. Si excede, mostrar mensaje de "Un momento, estoy consultando" y reintentar una vez. Si reintenta y falla, ofrecer transferencia a humano o WhatsApp.
 - **Error de red:** capturar en `sofia_error` event, ofrecer fallback.
-- **Pérdida de sesión:** si la conversación se corta (recarga de página, etc.), Sofía recuerda el contexto solo si el visitante no cerró la pestaña. Si cerró, empieza de nuevo (por diseño, para no violar privacidad).
+- **Pérdida de sesión:** si la conversación se corta (recarga de página, etc.), CISA recuerda el contexto solo si el visitante no cerró la pestaña. Si cerró, empieza de nuevo (por diseño, para no violar privacidad).
 
 ## 10. Cumplimiento de privacidad y cookies
 
 - **Sin cookies de tracking** en el frontend del widget. ElevenLabs puede setear las suyas; verificar en su documentación.
-- **Sin almacenamiento en `localStorage`** del lado de Sofía. La memoria es solo de sesión.
+- **Sin almacenamiento en `localStorage`** del lado de CISA. La memoria es solo de sesión.
 - **Aviso de privacidad:** el sitio debe tener un enlace a `/aviso-de-privacidad` cerca del widget o en el footer. El aviso debe mencionar que el sitio usa un agente conversacional de IA provisto por ElevenLabs, y que las conversaciones pueden ser revisadas por el equipo de CISA para mejorar el servicio.
 - **Botón de "no quiero continuar"** dentro del widget: el visitante debe poder cerrar el chat y borrar la conversación.
 
@@ -379,7 +382,7 @@ Antes de marcar como listo para producción:
 - [ ] Variables de entorno en Vercel (`ELEVENLABS_API_KEY`, `ELEVENLABS_AGENT_ID`)
 - [ ] KB cargada en ElevenLabs con el contenido de `knowledge-base.md`
 - [ ] System prompt cargado en ElevenLabs con el contenido de `system-prompt.md`
-- [ ] Voz de Sofía elegida y configurada
+- [ ] Voz de CISA elegida y configurada
 - [ ] Webhook de handoff al CRM / WhatsApp Business configurado y probado
 - [ ] Asesor humano asignado y notificado
 - [ ] Fallback a WhatsApp probado (simular caída de ElevenLabs)

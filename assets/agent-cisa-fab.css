@@ -1,320 +1,379 @@
-/* ============================================================================
-   AGENT CISA · FAB flotante (esquina inferior derecha)
-   ============================================================================
-   Personaje CISA presente en toda la página:
-   - Loop idle (clip con celular, tranquilo)
-   - Saludo automático cada 8-12s
-   - Hover → clip de interacción
-   - Click → abre chat (ElevenLabs widget)
-   - Mouse-tracking sutil (parallax de 8px)
-   ============================================================================ */
-
 :root {
-  --cisa-fab-size: 88px;
-  --cisa-fab-size-mobile: 72px;
-  --cisa-fab-bottom: 24px;
-  --cisa-fab-bottom-mobile: 16px;
-  --cisa-fab-right: 24px;
-  --cisa-fab-right-mobile: 16px;
+  --cisa-verde-oscuro: #1F4D2A;
+  --cisa-verde: #2E7D32;
+  --cisa-verde-claro: #8BC34A;
+  --cisa-texto: #1b1f1c;
 }
 
 #agent-cisa-fab {
   position: fixed;
-  bottom: var(--cisa-fab-bottom);
-  right: var(--cisa-fab-right);
-  width: var(--cisa-fab-size);
-  height: var(--cisa-fab-size);
-  border-radius: 50%;
-  background: transparent;
-  border: 3px solid var(--brand-green, #2E7D32);
-  box-shadow: 0 8px 24px rgba(31, 77, 42, 0.28);
-  cursor: pointer;
+  right: 24px;
+  bottom: 24px;
   z-index: 100000;
-  overflow: visible;
+  width: 88px;
+  height: 88px;
   padding: 0;
-  margin: 0;
-  display: block;
-  transition: box-shadow 0.25s ease, transform 0.2s ease;
-  /* El transform lo controla el JS (mouse-tracking). Solo permitimos
-     scale al hacer :hover sin pisar el parallax. */
-}
-
-#agent-cisa-fab:hover {
-  box-shadow: 0 14px 36px rgba(31, 77, 42, 0.4);
-}
-
-#agent-cisa-fab:focus-visible {
-  outline: 3px solid #fff;
-  outline-offset: 3px;
-}
-
-/* Clip circular del video */
-#agent-cisa-fab .agent-fab__clip {
-  position: absolute;
-  inset: 0;
+  border: 3px solid var(--cisa-verde);
   border-radius: 50%;
+  background: #fff;
+  color: var(--cisa-texto);
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(31, 77, 42, 0.24);
+}
+
+#agent-cisa-fab:focus-visible,
+.agent-cisa-panel button:focus-visible,
+.agent-cisa-panel a:focus-visible,
+.agent-cisa-panel textarea:focus-visible {
+  outline: 3px solid var(--cisa-verde-claro);
+  outline-offset: 2px;
+}
+
+#agent-cisa-fab[data-state="listening"],
+#agent-cisa-fab[data-state="speaking"] {
+  box-shadow: 0 0 0 5px rgba(139, 195, 74, 0.3), 0 6px 20px rgba(31, 77, 42, 0.24);
+}
+
+.agent-fab__clip {
+  display: block;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  background: transparent;
-}
-
-#agent-cisa-fab .agent-fab__video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  pointer-events: none;
-  display: block;
-}
-
-/* Imagen estática del agente — visible por default (idle).
-   El video solo aparece en wave/hover. Asi NO hay video reproduciendose
-   en loop cuando entras a la home. */
-#agent-cisa-fab .agent-fab__still {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  pointer-events: none;
-  display: block;
-  transition: opacity 200ms ease;
-}
-
-#agent-cisa-fab .agent-fab__video {
-  display: none;
-}
-
-/* Cuando el FAB entra a wave u hover, se ve el video y se oculta la imagen */
-#agent-cisa-fab[data-state="wave"] .agent-fab__still,
-#agent-cisa-fab[data-state="hover"] .agent-fab__still {
-  opacity: 0;
-}
-
-#agent-cisa-fab[data-state="wave"] .agent-fab__video,
-#agent-cisa-fab[data-state="hover"] .agent-fab__video {
-  display: block;
-}
-
-/* Apertura del chat: el video se queda visible */
-#agent-cisa-fab[data-state="opening"] .agent-fab__video,
-#agent-cisa-fab[data-state="open"] .agent-fab__video {
-  display: block;
-}
-#agent-cisa-fab[data-state="opening"] .agent-fab__still,
-#agent-cisa-fab[data-state="open"] .agent-fab__still {
-  opacity: 0;
-}
-
-/* Anillo pulsante "En vivo" */
-#agent-cisa-fab .agent-fab__pulse {
-  position: absolute;
-  inset: -3px;
   border-radius: 50%;
-  border: 2px solid var(--brand-green, #2E7D32);
-  pointer-events: none;
-  opacity: 0;
-  animation: agent-fab-pulse 2.4s ease-out infinite;
 }
 
-@keyframes agent-fab-pulse {
-  0%   { transform: scale(0.95); opacity: 0.75; }
-  80%  { transform: scale(1.35); opacity: 0;    }
-  100% { transform: scale(1.35); opacity: 0;    }
+.agent-fab__still {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-/* Etiqueta flotante inferior: "EN VIVO" */
-#agent-cisa-fab .agent-fab__tag {
+.agent-fab__tag {
   position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--brand-green-dark, #1F4D2A);
-  color: #fff;
-  font: 700 9px/1 "Manrope", system-ui, sans-serif;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 4px 9px;
-  border-radius: 10px;
-  white-space: nowrap;
+  right: -4px;
+  bottom: -4px;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
-  pointer-events: none;
-}
-
-#agent-cisa-fab .agent-fab__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #4ADE80;
-  box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
-  animation: agent-fab-blink 1.6s ease-in-out infinite;
-}
-
-@keyframes agent-fab-blink {
-  0%, 100% { opacity: 1; transform: scale(1);   }
-  50%      { opacity: 0.4; transform: scale(0.85); }
-}
-
-/* Tooltip que aparece al hacer hover largo */
-#agent-cisa-fab .agent-fab__tip {
-  position: absolute;
-  right: calc(100% + 12px);
-  top: 50%;
-  transform: translateY(-50%) translateX(6px);
-  background: var(--ink-900, #0F1F15);
+  gap: 4px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: var(--cisa-verde-oscuro);
   color: #fff;
-  font: 600 13px/1.3 "Manrope", system-ui, sans-serif;
-  padding: 8px 12px;
-  border-radius: 8px;
+  font: 600 11px/1.2 Arial, sans-serif;
+}
+
+.agent-fab__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cisa-verde-claro);
+}
+
+.agent-fab__tip {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  display: block;
+  padding: 7px 10px;
+  border-radius: 6px;
+  background: var(--cisa-verde-oscuro);
+  color: #fff;
+  font: 400 13px/1.3 Arial, sans-serif;
   white-space: nowrap;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-#agent-cisa-fab .agent-fab__tip::after {
-  content: "";
-  position: absolute;
-  left: 100%;
-  top: 50%;
-  transform: translateY(-50%);
-  border: 6px solid transparent;
-  border-left-color: var(--ink-900, #0F1F15);
+  transform: translateY(4px);
 }
 
 #agent-cisa-fab:hover .agent-fab__tip,
 #agent-cisa-fab:focus-visible .agent-fab__tip {
   opacity: 1;
-  transform: translateY(-50%) translateX(0);
+  transform: translateY(0);
 }
 
-/* Estado: saludo en curso (leve bounce) */
-#agent-cisa-fab[data-state="wave"] {
-  animation: agent-fab-wave 0.6s ease-in-out 1;
+.agent-fab__video,
+.agent-fab__pulse {
+  display: none !important;
 }
 
-@keyframes agent-fab-wave {
-  0%, 100% { /* transform lo controla el JS; no override */ }
-  50%      { /* sin transform — JS ya posiciona */ }
-}
-
-/* Estado: abriendo chat (pulso más rápido) */
-#agent-cisa-fab[data-state="opening"] .agent-fab__pulse {
-  animation-duration: 1s;
-  border-color: var(--brand-green-light, #8BC34A);
-}
-
-#agent-cisa-fab[data-state="opening"] {
-  background: transparent;
-  border-color: var(--brand-green-light, #8BC34A);
-}
-
-/* Estado: chat abierto (mini indicator) */
-#agent-cisa-fab[data-state="open"] {
-  background: transparent;
-  border-color: var(--brand-green-light, #8BC34A);
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-  :root {
-    --cisa-fab-size: var(--cisa-fab-size-mobile);
-    --cisa-fab-bottom: var(--cisa-fab-bottom-mobile);
-    --cisa-fab-right: var(--cisa-fab-right-mobile);
-  }
-
-  #agent-cisa-fab .agent-fab__tip {
-    display: none;
-  }
-}
-
-/* Respeta usuarios con reduce-motion */
-@media (prefers-reduced-motion: reduce) {
-  #agent-cisa-fab .agent-fab__pulse,
-  #agent-cisa-fab .agent-fab__dot {
-    animation: none;
-  }
-  #agent-cisa-fab .agent-fab__video {
-    /* Mostrar el primer frame en lugar de animar */
-  }
-}
-
-/* ============================================================================
-   Convivencia con el widget de ElevenLabs
-   ============================================================================
-   El widget se dibuja fijo en la misma esquina que este FAB y con z-index
-   menor, asi que el FAB le tapaba "Iniciar llamada" y "Mensaje". Mientras el
-   asistente esta abierto, el personaje se aparta y aparece un boton propio
-   para volver.
-   ========================================================================== */
-
-#agent-cisa-fab.is-away {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 0.28s ease, visibility 0s linear 0.28s;
-}
-
-/* El host del widget ya no vive fuera de pantalla: el widget se posiciona
-   solo y necesita estar en el flujo para recibir clics. */
-#agent-cisa-widget-host {
-  position: static;
-}
-
-#agent-cisa-close {
-  /* Arriba a la derecha a proposito: el panel del widget crece hacia arriba
-     al abrir el chat, asi que cualquier anclaje abajo terminaba encimandose
-     con su saludo o con "Iniciar llamada". El desplazamiento vertical libra
-     la barra fija del sitio. */
+.agent-cisa-panel {
   position: fixed;
-  top: calc(var(--cisa-header-h, 72px) + 12px);
-  right: var(--cisa-fab-right);
-  z-index: 100001;
-  display: inline-flex;
+  right: 24px;
+  bottom: 124px;
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  height: min(640px, calc(100vh - 140px));
+  overflow: hidden;
+  border: 1px solid #d6e4d2;
+  border-radius: 16px;
+  background: #fff;
+  color: var(--cisa-texto);
+  box-shadow: 0 12px 38px rgba(27, 31, 28, 0.22);
+  font: 14px/1.45 Arial, sans-serif;
+}
+
+.agent-cisa-panel[hidden] {
+  display: none;
+}
+
+.agent-cisa-panel__header {
+  display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  min-height: 40px;
-  border: 1px solid var(--brand-green, #2E7D32);
-  border-radius: 999px;
-  background: var(--brand-green-dark, #1F4D2A);
+  gap: 10px;
+  flex: 0 0 auto;
+  padding: 14px 16px;
+  background: var(--cisa-verde-oscuro);
   color: #fff;
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+}
+
+.agent-cisa-panel__avatar {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  border: 2px solid var(--cisa-verde-claro);
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.agent-cisa-panel__identity {
+  min-width: 0;
+  flex: 1;
+}
+
+.agent-cisa-panel__title {
+  margin: 0;
+  color: #fff;
+  font-size: 19px;
+  line-height: 1.2;
+}
+
+.agent-cisa-panel__subtitle {
+  margin: 3px 0 0;
+  color: #e7f2e5;
+  font-size: 12px;
+}
+
+.agent-cisa-panel__close {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(10, 15, 12, 0.34);
-  transition: background 0.2s ease, transform 0.2s ease;
+  font: 300 26px/1 Arial, sans-serif;
 }
 
-#agent-cisa-close span {
-  font-size: 15px;
-  line-height: 1;
+.agent-cisa-panel__close:hover {
+  background: rgba(255, 255, 255, 0.15);
 }
 
-#agent-cisa-close:hover {
-  background: var(--brand-green, #2E7D32);
-  transform: translateY(-1px);
+.agent-cisa-panel__tools {
+  flex: 0 0 auto;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e5ebe2;
+  text-align: right;
 }
 
-#agent-cisa-close:focus-visible {
-  outline: 3px solid var(--brand-green-light, #8BC34A);
-  outline-offset: 3px;
+.agent-cisa-panel__new {
+  border: 0;
+  background: transparent;
+  color: var(--cisa-verde);
+  cursor: pointer;
+  font: 600 12px/1.3 Arial, sans-serif;
 }
 
-@media (max-width: 600px) {
-  #agent-cisa-close {
-    top: calc(var(--cisa-header-h, 64px) + 10px);
-    right: var(--cisa-fab-right-mobile);
+.agent-cisa-panel__body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.agent-cisa-messages {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 12px;
+  background: #fff;
+}
+
+.agent-cisa-notice {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 9px 12px;
+  border-top: 1px solid #e5ebe2;
+  background: #fafcf9;
+  color: #5b655b;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.agent-cisa-message-row {
+  display: flex;
+  margin: 0 0 10px;
+}
+
+.agent-cisa-message-row--user {
+  justify-content: flex-end;
+}
+
+.agent-cisa-message-row--assistant {
+  justify-content: flex-start;
+}
+
+.agent-cisa-message-row--system {
+  justify-content: center;
+}
+
+.agent-cisa-message {
+  max-width: 88%;
+  padding: 9px 11px;
+  border-radius: 14px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.agent-cisa-message--user {
+  border-bottom-right-radius: 4px;
+  background: var(--cisa-verde);
+  color: #fff;
+}
+
+.agent-cisa-message--assistant {
+  border: 1px solid var(--cisa-verde-claro);
+  border-bottom-left-radius: 4px;
+  background: #F1F7EC;
+  color: var(--cisa-texto);
+}
+
+.agent-cisa-message--system {
+  max-width: 100%;
+  border-radius: 8px;
+  background: #f3f3f3;
+  color: #666;
+  font-size: 12px;
+  font-style: italic;
+  text-align: center;
+}
+
+.agent-cisa-system-link {
+  display: inline-block;
+  margin-top: 5px;
+  color: var(--cisa-verde);
+  font-style: normal;
+  font-weight: 700;
+}
+
+.agent-cisa-form {
+  flex: 0 0 auto;
+  padding: 10px 12px 4px;
+  border-top: 1px solid #e5ebe2;
+  background: #fff;
+}
+
+.agent-cisa-textarea {
+  display: block;
+  width: 100%;
+  min-height: 68px;
+  max-height: 140px;
+  resize: vertical;
+  box-sizing: border-box;
+  padding: 9px 10px;
+  border: 1px solid #c9d8c6;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--cisa-texto);
+  font: 14px/1.4 Arial, sans-serif;
+}
+
+.agent-cisa-textarea::placeholder {
+  color: #7b857b;
+}
+
+.agent-cisa-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.agent-cisa-controls button {
+  min-height: 34px;
+  padding: 7px 10px;
+  border: 1px solid var(--cisa-verde);
+  border-radius: 7px;
+  background: #fff;
+  color: var(--cisa-verde);
+  cursor: pointer;
+  font: 600 12px/1.2 Arial, sans-serif;
+}
+
+.agent-cisa-controls button:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
+}
+
+.agent-cisa-send {
+  background: var(--cisa-verde) !important;
+  color: #fff !important;
+}
+
+.agent-cisa-mic[aria-pressed="true"] {
+  background: var(--cisa-verde-claro) !important;
+  color: var(--cisa-verde-oscuro) !important;
+}
+
+.agent-cisa-whatsapp {
+  display: block;
+  flex: 0 0 auto;
+  padding: 8px 12px 12px;
+  color: var(--cisa-verde);
+  font: 700 13px/1.3 Arial, sans-serif;
+  text-decoration: none;
+}
+
+.agent-cisa-whatsapp:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  #agent-cisa-fab {
+    right: 16px;
+    bottom: 16px;
+    width: 72px;
+    height: 72px;
+  }
+
+  .agent-cisa-panel {
+    inset: 8px;
+    width: auto;
+    max-width: none;
+    height: auto;
+    max-height: calc(100vh - 16px);
+  }
+
+  .agent-fab__tag {
+    right: -3px;
+    bottom: -3px;
     font-size: 10px;
-    padding: 9px 13px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #agent-cisa-fab.is-away { transition: none; }
-  #agent-cisa-close { transition: none; }
-  #agent-cisa-close:hover { transform: none; }
+  #agent-cisa-fab,
+  #agent-cisa-fab[data-state="listening"],
+  #agent-cisa-fab[data-state="speaking"],
+  .agent-fab__tip {
+    transition: none !important;
+    animation: none !important;
+    box-shadow: 0 6px 20px rgba(31, 77, 42, 0.24) !important;
+    transform: none !important;
+  }
 }

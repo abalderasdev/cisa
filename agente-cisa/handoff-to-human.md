@@ -1,29 +1,32 @@
-# Handoff a humano · Sofía · v1.0
+# Handoff a humano · CISA · v1.0
 
-> Protocolo de transferencia de la conversación de Sofía a un asesor humano de CISA.
+> **Estado actual:** el agente público no tiene herramienta/webhook de transferencia. La salida a humano es el enlace de WhatsApp del panel y el formulario de contacto. Lo que sigue describe el diseño de transferencia para cuando se implemente.
+
+
+> Protocolo de transferencia de la conversación de CISA a un asesor humano de CISA.
 > Define: cuándo se transfiere, qué se le dice al usuario, qué payload se manda al backend, y cómo se cierra.
 
 ---
 
 ## 1. Triggers de transferencia
 
-Sofía transfiere al equipo comercial cuando se cumple **cualquiera** de estas condiciones:
+CISA transfiere al equipo comercial cuando se cumple **cualquiera** de estas condiciones:
 
-| # | Trigger | Cómo lo detecta Sofía | Flujo asociado |
+| # | Trigger | Cómo lo detecta CISA | Flujo asociado |
 |---|---------|------------------------|----------------|
 | 1 | El visitante pide hablar con un humano explícitamente | Frase directa: "quiero hablar con alguien", "pásame con un asesor", "necesito una llamada" | E (frustración) o D (general) |
-| 2 | El visitante pregunta algo fuera del scope de Sofía | Cualquier pregunta listada en `knowledge-base.md` Sección 10 | El flujo que esté activo (A, B o D) |
-| 3 | Lleva más de 5 intercambios sin resolverse | Sofía lleva el contador; cualquier flujo | El flujo que esté activo |
+| 2 | El visitante pregunta algo fuera del scope de CISA | Cualquier pregunta listada en `knowledge-base.md` Sección 10 | El flujo que esté activo (A, B o D) |
+| 3 | Lleva más de 5 intercambios sin resolverse | CISA lleva el contador; cualquier flujo | El flujo que esté activo |
 | 4 | El visitante muestra frustración detectable | Frases listadas en `flows.md` Flujo E paso E1 | E |
-| 5 | El flujo A (dueño de terreno) llega a la captura final | Sofía ya confirmó los 7 datos del precalificador | A |
-| 6 | El flujo B (socio de capital) llega a la captura final | Sofía ya confirmó perfil + capital + experiencia + timing | B |
+| 5 | El flujo A (dueño de terreno) llega a la captura final | CISA ya confirmó los 7 datos del precalificador | A |
+| 6 | El flujo B (socio de capital) llega a la captura final | CISA ya confirmó perfil + capital + experiencia + timing | B |
 | 7 | El flujo C (prensa / reclutador) se activa | Visitante declara perfil o pregunta por el equipo | C |
-| 8 | Pregunta por un proyecto, aliado o persona no confirmado en la KB | Sofía valida contra `knowledge-base.md` y no encuentra | El flujo que esté activo |
+| 8 | Pregunta por un proyecto, aliado o persona no confirmado en la KB | CISA valida contra `knowledge-base.md` y no encuentra | El flujo que esté activo |
 | 9 | El visitante pide algo que requiere abogado o contador | Preguntas legales o fiscales específicas | El flujo que esté activo |
 
 ## 2. Mensaje que se muestra al usuario
 
-Cuando Sofía activa el handoff, sigue esta secuencia textual.
+Cuando CISA activa el handoff, sigue esta secuencia textual.
 
 ### Paso 1 · Empatía breve (1 línea)
 
@@ -78,7 +81,7 @@ Variantes para los flujos específicos:
 
 ## 3. Payload que se manda al backend
 
-Cuando Sofía transfiere, manda un POST al endpoint configurado con este payload:
+Cuando CISA transfiere, manda un POST al endpoint configurado con este payload:
 
 ```json
 {
@@ -117,11 +120,11 @@ Cuando Sofía transfiere, manda un POST al endpoint configurado con este payload
 
 **Notas sobre el payload:**
 
-- `conversation_id` lo genera ElevenLabs al iniciar la conversación; se mantiene a lo largo de la sesión.
+- `conversation_id`: pendiente; el agente actual no tiene webhook de transferencia (el historial vive en el navegador del visitante).
 - `flow` y `trigger` los determina el sistema de flows (ver `flows.md`).
 - `qualification_data` se construye a partir de lo capturado en el flujo A o B. En flujos C, D y E viene vacío o con datos mínimos.
 - `conversation_summary` lo genera el LLM al cierre de la conversación. NO es copia literal del chat; es un resumen ejecutivo para que el asesor entre a la llamada con contexto.
-- `articles_recommended` lista los slugs de los artículos que Sofía recomendó durante la conversación.
+- `articles_recommended` lista los slugs de los artículos que CISA recomendó durante la conversación.
 - `agent_assigned` por ahora es `asesor-default`. Cuando se definan múltiples asesores, se enruta según el flow (terreno → asesor A, capital → asesor B, prensa → buzón general).
 - `metadata` se popula del lado del cliente o del servidor; útil para auditoría.
 
@@ -136,7 +139,7 @@ El endpoint que recibe el payload puede ser:
 | **Webhook de CRM** (HubSpot, Pipedrive, etc.) | URL provista por el CRM | ABDev + CISA |
 | **Formulario interno** (endpoint que recibe y manda correo) | `https://cisa.vercel.app/api/contacto-interno` | ABDev |
 
-**Recomendación inicial:** Vercel Function. Cuando CISA decida qué CRM usar, se cambia el destino sin tocar la lógica de Sofía.
+**Recomendación inicial:** Vercel Function. Cuando CISA decida qué CRM usar, se cambia el destino sin tocar la lógica de CISA.
 
 **Esqueleto del endpoint** (`/api/sofia/handoff.js`):
 
@@ -166,7 +169,7 @@ export default async function handler(req, res) {
 
 ## 5. Tiempo de respuesta comprometido
 
-**Sofía promete al usuario: 48 horas hábiles** para que un asesor le contacte.
+**CISA promete al usuario: 48 horas hábiles** para que un asesor le contacte.
 
 **Definición de "48 horas hábiles":**
 
@@ -188,7 +191,7 @@ export default async function handler(req, res) {
 
 ## 6. Mensaje de cierre al usuario (cuando ya se transfirió)
 
-Una vez que el backend confirma que el payload se envió (HTTP 200), Sofía muestra el mensaje final.
+Una vez que el backend confirma que el payload se envió (HTTP 200), CISA muestra el mensaje final.
 
 ### Mensaje estándar (cualquier flujo)
 
@@ -217,28 +220,28 @@ Una vez que el backend confirma que el payload se envió (HTTP 200), Sofía mues
 - Una sola despedida. No agregar "si necesita algo más, aquí estoy" (genera expectativa de respuesta inmediata).
 - Incluir el nombre del visitante SOLO si lo dio. Si no, no inventar.
 - La recomendación opcional (artículo del blog) aparece solo si el visitante mostró interés en un tema educativo. No recargar.
-- El mensaje cierra la sesión. Sofía no espera más input; el chat queda abierto pero inactivo.
+- El mensaje cierra la sesión. CISA no espera más input; el chat queda abierto pero inactivo.
 
 ## 7. Lo que NO debe pasar en el handoff
 
-1. **Sofía NO cierra la venta.** Ni intenta convencer al visitante de avanzar.
-2. **Sofía NO promete un horario específico** ("mañana a las 10"). El SLA es 48 horas hábiles, sin hora.
-3. **Sofía NO comparte datos de otros visitantes** ni hace comparaciones.
-4. **Sofía NO pide datos sensibles** (CURP, RFC, datos bancarios, número de escritura, contraseñas).
-5. **Sofía NO transfiere al número equivocado.** Si el visitante es prensa, va al buzón general. Si es frustración, va a un asesor de atención. Si es calificación, va al equipo comercial.
+1. **CISA NO cierra la venta.** Ni intenta convencer al visitante de avanzar.
+2. **CISA NO promete un horario específico** ("mañana a las 10"). El SLA es 48 horas hábiles, sin hora.
+3. **CISA NO comparte datos de otros visitantes** ni hace comparaciones.
+4. **CISA NO pide datos sensibles** (CURP, RFC, datos bancarios, número de escritura, contraseñas).
+5. **CISA NO transfiere al número equivocado.** Si el visitante es prensa, va al buzón general. Si es frustración, va a un asesor de atención. Si es calificación, va al equipo comercial.
 6. **El payload NO contiene datos inventados.** Si un campo no se capturó, queda `null` o se omite.
-7. **El sistema NO debe fallar silenciosamente.** Si el endpoint devuelve error, Sofía muestra un mensaje de "Hubo un problema al contactarle; le respondemos por correo en contacto@grupocisa.mx en menos de 48 horas hábiles" y registra el error en logs.
+7. **El sistema NO debe fallar silenciosamente.** Si el endpoint devuelve error, CISA muestra un mensaje de "Hubo un problema al contactarle; le respondemos por correo en contacto@grupocisa.mx en menos de 48 horas hábiles" y registra el error en logs.
 
 ## 8. Plantilla del correo interno (cuando no hay CRM)
 
 Si CISA no tiene CRM configurado al momento del lanzamiento, el backend manda un correo a una casilla interna con esta plantilla:
 
 ```
-Asunto: [CISA · Sofía] Nuevo lead · {flow} · {timestamp}
+Asunto: [CISA · CISA] Nuevo lead · {flow} · {timestamp}
 
 Hola, equipo CISA:
 
-Sofía transfirió una conversación. Resumen:
+CISA transfirió una conversación. Resumen:
 
 - Visitante: {user.name}
 - WhatsApp: {user.whatsapp}
@@ -257,12 +260,12 @@ Artículos recomendados al visitante:
 {articles_recommended, en lista}
 
 Conversación completa (ID: {conversation_id}):
-[link al dashboard de ElevenLabs]
+[pendiente: no hay dashboard de conversaciones en el agente actual]
 
 SLA: contactar en menos de 48 horas hábiles.
 
 —
-Sofía · Grupo CISA · sistema automatizado
+CISA · Grupo CISA · sistema automatizado
 ```
 
 Destinatario propuesto: `atencion@grupocisa.mx` o el correo del equipo comercial. [CONFIRMAR CON CISA]
