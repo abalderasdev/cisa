@@ -6,13 +6,15 @@ const contexto = require('./_lib/agente-contexto');
 const LIMITS = {
   MAX_MESSAGES: 20,
   MAX_CHARS: 2000,
-  MAX_TTS_CHARS: 1200
+  MAX_TTS_CHARS: 1200,
+  MAX_AUDIO_BYTES: 720000,
+  MIN_AUDIO_BYTES: 4800
 };
 
 const RATE_LIMITS = {
   chat: { limite: 20, ventana: 60 },
   tts: { limite: 20, ventana: 60 },
-  voz: { limite: 3, ventana: 60 }
+  voz: { limite: 6, ventana: 60 }
 };
 
 function registrarAviso(action, codigo) {
@@ -211,61 +213,16 @@ async function consultarMinimaxTts(text) {
   return { audio: audio.toString('base64') };
 }
 
-async function crearTokenVoz() {
-  const apiKey = process.env.XAI_API_KEY;
+function validarMensajes(messages, opciones = {}) {
+  const { permitirCualquierRolUltimo = false, maximo = LIMITS.MAX_MESSAGES } = opciones;
 
-  if (!apiKey) {
-    return { error: 'not_configured' };
-  }
-
-  let response;
-
-  try {
-    response = await fetch('https://api.x.ai/v1/realtime/client_secrets', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify({
-        expires_after: { seconds: 60 }
-      }),
-      signal: AbortSignal.timeout(25000)
-    });
-  } catch (_) {
-    return { error: 'provider_error' };
-  }
-
-  if (!response.ok) {
-    return { error: 'provider_error', status: response.status };
-  }
-
-  let payload;
-
-  try {
-    payload = await response.json();
-  } catch (_) {
-    return { error: 'provider_error', status: response.status };
-  }
-
-  if (!payload || typeof payload.value !== 'string' || !payload.value) {
-    return { error: 'provider_error', status: response.status };
-  }
-
-  return {
-    token: payload.value,
-    expiresAt: payload.expires_at
-  };
-}
-
-function validarChat(body) {
-  if (!Array.isArray(body.messages) || body.messages.length === 0) {
+  if (!Array.isArray(messages) || messages.length === 0) {
     return { error: 'bad_request' };
   }
 
-  const messages = body.messages.slice(-LIMITS.MAX_MESSAGES);
+  const mensajes = messages.slice(-maximo);
 
-  for (const message of messages) {
+  for (const message of mensajes) {
     if (
       !message ||
       !['user', 'assistant'].includes(message.role) ||
@@ -283,16 +240,324 @@ function validarChat(body) {
     }
   }
 
-  if (messages[messages.length - 1].role !== 'user') {
+  if (!permitirCualquierRolUltimo && mensajes[mensajes.length - 1].role !== 'user') {
     return { error: 'bad_request' };
   }
 
   return {
-    messages: messages.map((message) => ({
+    messages: mensajes.map((message) => ({
       role: message.role,
       content: message.content
     }))
   };
+}
+
+function validarChat(body) {
+  return validarMensajes(body.messages);
+}
+
+function validarAudio(audio) {
+  if (
+    typeof audio !== 'string' ||
+    !audio.length ||
+    !/^[A-Za-z0-9+/]+={0,2}$/.test(audio) ||
+    audio.length % 4 !== 0
+  ) {
+    return { error: 'bad_audio' };
+  }
+
+  // Rechaza audio demasiado largo antes de decodificarlo.
+  if (Math.floor((audio.length * 3) / 4) - (audio.match(/=+$/) || [''])[0].length > LIMITS.MAX_AUDIO_BYTES) {
+    return { error: 'audio_too_long' };
+  }
+
+  let bytes;
+
+  try {
+    bytes = Buffer.from(audio, 'base64');
+  } catch (_) {
+    return { error: 'bad_audio' };
+  }
+
+  if (!bytes.length || bytes.length % 2 !== 0) {
+    return { error: 'bad_audio' };
+  }
+
+  if (bytes.length < LIMITS.MIN_AUDIO_BYTES) {
+    return { error: 'bad_audio' };
+  }
+
+  if (bytes.length > LIMITS.MAX_AUDIO_BYTES) {
+    return { error: 'audio_too_long' };
+  }
+
+  return { audio: bytes };
+}
+
+function recortarTexto(texto) {
+  return typeof texto === 'string' ? texto.trim() : '';
+}
+
+async function relayVoz({ audio, messages }, opts = {}) {
+  const WebSocket = opts.WebSocket || require('ws');
+  const timeoutMs = opts.timeoutMs === undefined ? 22000 : opts.timeoutMs;
+  const apiKey = process.env.XAI_API_KEY;
+
+  if (!apiKey) {
+    const error = new Error('not_configured');
+    error.code = 'not_configured';
+    throw error;
+  }
+
+  if (!Buffer.isBuffer(audio)) {
+    const error = new Error('bad_audio');
+    error.code = 'bad_audio';
+    throw error;
+  }
+
+  return new Promise((resolve, reject) => {
+    let socket;
+    let settled = false;
+    let timer = null;
+    let sessionUpdated = false;
+    let responseDone = false;
+    let outputBuffers = [];
+    let outputBytes = 0;
+    let transcript = '';
+    let userTranscript = '';
+
+    const finish = (fn, value) => {
+      if (settled) return;
+
+      settled = true;
+
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+
+      try {
+        if (socket) {
+          if (typeof socket.terminate === 'function') {
+            socket.terminate();
+          } else if (typeof socket.close === 'function') {
+            socket.close();
+          }
+        }
+      } catch (_) {
+        // El cierre es best-effort.
+      }
+
+      fn(value);
+    };
+
+    const fail = (code) => {
+      const error = new Error(code);
+      error.code = code;
+      finish(reject, error);
+    };
+
+    const succeed = () => {
+      const responseAudio = Buffer.concat(outputBuffers);
+      const responseTranscript = recortarTexto(transcript);
+      const visitorTranscript = recortarTexto(userTranscript);
+
+      if (!responseAudio.length && !responseTranscript) {
+        fail('provider_error');
+        return;
+      }
+
+      finish(resolve, {
+        audio: responseAudio.toString('base64'),
+        transcript: responseTranscript,
+        userTranscript: visitorTranscript
+      });
+    };
+
+    const send = (payload) => {
+      if (!socket || typeof socket.send !== 'function') return;
+
+      try {
+        socket.send(JSON.stringify(payload));
+      } catch (_) {
+        fail('provider_error');
+      }
+    };
+
+    const sendSessionUpdate = () => {
+      send({
+        type: 'session.update',
+        session: {
+          instructions: contexto.instruccionesVoz(),
+          voice: process.env.XAI_VOICE || 'Ara',
+          turn_detection: null,
+          audio: {
+            input: {
+              format: {
+                type: 'audio/pcm',
+                rate: 24000
+              }
+            },
+            output: {
+              format: {
+                type: 'audio/pcm',
+                rate: 24000
+              }
+            }
+          }
+        }
+      });
+    };
+
+    const sendConversation = () => {
+      for (const message of messages || []) {
+        send({
+          type: 'conversation.item.create',
+          item: {
+            type: 'message',
+            role: message.role,
+            content: [
+              {
+                type: message.role === 'user' ? 'input_text' : 'text',
+                text: message.content
+              }
+            ]
+          }
+        });
+      }
+
+      const chunkSize = 96000;
+
+      for (let offset = 0; offset < audio.length; offset += chunkSize) {
+        const chunk = audio.subarray(offset, Math.min(offset + chunkSize, audio.length));
+
+        send({
+          type: 'input_audio_buffer.append',
+          audio: chunk.toString('base64')
+        });
+      }
+
+      send({ type: 'input_audio_buffer.commit' });
+      send({ type: 'response.create' });
+    };
+
+    const handleEvent = (raw) => {
+      let event;
+
+      try {
+        event = JSON.parse(typeof raw === 'string' ? raw : Buffer.from(raw).toString('utf8'));
+      } catch (_) {
+        return;
+      }
+
+      if (!event || typeof event !== 'object') return;
+
+      if (event.type === 'session.created') {
+        sendSessionUpdate();
+        return;
+      }
+
+      if (event.type === 'session.updated') {
+        // Solo cuenta la confirmación que ya trae nuestras instrucciones.
+        if (!sessionUpdated && event.session && event.session.instructions) {
+          sessionUpdated = true;
+          sendConversation();
+        }
+        return;
+      }
+
+      if (event.type === 'response.output_audio.delta') {
+        if (typeof event.delta !== 'string') return;
+
+        let delta;
+
+        try {
+          delta = Buffer.from(event.delta, 'base64');
+        } catch (_) {
+          return;
+        }
+
+        if (!delta.length) return;
+
+        if (outputBytes + delta.length > 2880000) {
+          const remaining = 2880000 - outputBytes;
+
+          if (remaining > 0) {
+            outputBuffers.push(delta.subarray(0, remaining));
+            outputBytes += remaining;
+          }
+
+          succeed();
+          return;
+        }
+
+        outputBuffers.push(delta);
+        outputBytes += delta.length;
+        return;
+      }
+
+      if (event.type === 'response.output_audio_transcript.delta') {
+        if (typeof event.delta === 'string') {
+          transcript += event.delta;
+        }
+        return;
+      }
+
+      if (event.type === 'conversation.item.input_audio_transcription.completed') {
+        if (typeof event.transcript === 'string') {
+          userTranscript += event.transcript;
+        }
+        return;
+      }
+
+      if (event.type === 'error') {
+        fail('provider_error');
+        return;
+      }
+
+      if (event.type === 'response.done') {
+        responseDone = true;
+        succeed();
+      }
+    };
+
+    try {
+      socket = new WebSocket(
+        'wss://api.x.ai/v1/realtime?model=' +
+          encodeURIComponent(process.env.XAI_VOICE_MODEL || 'grok-voice-latest'),
+        {
+          headers: {
+            Authorization: 'Bearer ' + apiKey
+          }
+        }
+      );
+    } catch (_) {
+      fail('provider_error');
+      return;
+    }
+
+    timer = setTimeout(() => {
+      fail('timeout');
+    }, timeoutMs);
+
+    socket.on('open', () => {
+      // La actualización de sesión se envía al recibir session.created.
+    });
+
+    socket.on('message', (data) => {
+      handleEvent(data);
+    });
+
+    socket.on('error', () => {
+      fail('provider_error');
+    });
+
+    socket.on('close', () => {
+      if (!responseDone && !settled) {
+        fail('provider_error');
+      }
+    });
+  });
 }
 
 module.exports = async function handler(req, res) {
@@ -343,7 +608,7 @@ module.exports = async function handler(req, res) {
   if (action === 'voz') {
     const permitidoDia = await hit(
       `agente:voz-dia:${ip}`,
-      20,
+      60,
       86400
     );
 
@@ -402,38 +667,65 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  const resultado = await crearTokenVoz();
+  const validacionAudio = validarAudio(body.audio);
 
-  if (resultado.error === 'not_configured') {
+  if (validacionAudio.error) {
+    if (validacionAudio.error === 'audio_too_long') {
+      return responderError(res, 413, 'audio_too_long');
+    }
+
+    return responderError(res, 400, 'bad_audio');
+  }
+
+  let historial = [];
+
+  // Historial vacío equivale a no enviar historial.
+  if (body.messages !== undefined && !(Array.isArray(body.messages) && body.messages.length === 0)) {
+    const validacionMensajes = validarMensajes(body.messages, {
+      permitirCualquierRolUltimo: true,
+      maximo: 10
+    });
+
+    if (validacionMensajes.error) {
+      return responderError(res, 400, validacionMensajes.error);
+    }
+
+    historial = validacionMensajes.messages;
+  }
+
+  if (!process.env.XAI_API_KEY) {
     registrarAviso(action, 503);
     return responderError(res, 503, 'not_configured', { fallback: 'whatsapp' });
   }
 
-  if (resultado.error) {
+  let resultado;
+
+  try {
+    resultado = await relayVoz(
+      {
+        audio: validacionAudio.audio,
+        messages: historial
+      },
+      module.exports.relayOpts || {}
+    );
+  } catch (error) {
+    if (error && error.code === 'timeout') {
+      registrarAviso(action, 504);
+      return responderError(res, 504, 'timeout', { fallback: 'whatsapp' });
+    }
+
     registrarAviso(action, 502);
     return responderError(res, 502, 'provider_error', { fallback: 'whatsapp' });
   }
 
   return res.status(200).json({
-    token: resultado.token,
-    expiresAt: resultado.expiresAt,
-    url:
-      'wss://api.x.ai/v1/realtime?model=' +
-      encodeURIComponent(process.env.XAI_VOICE_MODEL || 'grok-voice-latest'),
-    session: {
-      instructions: contexto.instruccionesVoz(),
-      voice: process.env.XAI_VOICE || 'Ara',
-      turn_detection: { type: 'server_vad' },
-      audio: {
-        input: {
-          format: { type: 'audio/pcm', rate: 24000 }
-        },
-        output: {
-          format: { type: 'audio/pcm', rate: 24000 }
-        }
-      }
-    }
+    audio: resultado.audio,
+    format: 'pcm16',
+    sampleRate: 24000,
+    transcript: resultado.transcript,
+    userTranscript: resultado.userTranscript
   });
 };
 
 module.exports.LIMITS = LIMITS;
+module.exports.relayVoz = relayVoz;

@@ -2,7 +2,8 @@
 
 > **Implementación vigente (nov 2026).** Ya no se usa ElevenLabs. El asistente público "CISA" funciona así:
 > - `assets/agent-cisa-fab.js` / `.css`: botón y panel de chat; retrato estático (`assets/agent-cisa/cisa-idle.png`), pose de escuchar/hablar solo en esos estados; historial guardado solo en el navegador del visitante (`localStorage`, 30 días, botón "Nueva conversación").
-> - `api/agente-cisa.js`: endpoint propio (POST). `chat` y `tts` usan MiniMax en el servidor; `voz` crea en el servidor un token efímero de Grok (60 s, una sesión) para la voz en vivo. Con límite por IP y verificación de origen. Ninguna clave llega al navegador.
+> - `api/agente-cisa.js`: endpoint propio (POST). `chat` y `tts` usan MiniMax en el servidor. `voz` es un relay en el servidor por turnos (push-to-talk): el navegador graba PCM16 mono 24 kHz (máx. 15 s) y lo sube al mismo endpoint; el servidor abre el WebSocket de Grok con `XAI_API_KEY`, configura la sesión con las instrucciones (que nunca salen del servidor), envía el audio, espera la respuesta (máx. 22 s) y devuelve solo audio PCM y transcripciones. No hay streaming bidireccional: cada turno es una petición HTTP. Con límite por IP (voz: 6/min y 60/día) y verificación de origen. Ninguna clave, token ni instrucción llega al navegador.
+> - Privacidad: `aviso-de-privacidad.html` describe MiniMax (texto y lectura en voz alta), xAI (voz) y el historial local de 30 días.
 > - Personalidad y conocimiento: el servidor carga `system-prompt.md`, `knowledge-base.md`, `flows.md` y `handoff-to-human.md` de esta carpeta (`api/_lib/agente-contexto.js`; incluidos en la función por `vercel.json`).
 > - Si no hay micrófono o falla un proveedor, el panel ofrece seguir por WhatsApp.
 > - Variables (Vercel, sensibles): `MINIMAX_API_KEY`, `XAI_API_KEY`. Opcionales: `MINIMAX_TEXT_MODEL`, `MINIMAX_TTS_MODEL`, `MINIMAX_TTS_VOICE`, `XAI_VOICE_MODEL`, `XAI_VOICE`, `AGENTE_CISA_ORIGINS`.

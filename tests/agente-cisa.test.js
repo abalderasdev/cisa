@@ -127,6 +127,8 @@ test('exporta los límites declarados', async (t) => {
     MAX_MESSAGES: 20,
     MAX_CHARS: 2000,
     MAX_TTS_CHARS: 1200,
+    MAX_AUDIO_BYTES: 720000,
+    MIN_AUDIO_BYTES: 4800,
   });
 });
 
@@ -546,76 +548,6 @@ test('tts con status_code 1004 devuelve 502', async (t) => {
   assert.equal(res.statusCode, 502);
 });
 
-test('voz obtiene un secreto efímero y no expone XAI_API_KEY', async (t) => {
-  const handler = await loadHandler();
-  let fetchedUrl;
-  let fetchedOptions;
-
-  installFetch(t, async (url, options) => {
-    fetchedUrl = url;
-    fetchedOptions = options;
-    return response({
-      value: 'efimero-123',
-      expires_at: 1,
-    });
-  });
-
-  const res = await runHandler(
-    handler,
-    mockReq({
-      headers: {
-        origin: 'https://sitio.test',
-        host: 'sitio.test',
-        'x-forwarded-for': uniqueIp(),
-      },
-      body: {
-        action: 'voz',
-        messages: [{ role: 'user', content: 'Hola' }],
-      },
-    }),
-  );
-
-  assert.equal(res.statusCode, 200);
-  assert.equal(res.body.token, 'efimero-123');
-  assert.ok(res.body.url.startsWith('wss://api.x.ai/v1/realtime'));
-  assert.equal(typeof res.body.session.instructions, 'string');
-  assert.ok(res.body.session.instructions.length > 0);
-  assert.equal(
-    fetchedUrl,
-    'https://api.x.ai/v1/realtime/client_secrets',
-  );
-  assert.equal(
-    fetchedOptions.headers.Authorization,
-    'Bearer xai-prueba-NO-REAL',
-  );
-
-  const serialized = JSON.stringify(res.body);
-  assert.ok(!serialized.includes('xai-prueba-NO-REAL'));
-});
-
-test('voz sin XAI_API_KEY devuelve 503', async (t) => {
-  const handler = await loadHandler();
-  delete process.env.XAI_API_KEY;
-  t.after(() => { process.env.XAI_API_KEY = 'xai-prueba-NO-REAL'; });
-
-  const res = await runHandler(
-    handler,
-    mockReq({
-      headers: {
-        origin: 'https://sitio.test',
-        host: 'sitio.test',
-        'x-forwarded-for': uniqueIp(),
-      },
-      body: {
-        action: 'voz',
-        messages: [{ role: 'user', content: 'Hola' }],
-      },
-    }),
-  );
-
-  assert.equal(res.statusCode, 503);
-});
-
 test('el rate limit de chat permite 20 peticiones y bloquea la 21', async (t) => {
   const handler = await loadHandler();
   const ip = uniqueIp();
@@ -646,54 +578,6 @@ test('el rate limit de chat permite 20 peticiones y bloquea la 21', async (t) =>
       headers: { 'x-forwarded-for': ip },
       body: {
         action: 'chat',
-        messages: [{ role: 'user', content: 'Exceso' }],
-      },
-    }),
-  );
-
-  assert.equal(res.statusCode, 429);
-  assert.deepEqual(res.body, { error: 'rate_limited' });
-});
-
-test('el rate limit de voz permite 3 peticiones y bloquea la 4', async (t) => {
-  const handler = await loadHandler();
-  const ip = uniqueIp();
-
-  installFetch(t, async () =>
-    response({
-      value: 'efimero-123',
-      expires_at: 1,
-    }),
-  );
-
-  for (let index = 0; index < 3; index += 1) {
-    const res = await runHandler(
-      handler,
-      mockReq({
-        headers: {
-          origin: 'https://sitio.test',
-          host: 'sitio.test',
-          'x-forwarded-for': ip,
-        },
-        body: {
-          action: 'voz',
-          messages: [{ role: 'user', content: `Mensaje ${index}` }],
-        },
-      }),
-    );
-    assert.equal(res.statusCode, 200, `petición ${index + 1}`);
-  }
-
-  const res = await runHandler(
-    handler,
-    mockReq({
-      headers: {
-        origin: 'https://sitio.test',
-        host: 'sitio.test',
-        'x-forwarded-for': ip,
-      },
-      body: {
-        action: 'voz',
         messages: [{ role: 'user', content: 'Exceso' }],
       },
     }),
@@ -810,7 +694,7 @@ test('vercel.json incluye agente-cisa y configura el CSP requerido', () => {
   const csp = JSON.stringify(vercel.headers);
 
   assert.ok(!/elevenlabs/i.test(csp));
-  assert.ok(csp.includes('wss://api.x.ai'));
+  assert.ok(!csp.includes('api.x.ai'));
 });
 
 test('los botones agent-cisa-fab no contienen un video', () => {

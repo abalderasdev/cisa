@@ -198,13 +198,7 @@
       submitChat();
     });
 
-    mic.addEventListener('click', function () {
-      if (voice) {
-        stopVoice();
-      } else {
-        startVoice();
-      }
-    });
+    mic.addEventListener('click', toggleVoice);
 
     tts.addEventListener('click', function () {
       speakWithTts();
@@ -481,10 +475,13 @@
   function startVoice() {
     if (voice) return;
 
+    var AudioContextClass =
+      window.AudioContext || window.webkitAudioContext;
+
     if (
       !navigator.mediaDevices ||
       !navigator.mediaDevices.getUserMedia ||
-      !window.AudioContext ||
+      !AudioContextClass ||
       !window.AudioWorkletNode
     ) {
       showMicrophoneFallback();
@@ -493,367 +490,308 @@
 
     var session = {
       active: true,
-      socket: null,
+      phase: 'starting',
       stream: null,
       context: null,
       source: null,
       worklet: null,
-      sourceNodes: [],
-      pendingSource: null,
-      playbackStartedAt: 0,
-      playbackEndsAt: 0,
-      playhead: 0,
-      echoTimer: null,
-      voiceTimer: null,
-      sessionTimer: null,
-      createdTimer: null,
-      transcript: '',
-      userTranscript: '',
-      sentTranscript: false,
-      sentAssistant: false,
-      chunkTimer: null,
-      micChunks: [],
-      serverSession: null,
-      sessionCreated: false
+      chunks: [],
+      sampleRate: 24000,
+      recordingTimer: null,
+      requestController: null,
+      requestTimer: null,
+      playbackSource: null
     };
+
     voice = session;
 
-    elements.mic.setAttribute('aria-pressed', 'true');
-    setState('listening');
-
-    var timeout = window.setTimeout(function () {
-      if (!session.active) return;
-      stopVoice();
-      showMicrophoneFallback();
-    }, 30000);
-
-    fetch('/api/agente-cisa', {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ action: 'voz' })
-    })
-      .then(function (response) {
-        if (!response.ok) throw new Error('voz');
-        return response.json();
+    navigator.mediaDevices
+      .getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          channelCount: 1
+        }
       })
-      .then(function (data) {
-        window.clearTimeout(timeout);
-        if (!data || !data.url || !data.token || !data.session) {
-          throw new Error('voz');
+      .then(function (stream) {
+        if (!session.active) {
+          stopStream(stream);
+          throw new Error('Sesión cancelada');
         }
 
-        session.serverSession = data.session;
+        session.stream = stream;
+        session.context = new AudioContextClass({ sampleRate: 24000 });
+        session.sampleRate = session.context.sampleRate;
 
-        session.sessionTimer = window.setTimeout(function () {
-          stopVoice();
-        }, 5 * 60 * 1000);
+        return session.context.audioWorklet.addModule(
+          '/assets/agent-cisa-mic-worklet.js'
+        );
+      })
+      .then(function () {
+        if (!session.active || !session.context) {
+          throw new Error('Sesión cancelada');
+        }
 
-        return setupMicrophone(session, data);
+        session.source = session.context.createMediaStreamSource(
+          session.stream
+        );
+        session.worklet = new AudioWorkletNode(
+          session.context,
+          'cisa-mic'
+        );
+
+        session.worklet.port.onmessage = function (event) {
+          if (!session.active) return;
+
+          var samples = event.data;
+          if (!(samples instanceof Float32Array) || !samples.length) return;
+
+          var pcm = resampleFloat32(samples, session.sampleRate, 24000);
+          session.chunks.push(floatToPcm16(pcm));
+        };
+
+        session.source.connect(session.worklet);
+
+        session.phase = 'recording';
+        elements.mic.setAttribute('aria-pressed', 'true');
+        setState('listening');
+
+        session.recordingTimer = window.setTimeout(function () {
+          if (session.active && session.phase === 'recording') {
+            sendVoiceTurn();
+          }
+        }, 14500);
       })
       .catch(function () {
-        window.clearTimeout(timeout);
+        if (!session.active) return;
+
         stopVoice();
         showMicrophoneFallback();
       });
   }
 
-  function setupMicrophone(session, data) {
-    return navigator.mediaDevices
-      .getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true
-        }
+  function toggleVoice() {
+    if (!voice) {
+      startVoice();
+      return;
+    }
+
+    if (voice.phase === 'recording') {
+      sendVoiceTurn();
+      return;
+    }
+
+    stopVoice();
+  }
+
+  function sendVoiceTurn() {
+    if (!voice || voice.phase !== 'recording') return;
+
+    var session = voice;
+    session.phase = 'thinking';
+
+    stopCapture(session);
+
+    var pcm = concatPcm16(session.chunks);
+    session.chunks = [];
+
+    elements.mic.setAttribute('aria-pressed', 'false');
+
+    if (pcm.byteLength < 4800) {
+      finishVoice(session);
+      return;
+    }
+
+    var controller =
+      typeof AbortController !== 'undefined'
+        ? new AbortController()
+        : null;
+
+    session.requestController = controller;
+    session.requestTimer = window.setTimeout(function () {
+      if (controller) controller.abort();
+    }, 35000);
+
+    var messages = history.slice(-10).map(function (item) {
+      return {
+        role: item.role,
+        content: item.content
+      };
+    });
+
+    var requestOptions = {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        action: 'voz',
+        audio: arrayBufferToBase64(pcm.buffer),
+        messages: messages
       })
-      .then(function (stream) {
-        if (!session.active) {
-          stream.getTracks().forEach(function (track) {
-            track.stop();
-          });
-          throw new Error('sesión cancelada');
+    };
+
+    if (controller) requestOptions.signal = controller.signal;
+
+    setState('thinking');
+
+    fetch('/api/agente-cisa', requestOptions)
+      .then(function (response) {
+        if (!response.ok) throw new Error('Respuesta no válida');
+
+        return response.json();
+      })
+      .then(function (data) {
+        if (!session.active) return;
+
+        if (
+          !data ||
+          typeof data.audio !== 'string' ||
+          !data.audio ||
+          data.format !== 'pcm16' ||
+          data.sampleRate !== 24000
+        ) {
+          throw new Error('Respuesta no válida');
         }
 
-        session.stream = stream;
-        session.context = new AudioContext({ sampleRate: 24000 });
+        if (
+          typeof data.userTranscript === 'string' &&
+          data.userTranscript.trim()
+        ) {
+          addMessage('user', data.userTranscript.trim(), true);
+        }
 
-        return session.context.audioWorklet
-          .addModule('/assets/agent-cisa-mic-worklet.js')
-          .then(function () {
-            if (!session.active) throw new Error('sesión cancelada');
+        if (
+          typeof data.transcript === 'string' &&
+          data.transcript.trim()
+        ) {
+          addMessage('assistant', data.transcript.trim(), true);
+        }
 
-            session.socket = new WebSocket(data.url, [
-              'xai-client-secret.' + data.token
-            ]);
-            session.socket.binaryType = 'arraybuffer';
-
-            session.socket.addEventListener('open', function () {
-              session.createdTimer = window.setTimeout(function () {
-                if (!session.sessionCreated) {
-                  stopVoice();
-                  showMicrophoneFallback();
-                }
-              }, 6000);
-            });
-
-            session.socket.addEventListener('message', function (event) {
-              handleVoiceEvent(session, event);
-            });
-
-            session.socket.addEventListener('error', function () {
-              if (session.active) {
-                stopVoice();
-                showMicrophoneFallback();
-              }
-            });
-
-            session.socket.addEventListener('close', function () {
-              if (session.active && !session.closing) {
-                stopVoice();
-                showMicrophoneFallback();
-              }
-            });
-
-            session.source = session.context.createMediaStreamSource(stream);
-            session.worklet = new AudioWorkletNode(session.context, 'cisa-mic');
-            session.worklet.port.onmessage = function (event) {
-              handleAudioChunk(session, event.data);
-            };
-            session.source.connect(session.worklet);
-
-            session.chunkTimer = window.setInterval(function () {
-              flushAudio(session);
-            }, 100);
-          });
+        return playVoiceResponse(session, data.audio);
       })
       .catch(function () {
-        if (session.active) {
-          stopVoice();
-          showMicrophoneFallback();
-        }
+        if (!session.active) return;
+
+        stopVoice();
+        showMicrophoneFallback();
       });
   }
 
-  function handleVoiceEvent(session, event) {
-    if (!session.active || typeof event.data !== 'string') return;
+  function playVoiceResponse(session, base64Audio) {
+    var bytes = base64ToArrayBuffer(base64Audio);
+    var pcm = new Int16Array(bytes);
 
-    var data;
-    try {
-      data = JSON.parse(event.data);
-    } catch (error) {
-      return;
+    if (!pcm.length) {
+      throw new Error('Audio vacío');
     }
 
-    if (data.type === 'session.created') {
-      session.sessionCreated = true;
-      window.clearTimeout(session.createdTimer);
+    var AudioContextClass =
+      window.AudioContext || window.webkitAudioContext;
 
-      if (session.socket && session.socket.readyState === WebSocket.OPEN) {
-        session.socket.send(
-          JSON.stringify({
-            type: 'session.update',
-            session: session.serverSession || {}
-          })
-        );
-        setState('listening');
-      }
-      return;
+    if (!AudioContextClass) {
+      throw new Error('AudioContext no disponible');
     }
 
-    if (data.type === 'session.updated') {
-      setState('listening');
-      return;
-    }
-
-    if (data.type === 'response.output_audio.delta') {
-      if (typeof data.delta === 'string') {
-        flushPlayback(session, data.delta);
-      }
-      return;
-    }
-
-    if (data.type === 'response.output_audio_transcript.delta') {
-      if (typeof data.delta === 'string') session.transcript += data.delta;
-      return;
-    }
+    var context = session.context;
 
     if (
-      data.type === 'response.output_audio_transcript.done' ||
-      data.type === 'response.done'
+      !context ||
+      context.state === 'closed' ||
+      context.sampleRate !== 24000
     ) {
-      if (session.transcript && !session.sentAssistant) {
-        addMessage('assistant', session.transcript, true);
-        session.sentAssistant = true;
-      }
-
-      if (data.type === 'response.done') {
-        session.transcript = '';
-        session.sentAssistant = false;
-      }
-      return;
+      context = new AudioContextClass({ sampleRate: 24000 });
+      session.context = context;
     }
 
-    if (data.type === 'conversation.item.input_audio_transcription.completed') {
-      if (typeof data.transcript === 'string' && data.transcript.trim()) {
-        addMessage('user', data.transcript.trim(), true);
-      }
-      return;
-    }
-
-    if (data.type === 'input_audio_buffer.speech_started') {
-      stopPlayback(session);
-      return;
-    }
-
-    if (data.type === 'error') {
-      stopVoice();
-      showMicrophoneFallback();
-    }
-  }
-
-  function handleAudioChunk(session, samples) {
-    if (!session.active || !samples || !samples.length) return;
-
-    if (!session.sessionCreated) return;
-
-    if (Date.now() < session.playbackEndsAt + 300) return;
-
-    var pcm = floatToPcm16(samples);
-    session.micChunks.push(new Int16Array(pcm.buffer.slice(0)));
-  }
-
-  function flushAudio(session) {
-    if (!session.active || !session.sessionCreated) return;
-
-    if (!session.micChunks.length) return;
-
-    if (Date.now() < session.playbackEndsAt + 300) {
-      session.micChunks = [];
-      return;
-    }
-
-    if (!session.socket || session.socket.readyState !== WebSocket.OPEN) {
-      session.micChunks = [];
-      return;
-    }
-
-    var totalLength = 0;
-    var i;
-
-    for (i = 0; i < session.micChunks.length; i += 1) {
-      totalLength += session.micChunks[i].length;
-    }
-
-    var merged = new Int16Array(totalLength);
-    var offset = 0;
-
-    for (i = 0; i < session.micChunks.length; i += 1) {
-      merged.set(session.micChunks[i], offset);
-      offset += session.micChunks[i].length;
-    }
-
-    session.micChunks = [];
-
-    var base64 = arrayBufferToBase64(merged.buffer);
-
-    session.socket.send(
-      JSON.stringify({
-        type: 'input_audio_buffer.append',
-        audio: base64
-      })
-    );
-  }
-
-  function flushPlayback(session, base64) {
-    if (!session.active || !session.context || !base64) return;
-
-    var bytes = base64ToArrayBuffer(base64);
-    var samples = new Int16Array(bytes);
-    if (!samples.length) return;
-
-    var buffer = session.context.createBuffer(1, samples.length, 24000);
+    var buffer = context.createBuffer(1, pcm.length, 24000);
     var channel = buffer.getChannelData(0);
 
-    for (var i = 0; i < samples.length; i += 1) {
-      channel[i] = samples[i] / 32768;
+    for (var i = 0; i < pcm.length; i += 1) {
+      channel[i] = pcm[i] / 32768;
     }
 
-    var source = session.context.createBufferSource();
+    var source = context.createBufferSource();
     source.buffer = buffer;
-    source.connect(session.context.destination);
-    session.sourceNodes.push(source);
+    source.connect(context.destination);
 
-    var currentTime = session.context.currentTime;
-    var startAt = Math.max(currentTime, session.playhead);
-
-    session.playhead = startAt + buffer.duration;
-    session.playbackEndsAt =
-      Date.now() + (session.playhead - currentTime) * 1000;
-
-    source.start(startAt);
-    session.pendingSource = source;
-    session.playbackStartedAt = Date.now();
+    session.phase = 'speaking';
+    session.playbackSource = source;
     setState('speaking');
 
-    source.onended = function () {
-      var index = session.sourceNodes.indexOf(source);
-      if (index !== -1) session.sourceNodes.splice(index, 1);
+    return new Promise(function (resolve, reject) {
+      source.onended = function () {
+        if (!session.active) {
+          resolve();
+          return;
+        }
 
-      if (
-        session.active &&
-        !session.sourceNodes.length &&
-        session.context &&
-        session.playhead <= session.context.currentTime + 0.01
-      ) {
-        setState('listening');
-      }
-    };
-  }
+        session.playbackSource = null;
+        finishVoice(session);
+        resolve();
+      };
 
-  function stopPlayback(session) {
-    session.sourceNodes.forEach(function (source) {
-      try {
-        source.stop();
-      } catch (error) {
-        // Fuente ya finalizada.
+      source.onerror = function () {
+        reject(new Error('Error de reproducción'));
+      };
+
+      var startPlayback = function () {
+        if (!session.active) return;
+
+        try {
+          source.start();
+        } catch (error) {
+          reject(error);
+        }
+      };
+
+      if (context.state === 'suspended') {
+        context.resume().then(startPlayback).catch(reject);
+      } else {
+        startPlayback();
       }
     });
-
-    session.sourceNodes = [];
-    session.pendingSource = null;
-    session.playbackStartedAt = 0;
-    session.playbackEndsAt = 0;
-    session.playhead = 0;
-
-    if (session.context) {
-      session.playhead = session.context.currentTime;
-    }
   }
 
   function stopVoice() {
-    if (!voice) return;
-
     var session = voice;
+
     voice = null;
-    session.active = false;
-    session.closing = true;
 
-    window.clearTimeout(session.createdTimer);
-    window.clearTimeout(session.sessionTimer);
-    window.clearInterval(session.chunkTimer);
+    if (session) {
+      session.active = false;
 
-    stopPlayback(session);
-    session.micChunks = [];
+      window.clearTimeout(session.recordingTimer);
+      window.clearTimeout(session.requestTimer);
+
+      if (session.requestController) {
+        session.requestController.abort();
+      }
+
+      stopCapture(session);
+      stopPlayback(session);
+      closeAudioContext(session.context);
+    }
+
+    elements.mic.setAttribute('aria-pressed', 'false');
+    setState('idle');
+  }
+
+  function stopCapture(session) {
+    window.clearTimeout(session.recordingTimer);
+    session.recordingTimer = null;
 
     if (session.worklet) {
       session.worklet.port.onmessage = null;
+
       try {
         session.worklet.disconnect();
       } catch (error) {
         // El nodo puede estar desconectado.
       }
+
+      session.worklet = null;
     }
 
     if (session.source) {
@@ -862,32 +800,116 @@
       } catch (error) {
         // La fuente puede estar desconectada.
       }
+
+      session.source = null;
     }
 
     if (session.stream) {
-      session.stream.getTracks().forEach(function (track) {
-        track.stop();
-      });
+      stopStream(session.stream);
+      session.stream = null;
+    }
+  }
+
+  function stopPlayback(session) {
+    if (!session.playbackSource) return;
+
+    var source = session.playbackSource;
+    session.playbackSource = null;
+
+    try {
+      source.onended = null;
+      source.stop();
+    } catch (error) {
+      // La fuente puede estar finalizada.
     }
 
-    if (session.socket) {
-      try {
-        session.socket.close();
-      } catch (error) {
-        // El socket puede estar cerrado.
-      }
+    try {
+      source.disconnect();
+    } catch (error) {
+      // La fuente puede estar desconectada.
     }
+  }
 
-    if (session.context && session.context.state !== 'closed') {
-      session.context.close().catch(function () {
-        // Cierre de contexto.
-      });
-    }
+  function finishVoice(session) {
+    if (!session || !session.active) return;
+
+    window.clearTimeout(session.recordingTimer);
+    window.clearTimeout(session.requestTimer);
+
+    session.requestController = null;
+    session.playbackSource = null;
+    session.chunks = [];
+
+    closeAudioContext(session.context);
+    session.context = null;
+
+    if (voice === session) voice = null;
 
     elements.mic.setAttribute('aria-pressed', 'false');
     setState('idle');
   }
 
+  function stopStream(stream) {
+    if (!stream || !stream.getTracks) return;
+
+    stream.getTracks().forEach(function (track) {
+      track.stop();
+    });
+  }
+
+  function closeAudioContext(context) {
+    if (!context || context.state === 'closed') return;
+
+    try {
+      context.close().catch(function () {
+        // El contexto puede cerrarse durante la cancelación.
+      });
+    } catch (error) {
+      // El contexto puede estar cerrado.
+    }
+  }
+
+  function concatPcm16(chunks) {
+    var totalLength = 0;
+    var i;
+
+    for (i = 0; i < chunks.length; i += 1) {
+      totalLength += chunks[i].length;
+    }
+
+    var merged = new Int16Array(totalLength);
+    var offset = 0;
+
+    for (i = 0; i < chunks.length; i += 1) {
+      merged.set(chunks[i], offset);
+      offset += chunks[i].length;
+    }
+
+    return merged;
+  }
+
+  function resampleFloat32(samples, sourceRate, targetRate) {
+    if (!sourceRate || sourceRate === targetRate) return samples;
+
+    var targetLength = Math.max(
+      1,
+      Math.round((samples.length * targetRate) / sourceRate)
+    );
+    var result = new Float32Array(targetLength);
+    var ratio = (samples.length - 1) / (targetLength - 1 || 1);
+
+    for (var i = 0; i < targetLength; i += 1) {
+      var position = i * ratio;
+      var lower = Math.floor(position);
+      var upper = Math.min(lower + 1, samples.length - 1);
+      var weight = position - lower;
+
+      result[i] =
+        samples[lower] * (1 - weight) + samples[upper] * weight;
+    }
+
+    return result;
+  }
   function showMicrophoneFallback() {
     addSystemMessage(
       'El micrófono no está disponible. Puedes escribir aquí o seguir por WhatsApp.'
