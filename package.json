@@ -9,7 +9,7 @@
     "impeccable:doctor": "node .impeccable/scripts/doctor.mjs",
     "impeccable:stop": "node .impeccable/scripts/live-server.mjs stop",
     "impeccable:audit": "node .impeccable/scripts/live-server.mjs --audit",
-    "test": "node --test tests/",
+    "test": "node --test \"tests/*.test.js\"",
     "mark-editable": "node scripts/mark_editable.js",
     "hash-password": "node scripts/hash_password.js"
   },
