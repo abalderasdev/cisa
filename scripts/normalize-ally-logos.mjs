@@ -33,8 +33,8 @@ try {
 const DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'assets', 'aliados');
 const TOL = 30; // tolerancia de color para detectar el fondo
 
-const near = (a, b) =>
-  Math.abs(a[0] - b[0]) <= TOL && Math.abs(a[1] - b[1]) <= TOL && Math.abs(a[2] - b[2]) <= TOL;
+const near = (a, b, tol = TOL) =>
+  Math.abs(a[0] - b[0]) <= tol && Math.abs(a[1] - b[1]) <= tol && Math.abs(a[2] - b[2]) <= tol;
 
 /** Marca como transparente todo pixel contiguo al borde que coincida con el fondo. */
 function removeBg(data, w, h, ch, bg) {
@@ -63,6 +63,47 @@ function removeBg(data, w, h, ch, bg) {
   }
 }
 
+/**
+ * Segunda pasada: el logo de KIMBRA tiene el interior de su marco verde en
+ * blanco, y como esta encerrado el flood fill no lo alcanza — se quedaba un
+ * bloque blanco al fondo. Aqui se quitan las areas ENCERRADAS de color fondo.
+ *
+ * Usa tolerancia alta (90) porque solo entra lo que este encerrado dentro
+ * del logo, y exige un area minima del 3% para no tocar detalles pequenos
+ * (la linea gris del techo de CARVID, por ejemplo, queda intacta).
+ */
+function removeEnclosed(data, w, h, ch, bg, minShare, tol) {
+  const seen = new Uint8Array(w * h);
+  const minArea = Math.round(w * h * minShare);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const k = y * w + x;
+      if (seen[k]) continue;
+      const i = k * ch;
+      if (data[i + 3] < 250 || !near([data[i], data[i + 1], data[i + 2]], bg, tol)) { seen[k] = 1; continue; }
+      const comp = [];
+      const queue = [k];
+      seen[k] = 1;
+      while (queue.length) {
+        const c = queue.pop();
+        comp.push(c);
+        const cx = c % w, cy = (c / w) | 0;
+        const nb = [[cx - 1, cy], [cx + 1, cy], [cx, cy - 1], [cx, cy + 1]];
+        for (const [nx, ny] of nb) {
+          if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+          const nk = ny * w + nx;
+          if (seen[nk]) continue;
+          const ni = nk * ch;
+          if (data[ni + 3] < 250 || !near([data[ni], data[ni + 1], data[ni + 2]], bg, tol)) { seen[nk] = 1; continue; }
+          seen[nk] = 1;
+          queue.push(nk);
+        }
+      }
+      if (comp.length >= minArea) for (const c of comp) data[c * ch + 3] = 0;
+    }
+  }
+}
+
 /** Caja que envuelve el contenido con alfa. */
 function contentBox(data, w, h, ch) {
   let minX = w, minY = h, maxX = -1, maxY = -1;
@@ -88,7 +129,11 @@ for (const file of sources) {
 
   let opaque = 0;
   for (let i = 3; i < data.length; i += ch) if (data[i] > 250) opaque++;
-  if (opaque / (w * h) > 0.7) removeBg(data, w, h, ch, [data[0], data[1], data[2]]);
+  if (opaque / (w * h) > 0.7) {
+    const bg = [data[0], data[1], data[2]];
+    removeBg(data, w, h, ch, bg);
+    removeEnclosed(data, w, h, ch, bg, 0.03, 90);
+  }
 
   const box = contentBox(data, w, h, ch);
   if (!box) {
